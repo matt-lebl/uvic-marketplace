@@ -1,0 +1,289 @@
+openapi: "3.1.0"
+info:
+  title: "UVic Marketplace API Specification"
+  description: "API specification for communication between the frontend application and the backend application."
+  version: "1.0.0"
+tags:
+  - Listings
+paths:
+  /listings:
+    post:
+      summary: "Create a new listing"
+      operationId: "createListing"
+      tags:
+        - Listings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListingRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+    get:
+      summary: "Get listings"
+      operationId: "getListings"
+      tags:
+        - Listings
+      parameters:
+        - name: "search_query"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "sort"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            enum:
+              - "DISTANCE"
+              - "PRICE"
+              - "TIME_LISTED"
+        - name: "sort_direction"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "filters"
+          in: "query"
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              enum:
+                - "PRICE"
+                - "DISTANCE"
+                - "CATEGORY"
+        - name: "filter_price"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "filter_category"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+        - name: "filter_distance"
+          in: "query"
+          required: false
+          schema:
+            type: "number"
+            format: "float"
+        - name: "user_latitude"
+          in: "query"
+          required: true
+          schema:
+            type: "number"
+            format: "float"
+        - name: "user_longitude"
+          in: "query"
+          required: true
+          schema:
+            type: "number"
+            format: "float"
+        - name: "page_size"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "page_number"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Listing"
+  /listings/{id}:
+    get:
+      summary: "Get a particular listing"
+      operationId: "getListing"
+      tags:
+        - Listings
+      parameters:
+        - name: "id"
+          in: "path"
+          required: false
+      responses:
+        "404":
+          description: "Not Found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Listing"
+    put:
+      summary: "Update an existing listing"
+      operationId: "updateListing"
+      tags:
+        - Listings
+      parameters:
+        - name: "id"
+          in: "path"
+          required: false
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateListingRequest"
+        required: true
+      responses:
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+        "200":
+          description: "OK"
+    delete:
+      summary: "Delete an existing listing"
+      operationId: "deleteListing"
+      tags:
+        - Listings
+      parameters:
+        - name: "id"
+          in: "path"
+          required: false
+      responses:
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+        "200":
+          description: "OK"
+  /listings/userListings:
+    get:
+      summary: "Get listings posted by a particular user"
+      operationId: "getUserListings"
+      tags:
+        - Listings
+      parameters:
+        - name: "user_id"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+        - name: "page_size"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+        - name: "page_number"
+          in: "query"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "404":
+          description: "Not Found"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Listing"
+components:
+  schemas:
+    CreateListingRequest:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          example: "Used Calculus Textbook"
+        description:
+          type: "string"
+          example: "A used calculus textbook in good condition, perfect for MATH 101."
+        price:
+          type: "number"
+          example: 50.0
+        category:
+          type: "string"
+          example: "Books"
+        latitude:
+          type: "number"
+          example: 40.73061
+        longitude:
+          type: "number"
+          example: -73.935242
+        image_url:
+          type: "string"
+          example: "https://example.com/images/calculus-textbook.jpg"
+      required:
+        - "title"
+        - "price"
+        - "latitude"
+        - "longitude"
+    Review:
+      type: "object"
+      properties:
+        reviewerName:
+          type: "string"
+          example: "John Doe"
+        stars:
+          type: "integer"
+          format: "int32"
+          example: 5
+        comment:
+          type: "string"
+          example: "Great seller, the item was exactly as described and in perfect condition."
+      required:
+        - "reviewerName"
+        - "comment"
+    Listing:
+      type: "object"
+      properties:
+        title:
+          type: "string"
+          example: "Used Calculus Textbook"
+        price:
+          type: "number"
+          format: "float"
+          example: 50.0
+        category:
+          type: "string"
+          example: "Books"
+        sellerName:
+          type: "string"
+          example: "Jane Smith"
+        dateCreated:
+          type: "string"
+          format: "date-time"
+          example: "2024-05-23T15:30:00Z"
+        id:
+          type: "integer"
+          format: "int32"
+          example: 1
+        reviews:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Review"
+          example:
+            - reviewerName: "John Doe"
+              stars: 5
+              comment: "Great seller, the item was exactly as described and in perfect condition."
+            - reviewerName: "Alice Johnson"
+              stars: 4
+              comment: "Good condition, but the delivery was a bit slow."
+      required:
+        - "title"
+        - "category"
+        - "sellerName"
+        - "dateCreated"
+        - "reviews"
