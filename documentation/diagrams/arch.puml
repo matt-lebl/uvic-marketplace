@@ -1,0 +1,49 @@
+@startuml
+
+actor Client as client
+
+rectangle "Load Balancer" as loadbalancer
+
+rectangle "Kubernetes Cluster" #line.dashed {
+
+	collections "Ingress" as ingress
+
+	component "Node.js Frontend" as frontend
+	component "FastAPI Backend" as backend
+	component "Search and\nRecommender Service" as algorithms
+
+	ingress -> frontend: "/"
+	ingress -down-> backend: "/api"
+	ingress -down-> algorithms: "/api"
+
+	rectangle "Single Shared PostgreSQL Instance" #line.dashed {
+		database "Backend\nLogical Database" as backdb
+		database "Algorithms\nLogical Database" as algodb
+	}
+
+	component "Data Layer" as data
+
+	backend -down-> data
+	algorithms -down-> data
+
+	data -down-> backdb
+	data -down-> algodb
+
+	component "Data Sync Service" as sync
+
+	data -> sync
+	sync -> data
+
+	rectangle "Monitoring" #line.dashed;line:gray {
+		component "Prometheus Time\nSeries Database" as prom
+		component "Grafana" as grafana
+
+		grafana -> prom
+	}
+
+}
+
+client -down-> loadbalancer
+loadbalancer -down-> ingress
+
+@enduml

@@ -1,0 +1,10 @@
+# IDE Files
+.idea/**
+*.iml
+
+# Diagram Artefacts
+*.png
+*.svg
+
+# macOS
+.DS_Store
