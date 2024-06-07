@@ -6,6 +6,8 @@ WORKDIR /code
 # Copy the current directory contents into the container at /code
 COPY ./app /code/app
 COPY requirements.txt /code/
+COPY alembic.ini /code/
+COPY ./alembic /code/alembic
 
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt

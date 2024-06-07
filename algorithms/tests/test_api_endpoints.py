@@ -52,3 +52,13 @@ async def test_recommendations_endpoint():
         )
         assert response.status_code == 200
         #assert isinstance(response.json(), list)
+
+@pytest.mark.asyncio
+async def test_interactions_endpoint():
+    async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        response = await client.get(
+            "/api/interactions",
+            headers={"authorization": "Bearer testtoken"}
+        )
+        assert response.status_code == 200
+        #assert isinstance(response.json(), list)

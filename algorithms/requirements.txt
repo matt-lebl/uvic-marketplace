@@ -1,6 +1,7 @@
 fastapi==0.68.0
 uvicorn==0.15.0
 sqlalchemy==1.4.22
+alembic==1.13.1
 psycopg2-binary==2.9.1
 elasticsearch==7.10.1
 # Dont actually need to be installed to the final image. Only need these for testing locally
