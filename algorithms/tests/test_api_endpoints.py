@@ -32,6 +32,22 @@ async def test_create_listing_endpoint():
         #assert response.json()['listing']['title'] == new_listing['title']
 
 @pytest.mark.asyncio
+async def test_listing_in_elasticsearch():
+    async with httpx.AsyncClient(base_url="http://localhost:9200") as client:
+        listing_id = "123"
+        response = await client.get(
+            f"/listings/_doc/{listing_id}",
+            headers={"authorization": "Bearer testtoken"}
+        )
+        print(response)
+        assert response.status_code == 200
+    
+    # NOTE: To test if an item is in the SQL DB do the following:
+    # 1. Open the terminal for the 'db' docker container
+    # 2. Run `psql -U user -d mydatabase`
+    # 3. Run `SELECT * from listings` (or users or interactions)
+
+@pytest.mark.asyncio
 async def test_search_endpoint():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         response = await client.get(
