@@ -27,17 +27,15 @@ async def search(authorization: str = Header(...),
                     "fields": ["title", "description"]  # Adjust fields based on Elasticsearch structure
                 }
             },
-            "from": (page - 1) * limit,
-            "size": limit
         }
         
         # Perform the search query
-        response = es.search(index="listings", body=search_body)  # Replace "listings" with actual index name
+        response = es.search(index="listings", body=search_body)
         # Extract documents from the response
         listings = [Listing(id=doc["_id"], title=doc["_source"]["title"], 
                                    description=doc["_source"].get("description"), 
                                    price=doc["_source"]["price"], 
-                                   status=doc["_source"]["status"], 
+                                   #status=doc["_source"]["status"], 
                                    location=doc["_source"]["location"]) 
                     for doc in response['hits']['hits']]
         
