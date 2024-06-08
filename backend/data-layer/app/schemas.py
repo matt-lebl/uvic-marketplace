@@ -1,9 +1,17 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 
+# TODO: check schemas and add additional validation, for example ge=1, le=5 limits
+# stars to be a value between 1 and 5 inclusive
+# TODO: add Annotated to improve type hints
+# https://docs.pydantic.dev/1.10/usage/schema/
 class Review(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO: this is not a required field based on http://market.lebl.ca/openapi/ check if this can be optional
     listing_review_id: str = Field(
-        ..., 
+        None, 
         description="Unique identifier for the review", 
         example="A23F29039B23"
     )
@@ -13,7 +21,7 @@ class Review(BaseModel):
         example="John Doe"
     )
     stars: int = Field(
-        ..., 
+        None, 
         description="Star rating given by the reviewer, from 1 to 5", 
         example=5,
         ge=1, le=5
@@ -44,11 +52,48 @@ class Review(BaseModel):
         example="2024-05-23T15:30:00Z"
     )
 
-class Listing(BaseModel):
+class NewReview(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO: this is not a required field based on http://market.lebl.ca/openapi/ check if this can be optional
+    listing_review_id: str = Field(
+        None, 
+        description="Unique identifier for the review", 
+        example="A23F29039B23"
+    )
+    stars: int = Field(
+        ..., 
+        description="Star rating given by the reviewer, from 1 to 5", 
+        example=5,
+        ge=1, le=5
+    )
+    comment: str | None = Field(
+        None, 
+        description="Review comment", 
+        example="Great seller, the item was exactly as described and in perfect condition."
+    )
     listingID: str = Field(
         ..., 
         description="Unique identifier for the listing", 
         example="A23F29039B23"
+    )
+
+
+
+class Listing(BaseModel):
+    """
+    TODO: add description
+    """
+    listingID: str = Field(
+        None, 
+        description="Unique identifier for the listing", 
+        example="A23F29039B23"
+    )
+    seller_profile: UserProfile = Field(
+        None,
+        description="User profile of the seller",
+        example= "TODO"
     )
     title: str = Field(
         ..., 
@@ -66,6 +111,11 @@ class Listing(BaseModel):
         example=150.00,
         gt=0
     )
+    location: Location = Field(
+        None,
+        description="TODO",
+        example= "TODO"
+    )
     dateCreated: datetime | None = Field(
         None, 
         description="Date when the listing was created", 
@@ -76,62 +126,219 @@ class Listing(BaseModel):
         description="Date when the listing was last modified", 
         example="2024-05-23T15:30:00Z"
     )
+    reviews: list[Review] = Field(
+        None,
+        description="TODO",
+        example="TODO"
+    )
+    images: list[Image] = Field(
+        None,
+        description="TODO",
+        example="TODO"
+    )
+class NewListing(BaseModel):
+    title: str = Field(
+        ..., 
+        description="Title of the listing", 
+        example="Vintage Chair"
+    )
+    description: str = Field(
+        ..., 
+        description="Detailed description of the listing", 
+        example="A beautifully restored vintage chair from the 1950s."
+    )
+    price: float = Field(
+        ..., 
+        description="Price of the listing", 
+        example=150.00,
+        gt=0
+    )
+    location: Location = Field(
+        None,
+        description="TODO",
+        example= "TODO"
+    )
+    images: list[Image] = Field(
+    None,
+    description="TODO",
+    example="TODO"
+    )
+
+# TODO: validate url
+class Image(BaseModel):
+    """
+    TODO: add description
+    """
+    url: str = Field(
+        None,
+        description="TODO",
+        examples="TODO"
+    )
+
+class ListingSummary(BaseModel):
+    """
+    TODO: add description
+    """
+    listingID: str = Field(
+        ..., 
+        description="Unique identifier for the listing", 
+        example="A23F29039B23"
+    )
+    sellerID: str = Field(
+        ..., 
+        description="Unique identifier for the seller", 
+        example="A23F29039B23"
+    )
+    seller_Name: str = Field(
+        None,
+        description="TODO",
+        example= "TODO"
+    )
+    title: str = Field(
+        ..., 
+        description="Title of the listing", 
+        example="Vintage Chair"
+    )
+    description: str = Field(
+        None,
+        description="Detailed description of the listing", 
+        example="A beautifully restored vintage chair from the 1950s."
+    )
+    price: float = Field(
+        ..., 
+        description="Price of the listing", 
+        example=150.00,
+        gt=0
+    )
+    dateCreated: datetime = Field(
+        ..., 
+        description="Date when the listing was created", 
+        example="2024-05-23T15:30:00Z"
+    )
+    # TODO: validate url
+    imageUrl: str = Field(
+        None,
+        description="TODO",
+        examples="TODO"
+    )
+class LoginRequest(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+
+class UserProfile(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+
+class NewUser(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
 
 class User(BaseModel):
     userID: str = Field(
-        ..., 
+        None, 
         description="Unique identifier for the user", 
         example="A23434B090934"
     )
     username: str = Field(
-        ..., 
+        None, 
         description="Username of the user", 
         example="john_doe"
     )
-    email: EmailStr = Field(
-        ..., 
+    name: str = Field(
+        None, 
+        description="TODO", 
+        example="TODO"
+    )
+    bio: str = Field(
+        None, 
+        description="TODO", 
+        example="TODO"
+    )
+    # TODO: validate url
+    profileUrl: str = Field(
+        None, 
+        description="TODO", 
+        example="TODO"
+    )
+    # TODO: validate email
+    email: str = Field(
+        None, 
         description="Email address of the user", 
         example="john.doe@example.com"
     )
-    password: str = Field(
-        ..., 
-        description="Password of the user", 
-        example="password123"
-    ) # TODO: why do we need password ?
-    dateJoined: datetime | None = Field(
+    totp_secret: str = Field(
         None, 
-        description="Date when the user joined", 
-        example="2024-05-23T15:30:00Z"
+        description="TODO", 
+        example="TODO"
     )
-    lastLogin: datetime | None = Field(
-        None, 
-        description="Date when the user last logged in", 
-        example="2024-06-01T12:00:00Z"
-    )
+class Search(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
 
-class ItemImage(BaseModel):
-    imageID: str = Field(
-        ..., 
-        description="Unique identifier for the image", 
-        example="IMG1234567890"
-    )
-    listingID: str = Field(
-        ..., 
-        description="Unique identifier for the listing the image is associated with", 
-        example="A23F29039B23"
-    )
-    imageUrl: HttpUrl = Field(
-        ..., 
-        description="URL of the image", 
-        example="http://example.com/images/item123.jpg"
-    )
-    dateUploaded: datetime | None = Field(
-        None, 
-        description="Date when the image was uploaded", 
-        example="2024-05-23T15:30:00Z"
-    )
-    isPrimary: bool = Field(
-        ..., 
-        description="Indicates if the image is the primary image for the listing", 
-        example=True
-    )
+class SearchHistory(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class Location(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class ItemStatus(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class ItemSort(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class UserPreferencesPayload(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class MessageThread(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class Message(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class SendMessage(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+class MessageParticipant(BaseModel):
+    """
+    TODO: add description
+    """
+    # TODO
+    pass
+
