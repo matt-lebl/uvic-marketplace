@@ -1,289 +1,1124 @@
-openapi: "3.1.0"
+openapi: 3.0.0
 info:
   title: "UVic Marketplace API Specification"
   description: "API specification for communication between the frontend application and the backend application."
   version: "1.0.0"
 tags:
-  - Listings
+  - name: Listings
+    description: "Requests dealing with listings"
+  - name: Search and Recommendations
+    description: "Requests dealing with search and recommendations"
+  - name: Users
+    description: "Requests dealing with users"
+  - name: Messages
+    description: "Requests dealing with messaging"
+
 paths:
-  /listings:
+  /api/search:
+    get:
+      summary: "Return search results and for the Profile Page User Listings"
+      operationId: "search"
+      tags:
+        - Search and Recommendations
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          schema:
+            type: string
+          example: "golf clubs"
+          required: false
+        - name: minPrice
+          in: query
+          schema:
+            type: integer
+          example: 0
+          required: false
+        - name: maxPrice
+          in: query
+          schema:
+            type: integer
+          example: 50
+          required: false
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/ItemStatus"
+          required: false
+        - name: searchType
+          in: query
+          schema:
+            type: string
+            enum: [USERS, LISTINGS]
+            default: LISTINGS
+          required: false
+        - name: latitude
+          in: query
+          schema:
+            type: number
+            format: float
+          example: 34.2331
+          required: true
+        - name: longitude
+          in: query
+          schema:
+            type: number
+            format: float
+          example: -124.2323
+          required: true
+        - name: sort
+          in: query
+          schema:
+            $ref: "#/components/schemas/ItemSort"
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          required: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          required: false
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListingSummary"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/recommendations:
+    get:
+      summary: "Get recommendations"
+      operationId: "recommend"
+      tags:
+        - Search and Recommendations
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          required: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          required: false
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ListingSummary"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/stop-suggesting-item/{id}:
     post:
-      summary: "Create a new listing"
+      summary: "Stop suggesting this kind of item"
+      operationId: "stopSuggestingItem"
+      tags:
+        - Search and Recommendations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "OK"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/listing:
+    post:
+      summary: "Create a new listing."
       operationId: "createListing"
       tags:
         - Listings
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateListingRequest"
-        required: true
+              type: object
+              properties:
+                listing:
+                  $ref: "#/components/schemas/NewListing"
       responses:
-        "200":
-          description: "OK"
-    get:
-      summary: "Get listings"
-      operationId: "getListings"
-      tags:
-        - Listings
-      parameters:
-        - name: "search_query"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "sort"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-            enum:
-              - "DISTANCE"
-              - "PRICE"
-              - "TIME_LISTED"
-        - name: "sort_direction"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "filters"
-          in: "query"
-          required: false
-          schema:
-            type: "array"
-            items:
-              type: "string"
-              enum:
-                - "PRICE"
-                - "DISTANCE"
-                - "CATEGORY"
-        - name: "filter_price"
-          in: "query"
-          required: false
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "filter_category"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-        - name: "filter_distance"
-          in: "query"
-          required: false
-          schema:
-            type: "number"
-            format: "float"
-        - name: "user_latitude"
-          in: "query"
-          required: true
-          schema:
-            type: "number"
-            format: "float"
-        - name: "user_longitude"
-          in: "query"
-          required: true
-          schema:
-            type: "number"
-            format: "float"
-        - name: "page_size"
-          in: "query"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-        - name: "page_number"
-          in: "query"
-          required: true
-          schema:
-            type: "integer"
-            format: "int32"
-      responses:
-        "200":
-          description: "OK"
+        "201":
+          description: "Listing Created"
           content:
-            '*/*':
+            application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Listing"
-  /listings/{id}:
+                type: object
+                properties:
+                  listing:
+                    $ref: "#/components/schemas/Listing"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/listing/{id}:
     get:
-      summary: "Get a particular listing"
+      summary: "Get a listing's details"
       operationId: "getListing"
       tags:
         - Listings
       parameters:
-        - name: "id"
-          in: "path"
-          required: false
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         "404":
           description: "Not Found"
         "200":
           description: "OK"
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: "#/components/schemas/Listing"
-    put:
-      summary: "Update an existing listing"
-      operationId: "updateListing"
+        "401":
+          description: "Unauthorized"
+    patch:
+      summary: "Edit an existing listing"
+      operationId: "editListing"
       tags:
         - Listings
       parameters:
-        - name: "id"
-          in: "path"
-          required: false
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateListingRequest"
-        required: true
+              type: object
+              properties:
+                listing:
+                  $ref: "#/components/schemas/NewListing"
       responses:
+        "200":
+          description: Listing edited successfully
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
         "401":
           description: "Unauthorized"
-        "404":
-          description: "Not Found"
-        "200":
-          description: "OK"
     delete:
       summary: "Delete an existing listing"
       operationId: "deleteListing"
       tags:
         - Listings
       parameters:
-        - name: "id"
-          in: "path"
-          required: false
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
+        "200":
+          description: Listing deleted successfully
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
         "401":
           description: "Unauthorized"
         "404":
           description: "Not Found"
-        "200":
-          description: "OK"
-  /listings/userListings:
-    get:
-      summary: "Get listings posted by a particular user"
-      operationId: "getUserListings"
+  /api/user/:
+    post:
+      summary: "Create a new user."
+      operationId: "createUser"
       tags:
-        - Listings
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewUser"
+      responses:
+        "201":
+          description: "User Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+    patch:
+      summary: "Edit an existing User"
+      operationId: "editUser"
+      tags:
+        - Users
       parameters:
-        - name: "user_id"
-          in: "query"
+        - name: authorization
+          in: header
           required: true
           schema:
-            type: "string"
-        - name: "page_size"
-          in: "query"
+            type: string
+      responses:
+        "200":
+          description: "User updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+    delete:
+      summary: "Delete current user's account"
+      operationId: "deleteUser"
+      tags:
+        - Users
+      parameters:
+        - name: authorization
+          in: header
           required: true
           schema:
-            type: "integer"
-            format: "int32"
-        - name: "page_number"
-          in: "query"
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+  /api/user/{id}:
+    get:
+      summary: "Get a user object"
+      operationId: "getUser"
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
           required: true
           schema:
-            type: "integer"
-            format: "int32"
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "User found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+  /api/resetpassword:
+    post:
+      summary: "Send a password reset email to a user"
+      operationId: "resetPassword"
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example: hubert@gmail.com
+      responses:
+        "200":
+          description: "Verification email sent"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/user/searchhistory:
+    get:
+      summary: "Get a search history of a user"
+      operationId: "getSearchHistory"
+      tags:
+        - Search and Recommendations
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         "404":
           description: "Not Found"
         "200":
-          description: "OK"
+          description: "Searches Returned"
           content:
-            '*/*':
+            application/json:
               schema:
-                type: "array"
+                $ref: "#/components/schemas/SearchHistory"
+        "401":
+          description: "Unauthorized"
+    delete:
+      summary: "Delete search history"
+      operationId: "deleteSearchHistory"
+      tags:
+        - Search and Recommendations
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: searchID
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "A123454B45"
+      responses:
+        "200":
+          description: "Search history deleted successfully"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+  /api/login:
+    post:
+      summary: "Attempt Login"
+      operationId: "login"
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: "Login Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: "#/components/schemas/User"
+                  authorization:
+                    type: string
+                    example: "abc123def456"
+        "401":
+          description: "Unauthorized"
+  /api/logout:
+    post:
+      summary: "Attempt Logout"
+      operationId: "logout"
+      tags:
+        - Users
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Logout Success"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+  /api/review:
+    post:
+      summary: "Create a new review."
+      operationId: "createReview"
+      tags:
+        - Listings
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewReview"
+      responses:
+        "201":
+          description: "Review Created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Review"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+  /api/review/{id}:
+    patch:
+      summary: "Edit an existing review"
+      operationId: "editReview"
+      tags:
+        - Listings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewReview"
+      responses:
+        "200":
+          description: "Review edited successfully"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+    delete:
+      summary: "Delete an existing review"
+      operationId: "deleteReview"
+      tags:
+        - Listings
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "Review deleted successfully"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+        "404":
+          description: "Not Found"
+  /api/messages/overview:
+    get:
+      summary: Get all message threads
+      operationId: getMessageThreads
+      tags:
+        - Messages
+      description: Retrieve all message threads
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: num_items
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        "200":
+          description: A list of message threads
+          content:
+            application/json:
+              schema:
+                type: array
                 items:
-                  $ref: "#/components/schemas/Listing"
+                  $ref: "#/components/schemas/MessageThread"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+  /api/messages/thread/{listing_id}/{receiver_id}:
+    get:
+      summary: Get messages for a specific listing and receiver
+      operationId: getMessages
+      tags:
+        - Messages
+      description: Retrieve messages for a specific listing and receiver
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: listing_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: receiver_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: num_items
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 10
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            example: 0
+      responses:
+        "200":
+          description: A list of messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+        "401":
+          description: "Unauthorized"
+  /api/messages/connect:
+    get:
+      summary: Connect to the WebSocket for live messaging
+      operationId: connectWebSocket
+      tags:
+        - Messages
+      description: |
+        Connect to the WebSocket server to send and receive live messages.
+
+        **Send HeartBeat**
+        Heartbeat only needs to be sent to the server to keep the connection alive. It is never received from the server.
+        ```json
+        {
+          "type": "heartbeat"
+        }
+        ```
+
+        **Send Example:**
+        ```json
+        {
+          "receiver_id": "A23434B090936",
+          "listing_id": "L23434B090934",
+          "content": "Hello, is this still available?",
+        }
+        ```
+
+        **Receive Example:**
+        ```json
+        {
+          "sender_id": "A23434B090934",
+          "receiver_id": "A23434B090936",
+          "listing_id": "L23434B090934",
+          "content": "Hello, is this still available?",
+          "sent_at": 1625247600
+        }
+        ```
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "101":
+          $ref: "#/components/responses/SwitchingProtocolToWS"
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "500":
+          $ref: "#/components/responses/ServerError"
+
 components:
   schemas:
-    CreateListingRequest:
-      type: "object"
-      properties:
-        title:
-          type: "string"
-          example: "Used Calculus Textbook"
-        description:
-          type: "string"
-          example: "A used calculus textbook in good condition, perfect for MATH 101."
-        price:
-          type: "number"
-          example: 50.0
-        category:
-          type: "string"
-          example: "Books"
-        latitude:
-          type: "number"
-          example: 40.73061
-        longitude:
-          type: "number"
-          example: -73.935242
-        image_url:
-          type: "string"
-          example: "https://example.com/images/calculus-textbook.jpg"
-      required:
-        - "title"
-        - "price"
-        - "latitude"
-        - "longitude"
     Review:
-      type: "object"
+      type: object
       properties:
+        listing_review_id:
+          type: string
+          example: "A23F29039B23"
         reviewerName:
-          type: "string"
+          type: string
           example: "John Doe"
         stars:
-          type: "integer"
-          format: "int32"
+          type: integer
+          format: int32
           example: 5
         comment:
-          type: "string"
+          type: string
           example: "Great seller, the item was exactly as described and in perfect condition."
-      required:
-        - "reviewerName"
-        - "comment"
-    Listing:
-      type: "object"
-      properties:
-        title:
-          type: "string"
-          example: "Used Calculus Textbook"
-        price:
-          type: "number"
-          format: "float"
-          example: 50.0
-        category:
-          type: "string"
-          example: "Books"
-        sellerName:
-          type: "string"
-          example: "Jane Smith"
+        userID:
+          type: string
+          example: "A23434B090934"
+        listingID:
+          type: string
+          example: "A23F29039B23"
         dateCreated:
-          type: "string"
-          format: "date-time"
+          type: string
+          format: date-time
           example: "2024-05-23T15:30:00Z"
-        id:
-          type: "integer"
-          format: "int32"
-          example: 1
+        dateModified:
+          type: string
+          format: date-time
+          example: "2024-05-23T15:30:00Z"
+      required:
+        - listingID
+        - reviewerName
+    NewReview:
+      type: object
+      properties:
+        listing_rating_id:
+          type: string
+          example: "A23F29039B23"
+        stars:
+          type: integer
+          format: int32
+          example: 5
+        comment:
+          type: string
+          example: "Great seller, the item was exactly as described and in perfect condition."
+        listingID:
+          type: string
+          example: "A23F29039B23"
+      required:
+        - listingID
+        - stars
+    Listing:
+      type: object
+      properties:
+        listingID:
+          type: string
+          example: "A23F29039B23"
+        seller_profile:
+          $ref: "#/components/schemas/UserProfile"
+        title:
+          type: string
+          example: "Used Calculus Textbook"
+        description:
+          type: string
+          example: "No wear and tear, drop-off available."
+        price:
+          type: number
+          format: float
+          example: 50.00
+        location:
+          $ref: "#/components/schemas/Location"
+        status:
+          $ref: "#/components/schemas/ItemStatus"
+        dateCreated:
+          type: string
+          format: date-time
+          example: "2024-05-23T15:30:00Z"
+        dateModified:
+          type: string
+          format: date-time
+          example: "2024-05-23T15:30:00Z"
         reviews:
-          type: "array"
+          type: array
           items:
             $ref: "#/components/schemas/Review"
-          example:
-            - reviewerName: "John Doe"
-              stars: 5
-              comment: "Great seller, the item was exactly as described and in perfect condition."
-            - reviewerName: "Alice Johnson"
-              stars: 4
-              comment: "Good condition, but the delivery was a bit slow."
+        images:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Image"
+        distance:
+          type: number
+          example: 4.2
       required:
-        - "title"
-        - "category"
-        - "sellerName"
-        - "dateCreated"
-        - "reviews"
+        - title
+        - listedBy
+        - price
+        - status
+    NewListing:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Used Calculus Textbook"
+        description:
+          type: string
+          example: "No wear and tear, drop-off available."
+        price:
+          type: number
+          format: float
+          example: 50.00
+        location:
+          $ref: "#/components/schemas/Location"
+        images:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Image"
+      required:
+        - title
+        - listedBy
+        - location
+        - price
+        - status
+
+    Image:
+      type: object
+      properties:
+        url:
+          type: string
+          format: url
+          example: "https://example.com/image"
+    ListingSummary:
+      type: object
+      properties:
+        listingID:
+          type: string
+          example: "A23F29039B23"
+        sellerID:
+          type: string
+          example: "A23F29039B23"
+        sellerName:
+          type: string
+          example: "A23F29039B23"
+        title:
+          type: string
+          example: "Used Calculus Textbook"
+        description:
+          type: string
+          example: "No wear and tear, drop-off available."
+        price:
+          type: number
+          format: float
+          example: 50.00
+        dateCreated:
+          type: string
+          format: date-time
+          example: "2024-05-23T15:30:00Z"
+        imageUrl:
+          type: string
+          example: "image URL for first Image"
+      required:
+        - listingID
+        - title
+        - listedByUsername
+        - price
+        - dateCreated
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          example: "hubert@gmail.com"
+        password:
+          type: string
+          example: "securepassword123"
+        totp_code:
+          type: string
+          example: "123456"
+      required:
+        - email
+        - password
+        - totp_code
+    UserProfile:
+      type: object
+      properties:
+        userID:
+          type: string
+          example: "A12334B345"
+        username:
+          type: string
+          example: "hubert123"
+        name:
+          type: string
+          example: "Bartholomew Hubert"
+        bio:
+          type: string
+          example: "I love stuff"
+        profilePictureUrl:
+          type: string
+          example: "https://example.com/image.png"
+    NewUser:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "hubert123"
+        name:
+          type: string
+          example: "Bartholomew Hubert"
+        email:
+          type: string
+          example: "A23434B090934"
+        password:
+          type: string
+          example: "securepassword123"
+      required:
+        - email
+        - password
+        - username
+        - name
+    User:
+      type: object
+      properties:
+        userID:
+          type: string
+          example: "A12334B345"
+        username:
+          type: string
+          example: "hubert123"
+        name:
+          type: string
+          example: "Bartholomew Hubert"
+        bio:
+          type: string
+          example: "I wish my parents didn't name me Bartholomew Hubert"
+        profileUrl:
+          type: string
+          example: "https://example.com/image.png"
+        email:
+          type: string
+          example: "A23434B090934"
+        totp_secret:
+          type: string
+          example: "60b725f10c9c85c70d97880dfe8191b3"
+      required:
+        - email
+        - password
+    Search:
+      type: object
+      properties:
+        searchTerm:
+          type: string
+          example: "athletic shorts"
+        searchID:
+          type: string
+          example: "A12334B345"
+    SearchHistory:
+      type: object
+      properties:
+        searches:
+          type: array
+          items:
+            $ref: "#/components/schemas/Search"
+    Location:
+      type: object
+      properties:
+        latitude:
+          type: number
+          example: 34.23551
+        longitude:
+          type: number
+          example: -104.54451
+    ItemStatus:
+      type: string
+      enum: [AVAILABLE, SOLD]
+      default: AVAILABLE
+    ItemSort:
+      type: string
+      enum:
+        [
+          RELEVANCE,
+          PRICE_ASC,
+          PRICE_DESC,
+          LISTED_TIME_ASC,
+          LISTED_TIME_DESC,
+          DISTANCE_ASC,
+          DISTANCE_DESC,
+        ]
+      default: RELEVANCE
+    UserPreferencesPayload:
+      type: object
+      properties:
+        itemID:
+          type: string
+          example: B2309342A23
+    MessageThread:
+      type: object
+      properties:
+        listing_id:
+          type: string
+          description: ID of the listing
+          example: "L23434B090934"
+        other_participant:
+          $ref: "#/components/schemas/MessageParticipant"
+        last_message:
+          $ref: "#/components/schemas/Message"
+    Message:
+      type: object
+      properties:
+        sender_id:
+          type: string
+          description: ID of the sender
+          example: "A23434B090934"
+        receiver_id:
+          type: string
+          description: ID of the receiver
+          example: "A23434B090936"
+        listing_id:
+          type: string
+          description: ID of the listing
+          example: "L23434B090934"
+        content:
+          type: string
+          description: Content of the message
+          example: "Hello, is this still available?"
+        sent_at:
+          type: integer
+          description: Unix timestamp of when the message was sent
+          example: 1625247600
+    SendMessage:
+      type: object
+      properties:
+        receiver_id:
+          type: string
+          description: ID of the receiver
+          example: "A23434B090936"
+        listing_id:
+          type: string
+          description: ID of the listing
+          example: "L23434B090934"
+        content:
+          type: string
+          description: Content of the message
+          example: "Hello, is this still available?"
+    MessageParticipant:
+      type: object
+      properties:
+        user_id:
+          type: string
+          description: ID of the user
+          example: "A23434B090934"
+        name:
+          type: string
+          description: Display Name of the user
+          example: "John Doe"
+        profilePicture:
+          type: string
+          example: "https://example.com/image.png"
+  responses:
+    InvalidRequest:
+      description: Invalid Request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "missing parameter in request"
+    ServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Something went wrong"
+    SwitchingProtocolToWS:
+      description: Switching Protocols
+      headers:
+        Upgrade:
+          description: Switch protocols to WebSocket
+          schema:
+            type: string
+            example: websocket
+        Connection:
+          description: Establish the WebSocket connection
+          schema:
+            type: string
+            example: Upgrade
