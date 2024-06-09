@@ -13,8 +13,7 @@ FROM node:${NODE_VERSION}-alpine
 # Use production node environment by default.
 ENV NODE_ENV production
 
-
-WORKDIR /usr/src/app
+WORKDIR /frontend/dev
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -24,6 +23,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     --mount=type=bind,source=package-lock.json,target=package-lock.json \
     --mount=type=cache,target=/root/.npm \
     npm ci --omit=dev
+
+RUN mkdir node_modules/.cache && chmod -R 777 node_modules/.cache
 
 # Run the application as a non-root user.
 USER node
@@ -35,4 +36,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the application.
-CMD node src/index.js
+CMD ["npm", "run", "start"]

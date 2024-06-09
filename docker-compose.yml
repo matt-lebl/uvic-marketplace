@@ -1,0 +1,12 @@
+services:
+  frontend:
+    container_name: frontend
+    restart: always
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./frontend/:/frontend/dev
+      - /frontend/dev/node_modules/

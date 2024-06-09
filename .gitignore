@@ -12,5 +12,8 @@
 # Virtual environments
 .venv*
 
+# vscode
+.vscode/**
+
 # pycache
 __pycache__
