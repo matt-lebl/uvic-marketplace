@@ -18,7 +18,7 @@ function App() {
   return (
     <ThemeProvider theme={muiTheme}>
       <BrowserRouter>
-        <Router />
+        <Router/>
       </BrowserRouter>
     </ThemeProvider>
   )
