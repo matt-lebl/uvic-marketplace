@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import Profile from './Profile'
+import Profile from '../pages/Profile'
 
 
 // Jest test suite for frontend

@@ -21,28 +21,28 @@ clean:
 
 .PHONY: png svg clean
 
-frontend: | close-frontend build-frontend run-frontend
+all: | close-all build-all run-all
 
-close-frontend: ## Closes the frontend container
+close-all: ## Closes all containers
 	@echo "=================================================="
-	@echo "Make: close-frontend - closing FE container"
+	@echo "Make: close - closing containers"
 	@echo "=================================================="
 	@docker-compose -f docker-compose.yml down
 
-build-frontend: ## Builds the frontend container
+build-all: ## Builds all containers
 	@echo "=================================================="
-	@echo "Make: build-frontend - building FE container"
+	@echo "Make: build-all - building containers"
 	@echo "=================================================="
 	@docker-compose -f docker-compose.yml build
 
-run-frontend: ## Runs the frontend container
+run-all: ## Runs all containers
 	@echo "=================================================="
-	@echo "Make: run-frontend - running FE container"
+	@echo "Make: run-all - running containers"
 	@echo "=================================================="
 	@docker-compose -f docker-compose.yml up -d
 
 cleanall: ## Closes and cleans (removes) all containers
 	@echo "=================================================="
-	@echo "Make: cleanfe - closing and cleaning Docker containers"
+	@echo "Make: cleanall - closing and cleaning containers"
 	@echo "=================================================="
 	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans

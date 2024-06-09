@@ -1,13 +1,13 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import Listing from './Listing'
+import Header from '../pages/Components/Header'
 
 
 // Jest test suite for frontend
 // Invoke with `yarn test` or `npm test`
 
 test('renders listing page', () => {
-    render(<Listing/>)
-  const linkElement = screen.getByText(/Listing Page/i)
+    render(<Header/>)
+  const linkElement = screen.getByText(/Header/i)
   expect(linkElement).toBeInTheDocument()
 })
