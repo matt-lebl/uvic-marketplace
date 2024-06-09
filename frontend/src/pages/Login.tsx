@@ -1,6 +1,6 @@
-import React from 'react'
-import './App.css'
-import { Typography } from '@mui/material'
+import React from 'react';
+import './App.css';
+import { Typography } from '@mui/material';
 
 function Login() {
   return (
@@ -9,7 +9,7 @@ function Login() {
         <Typography>Login Page</Typography>
       </header>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;

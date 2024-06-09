@@ -1,6 +1,6 @@
-import React from 'react'
-import './App.css'
-import { Typography } from '@mui/material'
+import React from 'react';
+import './App.css';
+import { Typography } from '@mui/material';
 
 function Index() {
   return (
@@ -9,7 +9,7 @@ function Index() {
         <Typography>Hello World!</Typography>
       </header>
     </div>
-  )
+  );
 }
 
-export default Index
+export default Index;
