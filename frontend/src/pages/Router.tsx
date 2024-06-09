@@ -8,7 +8,15 @@ import Listing from './Listing'
 import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
 import { useState } from 'react'
+/*
+Add paths for new pages here
+path={} is what gets appended to the URL
+element={} is the page that gets rendered when that URL is requested
 
+TODO:
+Once login authentication is functional this needs to be modified
+Users shouldnt be abled to access most pages unless they are logged in
+*/
 const Router = () => {
   return (
     <Routes>
@@ -33,6 +41,11 @@ function Layout() {
   )
 }
 
+/*
+Function that checks the URL and switches the header displayed
+Currently only checks if you are on the login or register page
+If you are on the login or register page a different header gets displayed
+*/
 function HeaderLayout() {
   let url = window.location.href;
   let result = <Header/>
