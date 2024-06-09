@@ -5,8 +5,8 @@ import Registration from './Registration'
 import Home from './Home'
 import Profile from './Profile'
 import Listing from './Listing'
-import LoginHeader from './LoginHeader'
-import Header from './Header'
+import LoginHeader from './Components/LoginHeader'
+import Header from './Components/Header'
 import { useState } from 'react'
 
 const Router = () => {

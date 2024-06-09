@@ -7,7 +7,7 @@ describe('Testing basic routes', () => {
 
     test('Index Navigation', () => {
         const t = render(
-            <MemoryRouter>
+            <MemoryRouter initialEntries={["/"]}>
                 <Router/>
             </MemoryRouter>
         )
