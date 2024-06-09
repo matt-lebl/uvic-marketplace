@@ -20,3 +20,29 @@ clean:
 	rm -f $(SVG_PATHS)
 
 .PHONY: png svg clean
+
+all: | close-all build-all run-all
+
+close-all: ## Closes all containers
+	@echo "=================================================="
+	@echo "Make: close - closing containers"
+	@echo "=================================================="
+	@docker-compose -f docker-compose.yml down
+
+build-all: ## Builds all containers
+	@echo "=================================================="
+	@echo "Make: build-all - building containers"
+	@echo "=================================================="
+	@docker-compose -f docker-compose.yml build
+
+run-all: ## Runs all containers
+	@echo "=================================================="
+	@echo "Make: run-all - running containers"
+	@echo "=================================================="
+	@docker-compose -f docker-compose.yml up -d
+
+cleanall: ## Closes and cleans (removes) all containers
+	@echo "=================================================="
+	@echo "Make: cleanall - closing and cleaning containers"
+	@echo "=================================================="
+	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
