@@ -52,3 +52,130 @@ async def test_recommendations_endpoint():
         )
         assert response.status_code == 200
         #assert isinstance(response.json(), list)
+
+
+
+# Start of Async tests 
+@pytest.fixture
+async def async_client():
+    async with httpx.AsyncClient(base_url="http://localhost:8000") as client:
+        yield client
+
+@pytest.mark.asyncio
+async def test_add_listing(async_client):
+    # Arrange
+    listing_data = {
+        "listing": {
+            "title": "Used Calculus Textbook",
+            "description": "No wear and tear, drop-off available.",
+            "price": 50,
+            "location": {
+                "latitude": 34.23551,
+                "longitude": -104.54451
+            },
+            "images": [
+                {
+                    "url": "https://example.com/image"
+                }
+            ]
+        }
+    }
+    
+    # Act
+    response = await async_client.post("/api/listing", json=listing_data)
+    
+    # Assert
+    assert response.status_code == 201
+    response_data = response.json()
+    assert response_data['title'] == listing_data['listing']['title']
+    assert response_data['description'] == listing_data['listing']['description']
+    assert response_data['price'] == listing_data['listing']['price']
+    assert response_data['location'] == listing_data['listing']['location']
+    assert response_data['images'] == listing_data['listing']['images']
+
+@pytest.mark.asyncio
+async def test_search(async_client):
+    # Arrange
+    query_params = {
+        "query": "Calculus",
+        "latitude": 34.23551,
+        "longitude": -104.54451
+    }
+    
+    # Act
+    response = await async_client.get("/api/search", params=query_params)
+    
+    # Assert
+    assert response.status_code == 200
+    listings = response.json()
+    assert isinstance(listings, list)
+    assert len(listings) > 0
+    for listing in listings:
+        assert "listingID" in listing
+        assert "sellerID" in listing
+        assert "sellerName" in listing
+        assert "title" in listing
+        assert "description" in listing
+        assert "price" in listing
+        assert "dateCreated" in listing
+        assert "imageUrl" in listing
+
+@pytest.mark.asyncio
+async def test_search_invalid_request(async_client):
+    # Arrange
+    query_params = {
+        # Missing required 'query' parameter
+        "latitude": 34.23551,
+        "longitude": -104.54451
+    }
+    
+    # Act
+    response = await async_client.get("/api/search", params=query_params)
+    
+    # Assert
+    assert response.status_code == 400
+    error_response = response.json()
+    assert "error" in error_response
+    assert error_response["error"] == "missing parameter in request"
+
+@pytest.mark.asyncio
+async def test_recommendations(async_client):
+    # Arrange
+    query_params = {
+        "page": 1,
+        "limit": 5
+    }
+    
+    # Act
+    response = await async_client.get("/api/recommendations", params=query_params)
+    
+    # Assert
+    assert response.status_code == 200
+    recommendations = response.json()
+    assert isinstance(recommendations, list)
+    for recommendation in recommendations:
+        assert "listingID" in recommendation
+        assert "sellerID" in recommendation
+        assert "sellerName" in recommendation
+        assert "title" in recommendation
+        assert "description" in recommendation
+        assert "price" in recommendation
+        assert "dateCreated" in recommendation
+        assert "imageUrl" in recommendation
+
+@pytest.mark.asyncio
+async def test_recommendations_invalid_request(async_client):
+    # Arrange
+    query_params = {
+        # Missing required 'page' parameter
+        "limit": 5
+    }
+    
+    # Act
+    response = await async_client.get("/api/recommendations", params=query_params)
+    
+    # Assert
+    assert response.status_code == 400
+    error_response = response.json()
+    assert "error" in error_response
+    assert error_response["error"] == "missing parameter in request"
