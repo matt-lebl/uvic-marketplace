@@ -32,6 +32,17 @@ services:
     ports:
       - "5432:5432"
 
+ # For testing locally 
+  tests:
+    build: .
+    command: pytest
+    volumes:
+      - .:/code
+    depends_on:
+      - fastapi
+      - db
+      - elasticsearch
+
 volumes:
   esdata1:
   pgdata:
