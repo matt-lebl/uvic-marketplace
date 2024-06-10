@@ -1,6 +1,6 @@
-import React from 'react';
-import './App.css';
-import { Typography } from '@mui/material';
+import React from 'react'
+import './App.css'
+import { Typography } from '@mui/material'
 
 function Home() {
   return (
@@ -9,7 +9,7 @@ function Home() {
         <Typography>Home Page</Typography>
       </header>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home

@@ -1,6 +1,6 @@
-import React from 'react';
-import './App.css';
-import { Typography } from '@mui/material';
+import React from 'react'
+import './App.css'
+import { Typography } from '@mui/material'
 
 function Registration() {
   return (
@@ -9,7 +9,7 @@ function Registration() {
         <Typography>Register Page</Typography>
       </header>
     </div>
-  );
+  )
 }
 
-export default Registration;
+export default Registration

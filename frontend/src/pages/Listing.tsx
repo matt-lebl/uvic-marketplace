@@ -1,6 +1,6 @@
-import React from 'react';
-import './App.css';
-import { Typography } from '@mui/material';
+import React from 'react'
+import './App.css'
+import { Typography } from '@mui/material'
 
 function Listing() {
   return (
@@ -9,7 +9,7 @@ function Listing() {
         <Typography>Listing Page</Typography>
       </header>
     </div>
-  );
+  )
 }
 
-export default Listing;
+export default Listing
