@@ -20,7 +20,7 @@ Users shouldnt be abled to access most pages unless they are logged in
 const Router = () => {
   return (
     <Routes>
-      <Route path="/" element={<Layout />} >
+      <Route path="/" element={<Layout />}>
         <Route index element={<Index />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Registration />} />
@@ -35,7 +35,7 @@ const Router = () => {
 function Layout() {
   return (
     <div>
-      <HeaderLayout/>
+      <HeaderLayout />
       <Outlet />
     </div>
   )
@@ -47,14 +47,13 @@ Currently only checks if you are on the login or register page
 If you are on the login or register page a different header gets displayed
 */
 function HeaderLayout() {
-  let url = window.location.href;
-  let result = <Header/>
+  const url = window.location.href
+  let result = <Header />
 
-  if(url.includes("/login") || url.includes("/register")) result = <LoginHeader/>;
+  if (url.includes('/login') || url.includes('/register'))
+    result = <LoginHeader />
 
-  return(
-    result
-  )
+  return result
 }
 
 export default Router
