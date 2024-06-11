@@ -20,10 +20,10 @@ describe('Button', () => {
 
     test('renders button with correct css classes', () => {
         const id: string = 'button-id';
-        render(<Button id={id} />);
+        const cssClass: string = "button-test";
+        render(<Button id={id} className={cssClass}  />);
         const button = screen.getByTestId(id);
-
-        expect(button).toHaveClass('button-class');
+        expect(button).toHaveClass('button-test');
     });
 
     test('renders button with working function', () => {
