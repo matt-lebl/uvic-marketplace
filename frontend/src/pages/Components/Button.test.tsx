@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import Button from './Button';
 
 describe('Button', () => {
-    test('renders button with correct ID property', () => {
+    test('renders button with correct name property', () => {
         const id: string = 'button-id';
         render(<Button id={id} />);
         const button = screen.getByTestId(id);
