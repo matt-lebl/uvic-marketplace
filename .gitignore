@@ -11,3 +11,9 @@
 
 # vscode
 .vscode/**
+
+#env files
+backend/services/.env
+
+# __pychache__
+*/__pychache__/*
