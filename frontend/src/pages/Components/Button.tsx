@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import ReactButton from '@mui/material/Button'
 
 interface Props {
-    label: string,
+    id: string,
+    label?: string,
   }
 
 export default function Button({label} : Props) {
-    return(<ReactButton/>)
+    return(<ReactButton>{label}</ReactButton>);
 }
