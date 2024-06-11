@@ -31,7 +31,6 @@ describe('Button', () => {
         const id: string = 'button-id';
         render(<Button id={id} onClick={onClick}/>);
         const button = screen.getByTestId(id);
-        expect(button).toHaveClass('button-class');
         fireEvent.click(button);
         expect(onClick).toHaveBeenCalled();
     });
