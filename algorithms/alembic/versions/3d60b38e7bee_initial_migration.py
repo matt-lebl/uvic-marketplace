@@ -27,15 +27,15 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('listing_id'),
     sa.UniqueConstraint('elasticsearch_id')
     )
-    op.create_index(op.f('ix_listings_listing_id'), 'listings', ['listing_id'], unique=False)
-    op.create_index(op.f('ix_listings_listing_name'), 'listings', ['listing_name'], unique=True)
+    op.create_index(op.f('ix_listings_listing_id'), 'listings', ['listing_id'], unique=True)
+    op.create_index(op.f('ix_listings_listing_name'), 'listings', ['listing_name'], unique=False)
     op.create_table('users',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('user_name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('user_id')
     )
-    op.create_index(op.f('ix_users_user_id'), 'users', ['user_id'], unique=False)
-    op.create_index(op.f('ix_users_user_name'), 'users', ['user_name'], unique=True)
+    op.create_index(op.f('ix_users_user_id'), 'users', ['user_id'], unique=True)
+    op.create_index(op.f('ix_users_user_name'), 'users', ['user_name'], unique=False)
     op.create_table('interactions',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('listing_id', sa.Integer(), nullable=False),
@@ -44,7 +44,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('user_id', 'listing_id')
     )
-    op.create_index('idx_user_listing', 'interactions', ['user_id', 'listing_id'], unique=False)
+    op.create_index('idx_user_listing', 'interactions', ['user_id', 'listing_id'], unique=True)
     # ### end Alembic commands ###
 
 

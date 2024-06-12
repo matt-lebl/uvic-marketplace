@@ -36,7 +36,7 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     except SQLAlchemyError as e:
         print("Error adding listing to postgres: ", e)
         db.rollback()
-        return HTTPException(status=501, detail="Error adding listing to database")
+        return HTTPException(status_code=501, detail="Error adding listing to database")
 
     # Construct the response object by converting the dict back to a Pydantic model
     return listing
