@@ -8,7 +8,7 @@ BASE_URL = "http://localhost:8000"
 async def test_create_listing_endpoint():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         new_listing = {
-            "id": 123456,           # Not sure if this is needed ****
+            "id": 123456,           
             "title": "Brand New Golf Clubs",
             "description": "A set of top quality golf clubs.",
             "price": 300.00,
@@ -64,6 +64,7 @@ async def test_add_listing_response():
         # Arrange - create a new item to list
         listing_data = {
             "listing": {
+                "listingID": "A23F29039B23",
                 "title": "Used Calculus Textbook",
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
@@ -102,6 +103,7 @@ async def test_search_response():
         # Arrange - List new item & search query
         listing_data = {
             "listing": {
+                "listingID": "A23F29039B23",
                 "title": "Used Calculus Textbook",
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
@@ -166,9 +168,9 @@ async def test_search_invalid_request():
         
         # Assert - Check status code (and error message)
         assert response.status_code == 400
-        # error_response = response.json()
-        # assert "error" in error_response
-        # assert error_response["error"] == "missing parameter in request"
+        error_response = response.json()
+        assert "error" in error_response
+        assert error_response["error"] == "missing parameter in request"
 
 @pytest.mark.asyncio
 async def test_recommendations_response():
@@ -235,6 +237,6 @@ async def test_recommendations_invalid_request():
         
         # Assert - Check status code (and error message)
         assert response.status_code == 400
-        # error_response = response.json()
-        # assert "error" in error_response
-        # assert error_response["error"] == "missing parameter in request"
+        error_response = response.json()
+        assert "error" in error_response
+        assert error_response["error"] == "missing parameter in request"
