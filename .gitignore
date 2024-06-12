@@ -17,3 +17,4 @@ backend/services/.env
 
 # __pychache__
 */__pychache__/*
+*/.pytest_cache/*
