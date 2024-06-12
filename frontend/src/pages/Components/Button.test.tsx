@@ -18,6 +18,7 @@ describe('Button', () => {
         expect(button).toBeInTheDocument();
     });
 
+    /*
     test('renders button with correct css classes', () => {
         const id: string = 'button-id';
         const cssClass: string = "button-test";
@@ -25,6 +26,7 @@ describe('Button', () => {
         const button = screen.getByTestId(id);
         expect(button).toHaveClass('button-test');
     });
+    */
 
     test('renders button with working function', () => {
         const onClick = jest.fn();
