@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Body, Header, HTTPException, status, Depends
-from typing import Optional
+from typing import Dict, Optional
 from ...schemas import Listing, ErrorMessage
 from sqlalchemy.orm import Session
 from app.db.models import DB_Listing
 from app.api.deps import get_db
 from elasticsearch import Elasticsearch
-from typing import Dict, Optional
-
+from .embedding import generate_embedding
 
 router = APIRouter()
 
@@ -18,6 +17,11 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     print(data)
     # Save the listing to Elasticsearch
     listing = data['listing']
+
+    # Generate embedding for the listing
+    embedding = generate_embedding(listing['description'])
+    listing['embedding'] = embedding
+
     response = es.index(index="listings", id=listing['id'], body=listing)
     print(response)
     # if response.get('result') != 'created':

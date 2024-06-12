@@ -40,6 +40,17 @@ services:
       timeout: 5s
       retries: 5
 
+ # For testing locally 
+  tests:
+    build: .
+    command: pytest
+    volumes:
+      - .:/code
+    depends_on:
+      - fastapi
+      - db
+      - elasticsearch
+
 volumes:
   esdata1:
   pgdata:
