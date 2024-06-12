@@ -15,6 +15,6 @@
 #env files
 backend/services/.env
 
-# __pychache__
-*/__pychache__/*
+# __pycache__
+__pycache__/
 */.pytest_cache/*

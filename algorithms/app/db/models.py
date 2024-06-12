@@ -7,12 +7,12 @@ Base = declarative_base()
 class DB_User(Base):
     __tablename__ = 'users'
     user_id = Column(Integer, primary_key=True, index=True)
-    user_name = Column(String, unique=True, index=True)
+    user_name = Column(String, index=True)
 
 class DB_Listing(Base):
     __tablename__ = 'listings'
     listing_id = Column(Integer, primary_key=True, index=True)
-    listing_name = Column(String, unique=True, index=True)
+    listing_name = Column(String, index=True)
     elasticsearch_id = Column(String, unique=True)
 
 class DB_Interaction(Base):

@@ -6,6 +6,7 @@ from app.db.models import DB_Listing
 from app.api.deps import get_db
 from elasticsearch import Elasticsearch
 from .embedding import generate_embedding
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
@@ -23,16 +24,19 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     listing['embedding'] = embedding
 
     response = es.index(index="listings", id=listing['id'], body=listing)
-    print(response)
-    # if response.get('result') != 'created':
-    #     raise HTTPException(status_code=500, detail="Failed to create listing in Elasticsearch")
+    print(f'Added/updated ES database: {response}')
     
     # Add the listing to postgres
-    db_listing = DB_Listing(listing_name=listing['title'], elasticsearch_id=listing['id'])
-    db.add(db_listing)
-    db.commit()
-    db.refresh(db_listing)
-    print(f"DB listing id: {db_listing.listing_id}, ES listing id: {db_listing.elasticsearch_id}")
+    try:
+        db_listing = DB_Listing(listing_name=listing['title'], elasticsearch_id=listing['id'])
+        db.add(db_listing)
+        db.commit()
+        db.refresh(db_listing)
+        print(f"DB listing id: {db_listing.listing_id}, ES listing id: {db_listing.elasticsearch_id}")
+    except SQLAlchemyError as e:
+        print("Error adding listing to postgres: ", e)
+        db.rollback()
+        return HTTPException(status=501, detail="Error adding listing to database")
 
     # Construct the response object by converting the dict back to a Pydantic model
     return listing

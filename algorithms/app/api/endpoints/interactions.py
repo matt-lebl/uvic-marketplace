@@ -1,32 +1,33 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Body, Depends
+from typing import Dict
 from sqlalchemy.orm import Session
-from app.db.models import DB_Interaction, DB_User, DB_Listing
+from app.db.models import DB_Interaction
 from app.api.deps import get_db
+from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()
 
-@router.post("/interactions/")
-def record_interaction(user_name: str, listing_name: str, db: Session = Depends(get_db)):
-    # Get or create user
-    user = db.query(DB_User).filter(DB_User.user_name == user_name).first()
-    if not user:
-        user = DB_User(user_name=user_name)
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-
-    # Get listing
-    listing = db.query(DB_Listing).filter(DB_Listing.listing_name == listing_name).first()
-    if not listing:
-        raise HTTPException(status_code=404, detail="DB_Listing not found")
-
-    # Get or create interaction
-    interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user.user_id, DB_Interaction.listing_id == listing.listing_id).first()
+@router.post("/interactions/click")
+def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
+    user_id = data['user_id']
+    listing_id = data['listing_id']
+    
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="No user_id in request")
+    if listing_id is None:
+        raise HTTPException(status_code=401, detail="No listing_id in request")
+    
+    interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == data['user_id'], DB_Interaction.listing_id == data['listing_id']).first()
     if interaction:
         interaction.interaction_count += 1
     else:
-        interaction = DB_Interaction(user_id=user.user_id, listing_id=listing.listing_id, interaction_count=1)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=1)
 
-    db.add(interaction)
-    db.commit()
-    return {"user_id": user.user_id, "listing_id": listing.listing_id, "interaction_count": interaction.interaction_count}
+    try:
+        db.add(interaction)
+        db.commit()
+    except SQLAlchemyError as e:
+        print("Error adding interaction to postgres: ", e)
+        db.rollback()
+
+    return {"user_id": user_id, "listing_id": listing_id, "interaction_count": interaction.interaction_count}
