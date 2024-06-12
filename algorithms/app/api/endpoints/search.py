@@ -23,39 +23,37 @@ async def search(authorization: str = Header(...),
                  page: int = Query(1),
                  limit: int = Query(20)):
     if query:
+        # Generate the query embedding
+        query_embedding = generate_embedding(query["description"])
+
+        # Create an elastic search for searching listings
         search_body = {
             "query": {
-                "multi_match": {
+                "script_score": { 
+                    "script": {     # semantic section
+                        "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                        "params": {"query_vector": query_embedding}
+                    }
+                },
+                "multi_match": {    # lexical section
                     "query": query,
-                    "fields": ["title", "description"]  # Adjust fields based on Elasticsearch structure
-
-
-                    #####CHNAGE THIS
+                    "fields": ["title", "description"]
                 }
             },
         }
+        # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
         
         # Perform the search query
         response = es.search(index="listings", body=search_body)
 
-        # Extract descriptions and embeddings from listings
-        descriptions = [doc["_source"]["description"] for doc in response['hits']['hits']]
-        embeddings = np.array([doc["_source"]["embedding"] for doc in response['hits']['hits']])
-        
-        # Find the closest matches
-        closest_descriptions = find_closest_matches(query, embeddings, descriptions, n=limit)
-
 
         # Extract documents from the response
         listings = [] 
-        for description in closest_descriptions:
-            for doc in response['hits']['hits']:
-                if doc["_source"]["description"] == description:
-                    listings.append(Listing(id=doc["_id"], title=doc["_source"]["title"], 
-                                            description=doc["_source"].get("description"), 
-                                            price=doc["_source"]["price"], 
-                                            location=doc["_source"]["location"]))
-                    break
+        for doc in response['hits']['hits']:
+            listings.append(Listing(id=doc["_id"], title=doc["_source"]["title"], 
+                                    description=doc["_source"].get("description"), 
+                                    price=doc["_source"]["price"], 
+                                    location=doc["_source"]["location"]))
             
         print("Listings; {}".format(listings))
         return listings
