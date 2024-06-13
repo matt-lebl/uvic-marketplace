@@ -1,0 +1,48 @@
+version: '3.8'
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:80"
+    depends_on:
+      - elasticsearch
+      - db
+    environment:
+      DATABASE_URL: postgresql://user:password@db:5432/mydatabase
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.21
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  db:
+    image: postgres:13
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+ # For testing locally 
+  tests:
+    build: .
+    command: pytest
+    volumes:
+      - .:/code
+    depends_on:
+      - fastapi
+      - db
+      - elasticsearch
+
+volumes:
+  esdata1:
+  pgdata:
