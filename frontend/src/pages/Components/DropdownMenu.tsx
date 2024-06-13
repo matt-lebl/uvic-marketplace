@@ -26,7 +26,26 @@ const DropdownMenu: React.FC<Props> = ({
   label,
   containerSx,
 }) => {
-  return <></>
+  return (
+    <Box sx={containerSx}>
+      <FormControl fullWidth>
+        <InputLabel id={`${id}-label`}>{label}</InputLabel>
+        <Select
+          id={id}
+          labelId={`${id}-label`}
+          value={value}
+          onChange={onChange}
+          label={label}
+        >
+          {options.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              {option.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Box>
+  )
 }
 
 export default DropdownMenu
