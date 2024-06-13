@@ -1,5 +1,4 @@
-import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import DropdownMenu from './DropdownMenu'
 
 describe('Dropdown', () => {
@@ -23,7 +22,6 @@ describe('Dropdown', () => {
     )
     const dropdownMenu = screen.getByTestId(id)
     expect(dropdownMenu).toBeInTheDocument()
-    expect(dropdownMenu).toHaveAttribute('id', id)
   })
 
   test('renders dropdown with correct label', () => {
@@ -49,9 +47,10 @@ describe('Dropdown', () => {
         onChange={onChange}
       />
     )
-    fireEvent.mouseDown(screen.getByRole('button'))
+    fireEvent.mouseDown(screen.getByRole('combobox'))
+    const listbox = screen.getByRole('listbox')
     options.forEach((option) => {
-      expect(screen.getByText(option.label)).toBeInTheDocument()
+      expect(within(listbox).getByText(option.label)).toBeInTheDocument()
     })
   })
 
@@ -64,7 +63,7 @@ describe('Dropdown', () => {
         onChange={onChange}
       />
     )
-    fireEvent.mouseDown(screen.getByRole('button'))
+    fireEvent.mouseDown(screen.getByRole('combobox'))
     fireEvent.click(screen.getByText('Option 2'))
     expect(onChange).toHaveBeenCalled()
   })

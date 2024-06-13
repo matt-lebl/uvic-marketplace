@@ -31,7 +31,7 @@ const DropdownMenu: React.FC<Props> = ({
       <FormControl fullWidth>
         <InputLabel id={`${id}-label`}>{label}</InputLabel>
         <Select
-          id={id}
+          data-testid={id}
           labelId={`${id}-label`}
           value={value}
           onChange={onChange}
