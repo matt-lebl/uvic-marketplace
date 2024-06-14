@@ -1,7 +1,7 @@
 services:
   fastapi:
     build: .
-    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 80"]
+    command: "./entrypoint.sh"
     ports:
       - "8000:80"
     depends_on:
@@ -10,15 +10,18 @@ services:
       elasticsearch:
         condition: service_started
     environment:
+      HF_HOME: /.cache
       DATABASE_URL: postgresql://user:password@db:5432/mydatabase
       ELASTICSEARCH_URL: http://elasticsearch:9200
+    volumes:
+      - ./elastic_cache:/.cache
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.21
     environment:
       - discovery.type=single-node
     volumes:
-      - esdata1:/usr/share/elasticsearch/data
+      - ./elastic_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -26,7 +29,7 @@ services:
   db:
     image: postgres:13
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: mydatabase
       POSTGRES_USER: user
@@ -53,7 +56,3 @@ services:
       - fastapi
       - db
       - elasticsearch
-
-volumes:
-  esdata1:
-  pgdata:
