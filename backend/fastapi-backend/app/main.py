@@ -1,11 +1,12 @@
 from typing import Annotated
-
 from fastapi import FastAPI, Path, Query
+import routers.listings
 
 app = FastAPI()
+app.include_router(routers.listings.listingsRouter)
 
 
-@app.get("/api/{path:path}")
+@app.get("/api/")
 async def index():
     return {"hello": "UVic Marketplace FB"}
 
