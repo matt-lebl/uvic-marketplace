@@ -7,11 +7,9 @@ import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Searchbox from './SearchBox'
-import { FormEvent } from 'react'
 
 export default function LoginHeader() {
-
-  const handleSearch = (query:string) => {
+  const handleSearch = (query: string) => {
     console.log(query)
   }
 
@@ -28,16 +26,26 @@ export default function LoginHeader() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 0, mr:'40px' }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 0, mr: '40px' }}
+          >
             Header
           </Typography>
-          <Box sx={{flexGrow:1}}>
-          <Searchbox 
-            id="Header Searchbar" 
-            placeholder='Search UVic Marketplace'
-            sx={{m:'0px 0px', p: '4px 4px', display: 'flex', alignItems: 'center', width: 400}}
-            submit={handleSearch}
-          />
+          <Box sx={{ flexGrow: 1 }}>
+            <Searchbox
+              id="Header Searchbar"
+              placeholder="Search UVic Marketplace"
+              sx={{
+                m: '0px 0px',
+                p: '4px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                width: 400,
+              }}
+              submit={handleSearch}
+            />
           </Box>
           <Button color="inherit">Login</Button>
         </Toolbar>
