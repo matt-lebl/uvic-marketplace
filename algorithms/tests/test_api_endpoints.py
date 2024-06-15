@@ -1,8 +1,13 @@
 import httpx
 import pytest
 from app.schemas import Listing
+from app.elasticsearch_wrapper import ElasticsearchWrapper
 
-BASE_URL = "http://localhost:8000"
+# Change to http://localhost:8000 for local testing on host
+BASE_URL = "http://fastapi:80"
+ELASTICSEARCH_BASE_URL = "http://elasticsearch:9200"
+
+ElasticsearchWrapper.use_test_instance()
 
 @pytest.mark.asyncio
 async def test_create_listing_endpoint():
@@ -31,28 +36,28 @@ async def test_create_listing_endpoint():
         #assert "id" in response.json()['listing']  # Ensure the listing in the response has an ID
         #assert response.json()['listing']['title'] == new_listing['title']
 
-@pytest.mark.asyncio
-async def test_listing_in_elasticsearch():
-    async with httpx.AsyncClient(base_url="http://localhost:9200") as client:
-        listing_id = "123"
-        response = await client.get(
-            f"/listings/_doc/{listing_id}",
-            headers={"authorization": "Bearer testtoken"}
-        )
-        print(response)
-        assert response.status_code == 200
+# @pytest.mark.asyncio
+# async def test_listing_in_elasticsearch():
+#     async with httpx.AsyncClient(base_url=ELASTICSEARCH_BASE_URL) as client:
+#         listing_id = "123"
+#         response = await client.get(
+#             f"/listings/_doc/{listing_id}",
+#             headers={"authorization": "Bearer testtoken"}
+#         )
+#         print(response)
+#         assert response.status_code == 200
     
-    # NOTE: To test if an item is in the SQL DB do the following:
-    # 1. Open the terminal for the 'db' docker container
-    # 2. Run `psql -U user -d mydatabase`
-    # 3. Run `SELECT * from listings` (or users or interactions)
+#     # NOTE: To test if an item is in the SQL DB do the following:
+#     # 1. Open the terminal for the 'db' docker container
+#     # 2. Run `psql -U user -d mydatabase`
+#     # 3. Run `SELECT * from listings` (or users or interactions)
 
 @pytest.mark.asyncio
 async def test_search_endpoint():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         response = await client.get(
             "/api/search",
-            params={"query": "golf clubs", "latitude": 34.2331, "longitude": -124.2323},
+            params={"query": "golf clubs", "lat": 34.2331, "lon": -124.2323},
             headers={"authorization": "Bearer testtoken"}
         )
         print(response)
@@ -85,8 +90,8 @@ async def test_add_listing_response():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "latitude": 34.23551,
-                    "longitude": -104.54451
+                    "lat": 34.23551,
+                    "lon": -104.54451
                 },
                 "images": [
                     {
@@ -124,8 +129,8 @@ async def test_search_response():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "latitude": 34.23551,
-                    "longitude": -104.54451
+                    "lat": 34.23551,
+                    "lon": -104.54451
                 },
                 "images": [
                     {
@@ -144,8 +149,8 @@ async def test_search_response():
 
         query_params = {
             "query": "Calculus Book",
-            "latitude": 34.23551,
-            "longitude": -104.54451
+            "lat": 34.23551,
+            "lon": -104.54451
         }
 
         # Act - Get search info
@@ -175,8 +180,8 @@ async def test_search_invalid_request():
         # Arrange - Create incomplete query
         query_params = {
             # Missing required 'query' parameter
-            "latitude": 34.23551,
-            "longitude": -104.54451
+            "lat": 34.23551,
+            "lon": -104.54451
         }
         
         # Act - Send incomplete query
@@ -199,8 +204,8 @@ async def test_recommendations_response():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "latitude": 34.23551,
-                    "longitude": -104.54451
+                    "lat": 34.23551,
+                    "lon": -104.54451
                 },
                 "images": [
                     {

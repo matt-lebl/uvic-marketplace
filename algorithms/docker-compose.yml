@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   fastapi:
     build: .
@@ -44,7 +43,7 @@ services:
   tests:
     build: .
     command: >
-      sh -c "sleep 20 && pytest -v"
+      sh -c "sleep 10 && pytest -v"
     volumes:
       - .:/code
     depends_on:

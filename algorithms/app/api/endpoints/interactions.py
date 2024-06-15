@@ -9,15 +9,15 @@ router = APIRouter()
 
 @router.post("/interactions/click")
 def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
-    user_id = data['user_id']
-    listing_id = data['listing_id']
+    user_id = data['userID']
+    listing_id = data['listingID']
     
     if user_id is None:
-        raise HTTPException(status_code=401, detail="No user_id in request")
+        raise HTTPException(status_code=401, detail="No userID in request")
     if listing_id is None:
-        raise HTTPException(status_code=401, detail="No listing_id in request")
+        raise HTTPException(status_code=401, detail="No listingID in request")
     
-    interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == data['user_id'], DB_Interaction.listing_id == data['listing_id']).first()
+    interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
     if interaction:
         interaction.interaction_count += 1
     else:
@@ -30,4 +30,4 @@ def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
         print("Error adding interaction to postgres: ", e)
         db.rollback()
 
-    return {"user_id": user_id, "listing_id": listing_id, "interaction_count": interaction.interaction_count}
+    return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
