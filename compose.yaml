@@ -1,7 +1,6 @@
 services:
   frontend:
     init: true
-    container_name: frontend
     restart: always
     build:
       context: ./frontend
