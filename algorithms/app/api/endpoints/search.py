@@ -1,14 +1,15 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List, Optional
 from ...schemas import Listing, ErrorMessage
-from elasticsearch import Elasticsearch
+from ...elasticsearch_wrapper import ElasticsearchWrapper
 import torch
 import numpy as np
 from .embedding import generate_embedding, find_closest_matches
 
-router = APIRouter()
+es_wrapper = ElasticsearchWrapper()
+es = es_wrapper.es
 
-es = Elasticsearch("http://elasticsearch:9200")
+router = APIRouter()
 
 @router.get("/search", response_model=List[Listing], responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
 async def search(authorization: str = Header(...),
@@ -44,7 +45,7 @@ async def search(authorization: str = Header(...),
         # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
         
         # Perform the search query
-        response = es.search(index="listings", body=search_body)
+        response = es.search(index="listings_index", body=search_body)
 
 
         # Extract documents from the response
