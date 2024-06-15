@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Routes, Route, Outlet } from 'react-router-dom'
 import Index from './Index'
 import Login from './Login'
@@ -7,7 +8,6 @@ import Profile from './Profile'
 import Listing from './Listing'
 import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
-import { useState } from 'react'
 /*
 Add paths for new pages here
 path={} is what gets appended to the URL
