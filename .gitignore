@@ -9,6 +9,9 @@
 # macOS
 .DS_Store
 
+# Virtual environments
+.venv*
+
 # vscode
 .vscode/**
 
