@@ -1,0 +1,5 @@
+Generic single-database configuration.
+
+To create a new version automatically based on the models defined in /app/db/models, run
+`alembic revision --autogenerate -m "migration name"`
+Note that if you are doing this on a Windows host, you may need to change the sqlalchemy.url in alembic.ini to use the user "postgres".

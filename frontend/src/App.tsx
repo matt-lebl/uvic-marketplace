@@ -1,7 +1,7 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles"
-import { BrowserRouter } from "react-router-dom"
-import Router from "./pages/Router"
-import { light } from "@mui/material/styles/createPalette"
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { BrowserRouter } from 'react-router-dom'
+import Router from './pages/Router'
+import { light } from '@mui/material/styles/createPalette'
 
 const muiTheme = createTheme({
   palette: {
@@ -18,10 +18,10 @@ function App() {
   return (
     <ThemeProvider theme={muiTheme}>
       <BrowserRouter>
-        <Router/>
+        <Router />
       </BrowserRouter>
     </ThemeProvider>
   )
 }
 
-export default App;
+export default App

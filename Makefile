@@ -29,6 +29,12 @@ close-all: ## Closes all containers
 	@echo "=================================================="
 	@docker-compose -f docker-compose.yml down
 
+install-all: ## Installs dependencies for all containers
+	@echo "=================================================="
+	@echo "Make: install-all - installing dependencies"
+	@echo "=================================================="
+	@cd ./frontend && npm install && cd ..
+
 build-all: ## Builds all containers
 	@echo "=================================================="
 	@echo "Make: build-all - building containers"
