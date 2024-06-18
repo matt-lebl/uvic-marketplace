@@ -30,6 +30,12 @@ async def test_create_listing_endpoint():
             }
         }
 
+        # Delete the listing if it already exists
+        delete_response = await client.delete(
+            "/api/listing/randomID1234",
+            headers={"authorization": "Bearer testtoken"}
+        )
+
         # Send a POST request to create a new listing
         response = await client.post(
             "/api/listing",
@@ -38,7 +44,11 @@ async def test_create_listing_endpoint():
         )
         
         # Print the response for debugging
-        print(response.json())
+        if response.headers["Content-Type"] == "application/json":
+            print(response.json())
+        else:
+            print("Response is not in JSON format.")
+            print("Response:", response.text)
 
         assert response.status_code == 201
     
@@ -95,6 +105,12 @@ async def test_add_listing_response():
                 ]
             }
         }
+
+        # Delete the listing if it already exists
+        delete_response = await client.delete(
+            "/api/listing/A23F29039B23",
+            headers={"authorization": "Bearer testtoken"}
+        )
             
         # Act - POST the new item listing request
         response = await client.post(
@@ -134,6 +150,12 @@ async def test_search_response():
                 ]
             }
         }
+
+        # Delete the listing if it already exists
+        delete_response = await client.delete(
+            "/api/listing/unique123",
+            headers={"authorization": "Bearer testtoken"}
+        )
 
         post_response = await client.post(
             "/api/listing", 
@@ -206,6 +228,12 @@ async def test_recommendations_response():
                 ]
             }
         }
+
+        # Delete the listing if it already exists
+        delete_response = await client.delete(
+            "/api/listing/abc123",
+            headers={"authorization": "Bearer testtoken"}
+        )
 
         post_response = await client.post(
             "/api/listing", 
