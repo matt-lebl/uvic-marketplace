@@ -1,13 +1,12 @@
 services:
   db:
-    build: .
-    container_name: postgres_db
+    image: postgres:16.3
     restart: always
     env_file:
       - path: ../.env
         required: true
     ports:
-      - "9999:5432"
+      - "${DB_PORT:-9999}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
