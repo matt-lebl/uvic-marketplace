@@ -42,6 +42,9 @@ services:
  # For testing locally 
   tests:
     build: .
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
     command: >
       sh -c "sleep 10 && pytest -v"
     volumes:

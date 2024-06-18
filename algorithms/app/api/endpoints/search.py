@@ -25,23 +25,36 @@ async def search(authorization: str = Header(...),
                  limit: int = Query(20)):
     if query:
         # Generate the query embedding
-        query_embedding = generate_embedding(query["description"])
+        query_embedding = generate_embedding(query)
 
         # Create an elastic search for searching listings
         search_body = {
             "query": {
-                "script_score": { 
-                    "script": {     # semantic section
-                        "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
-                        "params": {"query_vector": query_embedding}
-                    }
-                },
-                "multi_match": {    # lexical section
-                    "query": query,
-                    "fields": ["title", "description"]
+                "bool": {
+                    "should": [
+                        {
+                            "script_score": {
+                                "query": {"match_all": {}},
+                                "script": {
+                                    "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                                    "params": {"query_vector": query_embedding}
+                                }
+                            }
+                        },
+                        {
+                            "multi_match": {
+                                "query": query,
+                                "fields": ["title", "description"]
+                            }
+                        }
+                    ],
+                    "filter": []
                 }
             },
+            "from": (page - 1) * limit,
+            "size": limit
         }
+        
         # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
         
         # Perform the search query
