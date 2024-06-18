@@ -1,11 +1,14 @@
+from pathlib import Path
+
 import pytest
 from httpx import AsyncClient
 from sqlmodel import Session, SQLModel, create_engine
 from sql_models import User, Listing, Message, ListingRating, ListingReview
-from data_layer import app
+from data_layer import app, Settings
 from data_factory import DataFactory
 
-TEST_DATABASE_URL = "postgresql://my_username:my_password@localhost:9999/my_database"
+test_settings = Settings()
+TEST_DATABASE_URL = test_settings.database_url
 test_engine = create_engine(TEST_DATABASE_URL)
 
 SQLModel.metadata.create_all(test_engine)
