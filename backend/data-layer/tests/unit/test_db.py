@@ -1,9 +1,6 @@
-from pathlib import Path
-
 import pytest
 from httpx import AsyncClient
 from sqlmodel import Session, SQLModel, create_engine
-from sql_models import User, Listing, Message, ListingRating, ListingReview
 from data_layer import app, Settings
 from data_factory import DataFactory
 
