@@ -16,15 +16,19 @@ class ItemSort(str, Enum):
     PRICE_DESC = 'price_desc'
     NEWEST = 'newest'
     OLDEST = 'oldest'
+    
+class Location(BaseModel):
+    lat: float
+    lon: float
 
 class Listing(BaseModel):
     """Schema for listing summary."""
-    id: int
+    listingID: str
     title: str
     description: Optional[str] = None
     price: float
     #status: ItemStatus
-    location: str
+    location: Location
 
 class ErrorMessage(BaseModel):
     """Schema for error messages."""
