@@ -1,22 +1,12 @@
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import * as React from 'react'
+import { ThemeProvider } from '@mui/material/styles'
 import { BrowserRouter } from 'react-router-dom'
 import Router from './pages/Router'
-import { light } from '@mui/material/styles/createPalette'
-
-const muiTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#000000',
-    },
-    secondary: {
-      main: '#000000',
-    },
-  },
-})
+import MarketplaceTheme from './Theme'
 
 function App() {
   return (
-    <ThemeProvider theme={muiTheme}>
+    <ThemeProvider theme={MarketplaceTheme}>
       <BrowserRouter>
         <Router />
       </BrowserRouter>
