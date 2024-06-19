@@ -20,7 +20,7 @@ class User(UserBase, table=True):
     listings: list["Listing"] | None = Relationship(back_populates="seller")
     sent_messages: list["Message"] | None = Relationship(back_populates="sender")
     received_messages: list["Message"] | None = Relationship(back_populates="receiver")
-    ratings: list["listingRating"] | None = Relationship(back_populates="rating_user")
+    ratings: list["ListingRating"] | None = Relationship(back_populates="rating_user")
     reviews: list["ListingReview"] | None = Relationship(back_populates="review_user")
 
     @classmethod
@@ -59,16 +59,16 @@ class ListingBase(SQLModel):
 class Listing(ListingBase, table=True):
     seller: User = Relationship(back_populates="listings")
     messages: list["Message"] | None = Relationship(back_populates="Listing")
-    ratings: list["listingRating"] | None = Relationship(back_populates="rated_listing")
+    ratings: list["ListingRating"] | None = Relationship(back_populates="rated_listing")
     reviews: list["ListingReview"] | None = Relationship(back_populates="reviewed_listing")
 
     @classmethod
     def create(cls, session: Session, **kwargs):
-        Listing = cls(**kwargs)
+        listing = cls(**kwargs)
         session.add(Listing)
         session.commit()
-        session.refresh(Listing)
-        return Listing
+        session.refresh(listing)
+        return listing
 
     @classmethod
     def get_by_id(cls, session: Session, listing_id: str):
@@ -145,7 +145,7 @@ class ListingRating(ListingRatingBase, table=True):
         return session.exec(statement).all()
 
 
-class listingReviewBase(SQLModel):
+class ListingReviewBase(SQLModel):
     listing_review_id: str = Field(default=None, primary_key=True)
     reviewed_listing_id: str = Field(foreign_key="Listing.listing_id", index=True)
     review_user_id: str = Field(foreign_key="user.user_id", index=True)
@@ -153,7 +153,7 @@ class listingReviewBase(SQLModel):
     timestamp: datetime | None = Field(index=True)
 
 
-class ListingReview(listingReviewBase, table=True):
+class ListingReview(ListingReviewBase, table=True):
     reviewed_listing: Listing = Relationship(back_populates="reviews")
     review_user: User = Relationship(back_populates="reviews")
 
