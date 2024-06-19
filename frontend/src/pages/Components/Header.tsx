@@ -6,8 +6,13 @@ import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
+import Searchbox from './SearchBox'
 
 export default function LoginHeader() {
+  const handleSearch = (query: string) => {
+    console.log(query)
+  }
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -21,9 +26,27 @@ export default function LoginHeader() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ flexGrow: 0, mr: '40px' }}
+          >
             Header
           </Typography>
+          <Box sx={{ flexGrow: 1 }}>
+            <Searchbox
+              id="Header Searchbar"
+              placeholder="Search UVic Marketplace"
+              sx={{
+                m: '0px 0px',
+                p: '4px 4px',
+                display: 'flex',
+                alignItems: 'center',
+                width: 400,
+              }}
+              submit={handleSearch}
+            />
+          </Box>
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
