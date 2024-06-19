@@ -1,11 +1,7 @@
-import uuid
+# TODO: add dependecies https://fastapi.tiangolo.com/tutorial/dependencies/
 from pathlib import Path
-from typing import List
-from fastapi import FastAPI, HTTPException, Depends
 from pydantic.v1 import BaseSettings
 from sqlmodel import Session, create_engine
-from sql_models import User, Listing, Message, ListingRating, ListingReview, UserBase, ListingBase, \
-    MessageBase
 
 
 class Settings(BaseSettings):
@@ -17,7 +13,7 @@ class Settings(BaseSettings):
     database_url: str = None
 
     class Config:
-        env_file = Path(__file__).parent.parent / ".env"
+        env_file = Path(__file__).parent.parent.parent.parent / ".env"
 
     def __init__(self, **values):
         super().__init__(**values)
@@ -25,7 +21,6 @@ class Settings(BaseSettings):
             f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.db_host}:{self.db_port}/{self.postgres_db}"
 
 
-app = FastAPI()
 settings = Settings()
 engine = create_engine(settings.database_url)
 
@@ -33,5 +28,3 @@ engine = create_engine(settings.database_url)
 def get_session():
     with Session(engine) as session:
         yield session
-
-
