@@ -16,7 +16,8 @@ WORKDIR /app
 COPY . .
 
 # Make the entrypoint script executable
-RUN chmod +x /app/entrypoint.sh
+RUN chmod 755 /app/entrypoint.sh
+
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
