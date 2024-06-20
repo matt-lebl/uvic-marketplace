@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Body, Header, HTTPException, status, Depends
 from typing import Dict, Optional
-from ...schemas import Listing, ErrorMessage
+from ...schemas import ListingResponse, ErrorMessage, ItemStatusEnum
 from sqlalchemy.orm import Session
 from app.db.models import DB_Listing
 from app.api.deps import get_db
@@ -13,23 +13,36 @@ es = es_wrapper.es
 
 router = APIRouter()
 
-@router.post("/listing", response_model=Listing, responses={201: {"model": Listing}, 400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}}, status_code=201)
+@router.post("/listing", response_model=ListingResponse, responses={201: {"model": ListingResponse}, 400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}}, status_code=201)
 async def create_listing(data: Dict = Body(...), authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
     
     print(data)
     # Save the listing to Elasticsearch
-    listing = data['listing']
+    listing_data = data['listing']
 
     # Generate embedding for the listing
-    embedding = generate_embedding(listing['description']) 
-    listing['embedding'] = embedding
+    embedding = generate_embedding(listing_data['description']) 
+    listing_data['embedding'] = embedding
 
-    response = es.index(index="listings_index", id=listing['listingID'], body=listing)
+    # Format location for Elasticsearch
+    listing_data['location'] = {
+        "lat": listing_data['location']['latitude'],
+        "lon": listing_data['location']['longitude']
+    }
+
+    # Add the listing to Elasticsearch
+    response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
     print(f'Added/updated ES database: {response}')
+
+    # undo elasiticsearch Location formatting
+    listing_data['location'] = {
+        "latitude": listing_data['location']['lat'],
+        "longitude": listing_data['location']['lon']
+    }
     
     # Add the listing to postgres
     try:
-        db_listing = DB_Listing(listing_name=listing['title'], elasticsearch_id=listing['listingID'])
+        db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
         db.add(db_listing)
         db.commit()
         db.refresh(db_listing)
@@ -38,9 +51,17 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
         print("Error adding listing to postgres: ", e)
         db.rollback()
         return HTTPException(status_code=501, detail="Error adding listing to database")
+    
+    # Format listing into proper response 
+    del listing_data['embedding']
+    listing_data['status'] = ItemStatusEnum.AVAILABLE
+    response = {"listing": listing_data}
+
+    print("this is the response: ")
+    print(response)
 
     # Construct the response object by converting the dict back to a Pydantic model
-    return listing
+    return response
 
 
 

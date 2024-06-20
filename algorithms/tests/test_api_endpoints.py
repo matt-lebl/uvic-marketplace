@@ -19,8 +19,8 @@ async def test_create_listing_endpoint():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "lat": 34.23551,
-                    "lon": -104.54451
+                    "latitude": 34.23551,
+                    "longitude": -104.54451
                 },
                 "images": [
                     {
@@ -95,8 +95,8 @@ async def test_add_listing_response():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "lat": 34.23551,
-                    "lon": -104.54451
+                    "latitude": 34.23551,
+                    "longitude": -104.54451
                 },
                 "images": [
                     {
@@ -122,11 +122,11 @@ async def test_add_listing_response():
         # Assert - check all response fields
         assert response.status_code == 201
         response_data = response.json()
-        assert response_data['listingID'] == listing_data['listing']['listingID']
-        assert response_data['title'] == listing_data['listing']['title']
-        assert response_data['description'] == listing_data['listing']['description']
-        assert response_data['price'] == listing_data['listing']['price']
-        assert response_data['location'] == listing_data['listing']['location']
+        assert response_data['listing']['listingID'] == listing_data['listing']['listingID']
+        assert response_data['listing']['title'] == listing_data['listing']['title']
+        assert response_data['listing']['description'] == listing_data['listing']['description']
+        assert response_data['listing']['price'] == listing_data['listing']['price']
+        assert response_data['listing']['location'] == listing_data['listing']['location']
        
 
 @pytest.mark.asyncio
@@ -140,8 +140,8 @@ async def test_search_response():
                 "description": "math textbook, no wear and tear.",
                 "price": 50,
                 "location": {
-                    "lat": 34.23551,
-                    "lon": -104.54451
+                    "latitude": 34.23551,
+                    "longitude": -104.54451
                 },
                 "images": [
                     {
@@ -222,8 +222,8 @@ async def test_recommendations_response():
                 "description": "No wear and tear, drop-off available.",
                 "price": 50,
                 "location": {
-                    "lat": 34.23551,
-                    "lon": -104.54451
+                    "latitude": 34.23551,
+                    "longitude": -104.54451
                 },
                 "images": [
                     {

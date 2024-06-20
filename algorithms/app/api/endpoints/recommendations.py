@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List
-from ...schemas import Recommendation, ErrorMessage
+from ...schemas import ListingSummary, ErrorMessage
 
 router = APIRouter()
 
-@router.get("/recommendations", response_model=List[Recommendation], responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
+@router.get("/recommendations", response_model=List[ListingSummary], responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
 async def recommendations(page: int = Query(1),
                           limit: int = Query(20),
                           authorization: str = Header(...)):
