@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List, Optional
-from ...schemas import Listing, ErrorMessage
+from ...schemas import ListingSummary, SearchResponse, ErrorMessage
 from ...elasticsearch_wrapper import ElasticsearchWrapper
 import torch
 import numpy as np
@@ -11,18 +11,18 @@ es = es_wrapper.es
 
 router = APIRouter()
 
-@router.get("/search", response_model=List[Listing], responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
+@router.get("/search", response_model=SearchResponse, responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
 async def search(authorization: str = Header(...),
-                 query: Optional[str] = Query(None),
+                 query: str = Query(...), # in the OpenAPI specs this is optional... 
                  minPrice: Optional[int] = Query(None),
                  maxPrice: Optional[int] = Query(None),
                  status: Optional[str] = Query(None),
-                 searchType: str = Query("LISTINGS"),
+                 searchType: Optional[str] = Query("LISTINGS"),
                  latitude: float = Query(...),
                  longitude: float = Query(...),
                  sort: Optional[str] = Query(None),
-                 page: int = Query(1),
-                 limit: int = Query(20)):
+                 page: Optional[int] = Query(1),
+                 limit: Optional[int] = Query(20)):
     if query:
         # Generate the query embedding
         query_embedding = generate_embedding(query)
@@ -58,7 +58,11 @@ async def search(authorization: str = Header(...),
         # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
         
         # Perform the search query
-        response = es.search(index="listings_index", body=search_body)
+        #response = es.search(index="listings_index", body=search_body)
+
+        # PLACE HOLDER ELASTICSEARCH RESPONSE
+        response = {"hits": {"hits": []}}
+
 
 
         # Extract documents from the response
@@ -70,8 +74,26 @@ async def search(authorization: str = Header(...),
                                     location=doc["_source"]["location"]))
             
         print("Listings; {}".format(listings))
-        return listings
+        #return listings
+
+
+        # PLACE HOLDER SEARCH RESPONSE
+        items = []
+        items.append(ListingSummary(
+            listingID="A23F29039B23",
+            sellerID="A23F29039B23",  # optional
+            sellerName="A23F29039B23",  # optional
+            title="Used Calculus Textbook",
+            description="No wear and tear, drop-off available.",  # optional
+            price=50,
+            dateCreated="2024-05-23T15:30:00Z",
+            imageUrl="https://example.com/image"  # optional
+        ))
+        totalItems = 1
+
+        return SearchResponse(items=items, totalItems=totalItems)
+
+
     else:
         return []  # What do we return if no query?
-
 
