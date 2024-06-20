@@ -1,3 +1,8 @@
+"""
+fastapi-backend\main.py
+
+>> Recieves traffic from FASTAPI-BACKEND, handles all data interactions. 
+"""
 from fastapi import FastAPI
 from .routers import listings, messages, users
 

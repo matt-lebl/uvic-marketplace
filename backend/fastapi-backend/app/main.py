@@ -1,3 +1,8 @@
+"""
+fastapi-backend\main.py
+
+>> Recieves traffic from REVERSE-PROXY, does everything other than DATA-LAYER or websocket connections, sends traffic to DATA-LAYER. >>
+"""
 from typing import Annotated
 from fastapi import FastAPI, Path, Query
 import routers.listings
