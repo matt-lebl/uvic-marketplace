@@ -1,5 +1,5 @@
 import uuid
-from sql_models import *
+from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 
@@ -17,7 +17,7 @@ def create_user(user: UserBase, session: Session = Depends(get_session)):
     return new_user
 
 
-@router.get("/", response_model=List[User])
+@router.get("/", response_model=list[User])
 def get_all_users(session: Session = Depends(get_session)):
     return User.get_all(session)
 

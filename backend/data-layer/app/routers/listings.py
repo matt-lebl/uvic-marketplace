@@ -1,5 +1,5 @@
 import uuid
-from sql_models import *
+from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 
