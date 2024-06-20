@@ -1,6 +1,9 @@
 from sqlalchemy import Column, ARRAY, String
 from sqlmodel import SQLModel, Field, Relationship, Session, select
+<<<<<<< Updated upstream
 from typing import Optional, List
+=======
+>>>>>>> Stashed changes
 from datetime import datetime
 
 
@@ -9,6 +12,7 @@ class UserBase(SQLModel):
     username: str = Field(index=True)
     email: str = Field(unique=True, index=True)
     password: str
+<<<<<<< Updated upstream
     profile_picture_url: Optional[str] = None
     location: Optional[str] = None
     joining_date: datetime
@@ -23,6 +27,22 @@ class User(UserBase, table=True):
     received_messages: List["Message"] | None = Relationship(back_populates="receiver")
     ratings: List["ListingRating"] | None = Relationship(back_populates="rating_user")
     reviews: List["ListingReview"] | None = Relationship(back_populates="review_user")
+=======
+    profile_picture_url: str | None = None
+    location: str | None = None
+    joining_date: datetime
+    items_sold: list = Field(sa_column=Column(ARRAY(String)))
+    items_purchased: list = Field(sa_column=Column(ARRAY(String)))
+    bio: str | None = None
+
+
+class User(UserBase, table=True):
+    listings: list["Listing"] | None = Relationship(back_populates="seller")
+    sent_messages: list["Message"] | None = Relationship(back_populates="sender")
+    received_messages: list["Message"] | None = Relationship(back_populates="receiver")
+    ratings: list["ListingRating"] | None = Relationship(back_populates="rating_user")
+    reviews: list["ListingReview"] | None = Relationship(back_populates="review_user")
+>>>>>>> Stashed changes
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -47,6 +67,7 @@ class ListingBase(SQLModel):
     listing_id: str = Field(default=None, primary_key=True)
     seller_id: str = Field(foreign_key="user.user_id", index=True)
     title: str
+<<<<<<< Updated upstream
     description: Optional[str] = None
     price: Optional[float] = None
     status: Optional[str] = Field(index=True)
@@ -55,13 +76,29 @@ class ListingBase(SQLModel):
     image_urls: list = Field(sa_column=Column(ARRAY(String)))
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+=======
+    description: str | None = None
+    price: float | None = None
+    status: str | None = Field(index=True)
+    listed_at: datetime | None = Field(index=True)
+    last_updated_at: datetime | None = None
+    image_urls: list = Field(sa_column=Column(ARRAY(String)))
+    latitude: float | None = None
+    longitude: float | None = None
+>>>>>>> Stashed changes
 
 
 class Listing(ListingBase, table=True):
     seller: User = Relationship(back_populates="listings")
+<<<<<<< Updated upstream
     messages: List["Message"] | None = Relationship(back_populates="listing")
     ratings: List["ListingRating"] | None = Relationship(back_populates="rated_listing")
     reviews: List["ListingReview"] | None = Relationship(back_populates="reviewed_listing")
+=======
+    messages: list["Message"] | None = Relationship(back_populates="listing")
+    ratings: list["ListingRating"] | None = Relationship(back_populates="rated_listing")
+    reviews: list["ListingReview"] | None = Relationship(back_populates="reviewed_listing")
+>>>>>>> Stashed changes
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -87,8 +124,13 @@ class MessageBase(SQLModel):
     sender_id: str = Field(foreign_key="user.user_id", index=True)
     receiver_id: str = Field(index=True)
     listing_id: str = Field(foreign_key="listing.listing_id", index=True)
+<<<<<<< Updated upstream
     message_content: Optional[str] = None
     timestamp: Optional[datetime] = Field(index=True)
+=======
+    message_content: str | None = None
+    timestamp: datetime | None = Field(index=True)
+>>>>>>> Stashed changes
 
 
 class Message(MessageBase, table=True):
@@ -119,8 +161,13 @@ class ListingRatingBase(SQLModel):
     listing_rating_id: str = Field(default=None, primary_key=True)
     rated_listing_id: str = Field(foreign_key="listing.listing_id", index=True)
     rating_user_id: str = Field(foreign_key="user.user_id", index=True)
+<<<<<<< Updated upstream
     rating_value: Optional[int] = Field(index=True)
     timestamp: Optional[datetime] = Field(index=True)
+=======
+    rating_value: int | None = Field(index=True)
+    timestamp: datetime | None = Field(index=True)
+>>>>>>> Stashed changes
 
 
 class ListingRating(ListingRatingBase, table=True):
@@ -150,8 +197,13 @@ class ListingReviewBase(SQLModel):
     listing_review_id: str = Field(default=None, primary_key=True)
     reviewed_listing_id: str = Field(foreign_key="listing.listing_id", index=True)
     review_user_id: str = Field(foreign_key="user.user_id", index=True)
+<<<<<<< Updated upstream
     review_content: Optional[str] = None
     timestamp: Optional[datetime] = Field(index=True)
+=======
+    review_content: str | None = None
+    timestamp: datetime | None = Field(index=True)
+>>>>>>> Stashed changes
 
 
 class ListingReview(ListingReviewBase, table=True):

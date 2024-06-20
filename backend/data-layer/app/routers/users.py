@@ -1,5 +1,9 @@
 import uuid
+<<<<<<< Updated upstream
 from sql_models import *
+=======
+from app.routers.sql_models import *
+>>>>>>> Stashed changes
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 
@@ -17,7 +21,11 @@ def create_user(user: UserBase, session: Session = Depends(get_session)):
     return new_user
 
 
+<<<<<<< Updated upstream
 @router.get("/", response_model=List[User])
+=======
+@router.get("/", response_model=list[User])
+>>>>>>> Stashed changes
 def get_all_users(session: Session = Depends(get_session)):
     return User.get_all(session)
 

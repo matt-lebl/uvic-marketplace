@@ -1,5 +1,9 @@
 import uuid
+<<<<<<< Updated upstream
 from sql_models import *
+=======
+from app.routers.sql_models import *
+>>>>>>> Stashed changes
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 

@@ -1,0 +1,9 @@
+services:
+
+  data-layer:
+    build: .
+    ports:
+      - "9998:80"
+    env_file:
+      - path: ../.env
+        required: true
