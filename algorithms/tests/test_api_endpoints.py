@@ -202,7 +202,11 @@ async def test_search_invalid_request():
         }
         
         # Act - Send incomplete query
-        response = await client.get("/api/search", params=query_params)
+        response = await client.get(
+            "/api/search", 
+            params=query_params,
+            headers={"authorization": "Bearer testtoken"}
+            )
         
         # Assert - Check status code (and error message)
         assert 400 <= response.status_code < 500
@@ -248,8 +252,13 @@ async def test_recommendations_response():
         }
         
         # Act - Get recommendations
-        response = await client.get("/api/recommendations", params=query_params)
+        response = await client.get(
+            "/api/recommendations", 
+            params=query_params,
+            headers={"authorization": "Bearer testtoken"}
+            )
         
+
         # Assert - Check all fields of recommendation response
         assert response.status_code == 200
         recommendations = response.json()

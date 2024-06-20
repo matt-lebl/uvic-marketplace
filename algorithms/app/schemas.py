@@ -34,3 +34,14 @@ class ErrorMessage(BaseModel):
     """Schema for error messages."""
     message: str
     details: Optional[str] = None
+
+class Recommendation(BaseModel):
+    """Schema for recommendation."""
+    listingID: str
+    sellerID: str
+    sellerName: str
+    title: str
+    description: Optional[str] = None
+    price: float
+    dateCreated: str
+    imageUrl: str
