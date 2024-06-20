@@ -1,15 +1,38 @@
 # Set up for fastapi servers:
 
+#### setup env
+
 - Setup virtual environment for each server
   example:
   `python -m venv ./.venv-api`
 
 > _Optional_ You can use a single venv but keep track of individual dependencies in each server's requirements.txt
 
+- Activate venv - This may be different for different os.
+  Windows:
+
+  - cd into venv/scripts
+    `.\activate`
+
 - Install dependencies: - Change current directory to the target server - Install dependencies based on target servers requirements
   `pip install -r "./requirements.txt`
-- Run server in dev mode (auto reload enabled):
-  `fastapi dev main.py`
+
+#### run reverse-proxy
+
+- Run main.py with **reverse-proxy** virtual environment
+  `python ./main.py`
+
+#### run fastapi-backend
+
+- Run main.py with **fastapi-backend** virtual environment
+  `python ./main.py`
+
+#### run data-layer
+
+- Run main.py with **data-layer** virtual environment
+  `python ./main.py`
+
+>
 
 ### Notes
 
@@ -40,7 +63,7 @@
 
 ### Current dependencies
 
-**reverse-proxie**
+**reverse-proxy**
 
 - fastapi
 
