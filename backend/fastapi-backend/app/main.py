@@ -3,17 +3,42 @@ fastapi-backend\main.py
 
 >> Recieves traffic from REVERSE-PROXY, does everything other than DATA-LAYER or websocket connections, sends traffic to DATA-LAYER. >>
 """
-from typing import Annotated
-from fastapi import FastAPI, Path, Query
-import routers.listings
+from urllib.parse import urljoin
+from fastapi import FastAPI, HTTPException
+import httpx
+
+from routers import listings
 
 app = FastAPI()
-app.include_router(routers.listings.listingsRouter)
+app.include_router(listings.listingsRouter)
+
+# TODO: Update for prod
+data_layer_url = "http://localhost:8002"
+
+"""
+TODO:
+
+- Reject all paths not used for:
+    - data-layer
+    - TODO: other services
+""" 
+# Routes for data-layer
+@app.get("/api/{path:path}")
+async def data_layer_request(path: str | None):
+    async with httpx.AsyncClient() as client:
+        try:
+            url = urljoin(data_layer_url, f"/api/{path}")
+            response = await client.get(url)
+            return response.text
+        except httpx.HTTPError as exc:
+            raise HTTPException(status_code=exc.response.status_code, detail=str(exc))
 
 
-@app.get("/api/")
-async def index():
-    return {"hello": "UVic Marketplace FB"}
+# Catch-all route to handle requests to other paths
+# TODO: change detail
+@app.get("/{path:path}")
+async def other_request(path: str | None):
+    raise HTTPException(status_code=404, detail="Path not found BACKEND")
 
 
 if __name__ == "__main__":
