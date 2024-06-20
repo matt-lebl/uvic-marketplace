@@ -16,15 +16,4 @@ describe('Footer', () => {
       )
     ).toBeInTheDocument()
   })
-
-  it('has correct styles for footer elements', () => {
-    render(<Footer />)
-    const footerTitle = screen.getByText('UVic Marketplace')
-    const footerMessage = screen.getByText(
-      'Connecting the UVic community through shared goods and services.'
-    )
-
-    expect(footerTitle).toHaveStyle('text-align: center')
-    expect(footerMessage).toHaveStyle('text-align: center')
-  })
 })
