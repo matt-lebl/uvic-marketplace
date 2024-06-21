@@ -78,7 +78,7 @@ describe('POST', () => {
         };
         mockedAxios.post.mockResolvedValue({ data: testResponse });
 
-         const res = await APIPost<ListingResponse, ListingRequest>(testURL,testRequest);
+        const res = await APIPost<ListingResponse, ListingRequest>(testURL,testRequest);
         // // expect(res.status).toEqual(200);
         expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
         expect(testRequest.listing).toSatisfySchemaInApiSpec('NewListing');
