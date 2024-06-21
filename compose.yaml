@@ -34,7 +34,7 @@ services:
         condition: service_started
     environment:
       HF_HOME: /.cache
-      DATABASE_URL: postgresql://user:password@postgres:5432/mydatabase
+      DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
       ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./elastic_cache:/.cache
@@ -51,14 +51,15 @@ services:
     image: postgres:13
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres-init.sh:/docker-entrypoint-initdb.d/postgres-init.sh
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_MULTIPLE_DATABASES: algorithms,backend
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d mydatabase || exit 1" ]
+      test: [ "CMD-SHELL", "pg_isready -U user -d postgres || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
