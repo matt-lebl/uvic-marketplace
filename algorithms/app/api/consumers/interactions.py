@@ -1,14 +1,9 @@
-from fastapi import APIRouter, HTTPException, Body, Depends
-from typing import Dict
-from sqlalchemy.orm import Session
+from fastapi import HTTPException
 from app.db.models import DB_Interaction
-from app.api.deps import get_db
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
-router = APIRouter()
-
-@router.post("/interactions/click")
-def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
+def record_click(data: dict, db: Session):
     user_id = data['userID']
     listing_id = data['listingID']
     

@@ -1,21 +1,15 @@
-from fastapi import APIRouter, Body, Header, HTTPException, status, Depends
-from typing import Dict, Optional
-from ...schemas import ListingResponse, ErrorMessage, ItemStatusEnum
+from fastapi import HTTPException
+from ...schemas import ItemStatusEnum
 from sqlalchemy.orm import Session
 from app.db.models import DB_Listing
-from app.api.deps import get_db
-from .embedding import generate_embedding
+from ..endpoints.embedding import generate_embedding
 from ...elasticsearch_wrapper import ElasticsearchWrapper
 from sqlalchemy.exc import SQLAlchemyError
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
 
-router = APIRouter()
-
-@router.post("/listing", response_model=ListingResponse, responses={201: {"model": ListingResponse}, 400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}}, status_code=201)
-async def create_listing(data: Dict = Body(...), authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
-    
+async def create_listing(data: dict, db: Session):
     print(data)
     # Save the listing to Elasticsearch
     listing_data = data['listing']
@@ -65,8 +59,8 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
 
 
 
-@router.delete("/listing/{listing_id}", responses={200: {"description": "Listing deleted successfully"}, 404: {"model": ErrorMessage}, 500: {"model": ErrorMessage}}, status_code=200)
-async def delete_listing(listing_id: str, db: Session = Depends(get_db)):
+async def delete_listing(data: dict, db: Session):
+    listing_id = data["listingID"]
     # Delete from Elasticsearch
     try:
         es_response = es.delete(index="listings_index", id=listing_id)

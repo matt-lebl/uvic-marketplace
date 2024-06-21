@@ -16,8 +16,12 @@
 .vscode/**
 
 #env files
-backend/services/.env
+*.env
+
 
 # __pycache__
 __pycache__/
 .pytest_cache/
+elastic_cache/
+elastic_data/
+postgres_data/
