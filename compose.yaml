@@ -8,6 +8,20 @@ services:
       NODE_ENV: production
     ports:
       - "8080:8080"
+  backend-data-layer:
+    build:
+      context: backend/data-layer
+    ports:
+      - "8002:8002"
+    environment:
+      POSTGRES_USER: backend
+      POSTGRES_PASSWORD: backend
+      POSTGRES_DB: backend
+      DB_HOST: localhost
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
   algorithms:
     build:
       context: algorithms
