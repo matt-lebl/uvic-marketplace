@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import LoginHeader from './LoginHeader'
+import LoginHeader from '../../pages/Components/LoginHeader'
 
 // Jest test suite for frontend
 // Invoke with `yarn test` or `npm test`

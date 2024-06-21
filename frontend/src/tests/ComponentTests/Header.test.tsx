@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import Header from './Header'
+import Header from '../../pages/Components/Header'
 
 // Jest test suite for frontend
 // Invoke with `yarn test` or `npm test`
