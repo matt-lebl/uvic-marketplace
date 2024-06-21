@@ -11,7 +11,7 @@ class APIError extends Error {
     }
 }
 
-export async function APIPost<TResponse, TBody>(path: string, requestBody: TBody ): Promise<TResponse | ErrorResponse | undefined> {
+export async function APIPost<TResponse, TBody>(path: string, requestBody: TBody ): Promise<TResponse | undefined> {
     try {
         const response: AxiosResponse<TResponse> = await axios.post(baseUrl+path, requestBody);
         switch(response.status){
