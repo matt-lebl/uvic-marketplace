@@ -4,7 +4,7 @@ reverse-proxy\main.py
 >> Entry point for the overall backend. <<
 """
 from urllib.parse import urljoin
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body, Depends
 import httpx
 
 
@@ -36,9 +36,9 @@ async def proxy_api_request(path: str | None):
 
 
 # Catch-all route to handle requests to other paths
-@app.get("/{path:path}")
-async def proxy_other_request(path: str | None):
-    raise HTTPException(status_code=404, detail="Path not found")
+# @app.get("/{path:path}")
+# async def proxy_other_request(path: str | None):
+#     raise HTTPException(status_code=404, detail="Path not found")
 
 if __name__ == "__main__":
     import uvicorn
