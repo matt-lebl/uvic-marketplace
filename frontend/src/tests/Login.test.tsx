@@ -6,7 +6,6 @@ import Login from '../pages/Login'
 // Invoke with `yarn test` or `npm test`
 
 test('renders login page', () => {
-
   // Test if the login page renders
   render(<Login />)
   const linkElement = screen.getByText(/Login/i)
