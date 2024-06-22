@@ -3,12 +3,16 @@ reverse-proxy\main.py
 
 >> Entry point for the overall backend. <<
 """
+
 from urllib.parse import urljoin
 from fastapi import FastAPI, HTTPException, Body, Depends
 import httpx
 
+from routers import users
 
 app = FastAPI()
+app.include_router(users.usersRouter)
+
 
 # TODO: Update for prod
 fastapi_backend_url = "http://localhost:8001"
@@ -22,7 +26,8 @@ TODO:
     - TODO: other services
 
 - Websockets for live chat (if we continue to implement it)
-""" 
+"""
+
 
 @app.get("/api/{path:path}")
 async def proxy_api_request(path: str | None):

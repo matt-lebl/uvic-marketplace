@@ -15,7 +15,7 @@ listingsRouter = APIRouter(
 
 @listingsRouter.get("/{id}")
 async def get_listing(id: int):
-    dsKafkaProducer.push_viewed_listing(id)
+    dsKafkaProducer.push_viewed_listing(id, 22)
     # TODO
     return {"id": id}
 
