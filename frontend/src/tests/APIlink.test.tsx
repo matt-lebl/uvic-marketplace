@@ -76,7 +76,7 @@ describe('POST', () => {
               distance: 4.2
             }
         };
-        mockedAxios.post.mockResolvedValue({ data: testResponse });
+        mockedAxios.post.mockResolvedValueOnce({ status:201, data: testResponse });
 
         const res = await APIPost<ListingResponse, ListingRequest>(testURL,testRequest);
         // // expect(res.status).toEqual(200);
