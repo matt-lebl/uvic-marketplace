@@ -58,14 +58,14 @@ class ListingBase(SQLModel):
 
 class Listing(ListingBase, table=True):
     seller: User = Relationship(back_populates="listings")
-    messages: list["Message"] | None = Relationship(back_populates="Listing")
+    messages: list["Message"] | None = Relationship(back_populates="listing")
     ratings: list["ListingRating"] | None = Relationship(back_populates="rated_listing")
     reviews: list["ListingReview"] | None = Relationship(back_populates="reviewed_listing")
 
     @classmethod
     def create(cls, session: Session, **kwargs):
         listing = cls(**kwargs)
-        session.add(Listing)
+        session.add(listing)
         session.commit()
         session.refresh(listing)
         return listing
@@ -81,42 +81,9 @@ class Listing(ListingBase, table=True):
         return session.exec(statement).all()
 
 
-class MessageBase(SQLModel):
-    message_id: str = Field(default=None, primary_key=True)
-    sender_id: str = Field(foreign_key="user.user_id", index=True)
-    receiver_id: str = Field(index=True)
-    listing_id: str = Field(foreign_key="Listing.listing_id", index=True)
-    message_content: str | None = None
-    timestamp: datetime | None = Field(index=True)
-
-
-class Message(MessageBase, table=True):
-    sender: User = Relationship(back_populates="sent_messages")
-    receiver: User = Relationship(back_populates="received_messages")
-    Listing: Listing = Relationship(back_populates="messages")
-
-    @classmethod
-    def create(cls, session: Session, **kwargs):
-        message = cls(**kwargs)
-        session.add(message)
-        session.commit()
-        session.refresh(message)
-        return message
-
-    @classmethod
-    def get_by_id(cls, session: Session, message_id: str):
-        statement = select(cls).where(cls.message_id == message_id)
-        return session.exec(statement).first()
-
-    @classmethod
-    def get_all(cls, session: Session):
-        statement = select(cls)
-        return session.exec(statement).all()
-
-
 class ListingRatingBase(SQLModel):
     listing_rating_id: str = Field(default=None, primary_key=True)
-    rated_listing_id: str = Field(foreign_key="Listing.listing_id", index=True)
+    rated_listing_id: str = Field(foreign_key="listing.listing_id", index=True)
     rating_user_id: str = Field(foreign_key="user.user_id", index=True)
     rating_value: int | None = Field(index=True)
     timestamp: datetime | None = Field(index=True)
@@ -147,7 +114,7 @@ class ListingRating(ListingRatingBase, table=True):
 
 class ListingReviewBase(SQLModel):
     listing_review_id: str = Field(default=None, primary_key=True)
-    reviewed_listing_id: str = Field(foreign_key="Listing.listing_id", index=True)
+    reviewed_listing_id: str = Field(foreign_key="listing.listing_id", index=True)
     review_user_id: str = Field(foreign_key="user.user_id", index=True)
     review_content: str | None = None
     timestamp: datetime | None = Field(index=True)
@@ -168,6 +135,39 @@ class ListingReview(ListingReviewBase, table=True):
     @classmethod
     def get_by_id(cls, session: Session, listing_review_id: str):
         statement = select(cls).where(cls.listing_review_id == listing_review_id)
+        return session.exec(statement).first()
+
+    @classmethod
+    def get_all(cls, session: Session):
+        statement = select(cls)
+        return session.exec(statement).all()
+
+
+class MessageBase(SQLModel):
+    message_id: str = Field(default=None, primary_key=True)
+    sender_id: str = Field(foreign_key="user.user_id", index=True)
+    receiver_id: str = Field(index=True)
+    listing_id: str = Field(foreign_key="listing.listing_id", index=True)
+    message_content: str | None = None
+    timestamp: datetime | None = Field(index=True)
+
+
+class Message(MessageBase, table=True):
+    sender: User = Relationship(back_populates="sent_messages")
+    receiver: User = Relationship(back_populates="received_messages")
+    listing: Listing = Relationship(back_populates="messages")
+
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        message = cls(**kwargs)
+        session.add(message)
+        session.commit()
+        session.refresh(message)
+        return message
+
+    @classmethod
+    def get_by_id(cls, session: Session, message_id: str):
+        statement = select(cls).where(cls.message_id == message_id)
         return session.exec(statement).first()
 
     @classmethod
