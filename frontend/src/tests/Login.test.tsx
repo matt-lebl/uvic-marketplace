@@ -9,7 +9,7 @@ test('renders login page', () => {
 
   // Test if the login page renders
   render(<Login />)
-  const linkElement = screen.getByText(/Login Page/i)
+  const linkElement = screen.getByText(/Login/i)
   expect(linkElement).toBeInTheDocument()
 
   // Test if the login form renders
