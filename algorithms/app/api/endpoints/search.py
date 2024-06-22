@@ -58,40 +58,19 @@ async def search(authorization: str = Header(...),
         # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
         
         # Perform the search query
-        #response = es.search(index="listings_index", body=search_body)
-
-        # PLACE HOLDER ELASTICSEARCH RESPONSE
-        response = {"hits": {"hits": []}}
-
-
+        response = es.search(index="listings_index", body=search_body)
 
         # Extract documents from the response
         listings = [] 
         for doc in response['hits']['hits']:
-            listings.append(Listing(id=doc["_id"], title=doc["_source"]["title"], 
+            listings.append(ListingSummary(listingID=doc["_id"], title=doc["_source"]["title"], 
                                     description=doc["_source"].get("description"), 
                                     price=doc["_source"]["price"], 
-                                    location=doc["_source"]["location"]))
+                                    location=doc["_source"]["location"],
+                                    dateCreated="2024-05-23T15:30:00Z"))
             
         print("Listings; {}".format(listings))
-        #return listings
-
-
-        # PLACE HOLDER SEARCH RESPONSE
-        items = []
-        items.append(ListingSummary(
-            listingID="A23F29039B23",
-            sellerID="A23F29039B23",  # optional
-            sellerName="A23F29039B23",  # optional
-            title="Used Calculus Textbook",
-            description="No wear and tear, drop-off available.",  # optional
-            price=50,
-            dateCreated="2024-05-23T15:30:00Z",
-            imageUrl="https://example.com/image"  # optional
-        ))
-        totalItems = 1
-
-        return SearchResponse(items=items, totalItems=totalItems)
+        return SearchResponse(items=listings, totalItems=len(listings))
 
 
     else:
