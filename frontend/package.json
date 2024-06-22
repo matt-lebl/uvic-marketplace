@@ -53,12 +53,17 @@
     ]
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.24.7",
+    "@babel/preset-react": "^7.24.7",
+    "@babel/preset-typescript": "^7.24.7",
     "@eslint/compat": "^1.0.3",
     "@eslint/js": "^8.56.0",
+    "@testing-library/react": "^16.0.0",
     "@testing-library/dom": "^10.1.0",
     "@types/react-test-renderer": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.12.0",
     "@typescript-eslint/parser": "^7.12.0",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-react-app": "^7.0.1",
@@ -66,7 +71,19 @@
     "eslint-plugin-react": "^7.34.2",
     "eslint-plugin-react-hooks": "^4.6.2",
     "globals": "^15.4.0",
+    "jest": "^26.6.3",
     "prettier": "^3.3.1",
     "typescript-eslint": "^7.12.0"
+  },
+  "babel": {
+    "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(your-module|@testing-library/dom)/)"
+    ]
   }
 }
