@@ -85,7 +85,7 @@ describe('POST', () => {
         expect(res?.listing).toSatisfySchemaInApiSpec('Listing');
     });
 
-    it('/api/REVIEW should satisfy OpenAPI spec', async () => {
+    it('/api/review should satisfy OpenAPI spec', async () => {
       const testURL:string ='/api/listing';
       const testRequest:ReviewRequest = {
         listing_rating_id: "A23F29039B23",
