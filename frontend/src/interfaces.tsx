@@ -1,4 +1,4 @@
-export interface ErrorResponse{
+export interface ErrorResponse {
     error: string;
 }
 
@@ -52,4 +52,22 @@ export interface ListingResponse {
         }[];
         distance: number;
     };
+}
+
+export interface ReviewRequest {
+    listing_rating_id: string;
+    stars: number;
+    comment: string;
+    listingID: string;
+}
+
+export interface ReviewResponse {
+    listing_review_id: string;
+    reviewerName: string;
+    stars: number;
+    comment: string;
+    userID: string;
+    listingID: string;
+    dateCreated: string;
+    dateModified: string;
 }
