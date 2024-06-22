@@ -19,6 +19,7 @@ MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.3
 psycopg2==2.9.9
+psycopg-binary==3.1.19
 pydantic==2.7.3
 pydantic_core==2.18.4
 pytest==8.2.2
