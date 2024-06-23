@@ -1,9 +1,8 @@
-import json
 import uuid
 from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
-from .schemas import NewListing, ListingSchema, NewReview, ReviewSchema
+from .schemas import NewReview, ReviewSchema
 from datetime import datetime
 
 router = APIRouter(

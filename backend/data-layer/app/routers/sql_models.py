@@ -10,14 +10,12 @@ class UserBase(SQLModel):
     userID: str = Field(default=None, primary_key=True)
     username: str = Field(index=True)
     name: str
-    email: str = Field(unique=True, index=True)
-    password: str
-    profilePictureUrl: str | None = None
-    location: str | None = None
-    joining_date: datetime
-    items_sold: list = Field(sa_column=Column(ARRAY(String)))
-    items_purchased: list = Field(sa_column=Column(ARRAY(String)))
     bio: str | None = None
+    profileUrl: str | None = None
+    email: str = Field(unique=True, index=True)
+    totp_secret: str
+    items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
+    items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
 
 
 class User(UserBase, table=True):
@@ -170,7 +168,7 @@ class ListingReview(ListingReviewBase, table=True):
         return review
 
     @classmethod
-    def update(cls, user_id: str, listing_review_id: str, session: Session, **kwargs ):
+    def update(cls, user_id: str, listing_review_id: str, session: Session, **kwargs):
         statement = select(cls).where(cls.listing_review_id == listing_review_id)
         review = session.exec(statement).first()
         if not review:
@@ -200,6 +198,7 @@ class ListingReview(ListingReviewBase, table=True):
         session.commit()
 
         return {"message": "Listing deleted successfully"}
+
     @classmethod
     def get_by_id(cls, session: Session, listing_review_id: str):
         statement = select(cls).where(cls.listing_review_id == listing_review_id)
