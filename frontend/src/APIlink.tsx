@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import ErrorResponse from './interfaces';
 
-const baseUrl = ''; //http://market.lebl.ca/openapi/
+export const baseUrl = ''; //http://market.lebl.ca/openapi/
 
 export default class APIError extends Error {
     status: number;
@@ -18,6 +18,27 @@ export async function APIPost<TResponse, TBody>(path: string, requestBody?: TBod
         switch(response.status){
             case 200:
             case 201:
+                return response.data;
+            default:
+                throw new APIError(response.data as string, response.status);
+        }
+    } catch (error:any) {
+        throw new Error(`API request failed: ${error.message}`);
+    }
+}
+
+export async function APIGet<TResponse>(path: string, queryParams?: [string, string|number][] ): Promise<TResponse> {
+    try {
+        const queryString = queryParams?.map(
+            ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        ).join('&');
+
+        const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`;
+
+        const response: AxiosResponse<TResponse> = await axios.get(url);
+        switch(response.status){
+            case 200:
+            case 101:
                 return response.data;
             default:
                 throw new APIError(response.data as string, response.status);
