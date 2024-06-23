@@ -1,12 +1,36 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import MessageItem from '../../pages/Components/MessageItem'
 
-// Jest test suite for frontend
-// Invoke with `yarn test` or `npm test`
+const message = {
+  listing_id: 'L23434B090934',
+  other_participant: {
+    user_id: 'A23434B090934',
+    name: 'John Doe',
+    profilePicture: 'https://example.com/image1.png',
+  },
+  last_message: {
+    sender_id: 'A23434B090934',
+    receiver_id: 'A23434B090936',
+    listing_id: 'L23434B090934',
+    content: 'Hello, is this still available?',
+    sent_at: 1625247600,
+  },
+}
 
-// test('renders listing page', () => {
-//   render(<MessageItem />)
-//   const linkElement = screen.getByText(/UVic Marketplace/i)
-//   expect(linkElement).toBeInTheDocument()
-// })
+test('renders message item content', () => {
+  const { getByText } = render(
+    <MessageItem message={message} onClick={() => {}} selected={false} />
+  )
+  expect(getByText('John Doe')).toBeInTheDocument()
+  expect(getByText('Hello, is this still available?')).toBeInTheDocument()
+})
+
+test('triggers onClick handler when clicked', () => {
+  const handleClick = jest.fn()
+  const { getByText } = render(
+    <MessageItem message={message} onClick={handleClick} selected={false} />
+  )
+  fireEvent.click(getByText('John Doe'))
+  expect(handleClick).toHaveBeenCalledTimes(1)
+})

@@ -1,12 +1,23 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 import Messaging from '../pages/Messaging'
 
-// Jest test suite for frontend
-// Invoke with `yarn test` or `npm test`
+test('renders initial conversation', () => {
+  const { getByText } = render(<Messaging />)
+  expect(getByText('Hello, is this still available?')).toBeInTheDocument()
+})
 
-test('renders listing page', () => {
-  render(<Messaging />)
-  const linkElement = screen.getByText(/UVic Marketplace/i)
-  expect(linkElement).toBeInTheDocument()
+test('switches conversation when a new message is selected', () => {
+  const { getByText, getAllByText } = render(<Messaging />)
+  fireEvent.click(getAllByText('Jane Doe')[0])
+  expect(getByText('Hello, is this still available?')).toBeInTheDocument()
+})
+
+test('sends message when Enter key is pressed', () => {
+  const { getByPlaceholderText } = render(<Messaging />)
+  const input = getByPlaceholderText('Write a message')
+  fireEvent.change(input, { target: { value: 'New message' } })
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
+  expect(input).toHaveValue('')
+  expect
 })
