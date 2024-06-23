@@ -5,7 +5,7 @@ from .dependencies import get_session
 from .schemas import UserSchema, NewUser, LoginRequest
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/user",
     tags=["users"]
 )
 

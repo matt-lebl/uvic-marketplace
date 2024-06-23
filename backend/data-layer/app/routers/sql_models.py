@@ -1,6 +1,5 @@
 import json
-from sqlalchemy import Column, ARRAY, String
-from sqlmodel import SQLModel, Field, Relationship, Session, select, and_
+from sqlmodel import SQLModel, Field, Relationship, Session, select, and_, func, Column, ARRAY, String, or_
 from datetime import datetime
 from .schemas import ListingSchema, UserProfile
 from fastapi import HTTPException
@@ -282,3 +281,62 @@ class Message(MessageBase, table=True):
     def get_all(cls, session: Session):
         statement = select(cls)
         return session.exec(statement).all()
+
+    @classmethod
+    def get_overview(cls, userID: str, session: Session):
+        subquery = (session.query(
+            Message.sender_id,
+            Message.receiver_id,
+            func.max(Message.sent_at).label("max_timestamp")
+        ).filter(or_(Message.sender_id == userID, Message.receiver_id == userID))
+                    .group_by(Message.sender_id, Message.receiver_id).subquery())
+
+        query = (
+            session.query(
+                Message,
+                User.userID.label("other_user_id"),
+                User.name,
+                User.profileUrl
+            ).join(
+                subquery,
+                and_(Message.sender_id == subquery.c.sender_id,
+                     Message.receiver_id == subquery.c.receiver_id,
+                     Message.sent_at == subquery.c.max_timestamp)
+            ).join(
+                User,
+                or_(
+                    and_(User.userID == Message.sender_id, Message.receiver_id == userID),
+                    and_(User.userID == Message.receiver_id, Message.sender_id == userID)
+                )
+            )
+        )
+
+        messages = query.all()
+
+        overview = []
+        for message, other_user_id, name, profileUrl in messages:
+            overview.append({
+                "listing_id": message.listing_id,
+                "other_participant": {
+                    "user_id": other_user_id,
+                    "name": name,
+                    "profilePicture": profileUrl
+                },
+                "last_message": message
+            })
+        return overview
+
+    @classmethod
+    def get_thread(cls, listing_id: str, receiver_id: str, user_id: str, session: Session):
+        statement = select(cls).where(
+            and_(
+                cls.listing_id == listing_id,
+                or_(
+                    and_(cls.sender_id == user_id, cls.receiver_id == receiver_id),
+                    and_(cls.sender_id == receiver_id, cls.receiver_id == user_id)
+                )
+            )
+        ).order_by(cls.sent_at)
+
+        return session.exec(statement)
+
