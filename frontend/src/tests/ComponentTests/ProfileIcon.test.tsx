@@ -18,7 +18,7 @@ describe('ProfileIcon', () => {
   test('renders Icon with correct image', () => {
     const id: string = 'icon-id'
     const name: string = 'Test Name'
-    const imageSrc: string = './Test_Resources/TestProfileImage.jpg'
+    const imageSrc: string = '../Test_Resources/TestProfileImage.jpg'
     render(<ProfileIcon id={id} name={name} imageSrc={imageSrc} />)
     const icon = screen.getByTestId(id)
     const avatar = icon.querySelector('img')
