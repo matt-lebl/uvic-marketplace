@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas import LoginRequest, NewListing, NewReview, NewUser, User, UpdateUser
+from schemas import LoginRequest, NewUser, EmailModel, UpdateUser
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -35,16 +35,20 @@ def delete_user(authUserID: int):
 
 ## Auth Not Required
 @userRouter.post("/reset-password")
-def reset_password(email: str):
+def reset_password(emailModel: EmailModel):
     # TODO: Implement password reset
-    return {"TODO": "Password reset email sent"}
+    return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
 
 
 ## Auth Not Required
 @userRouter.post("/login")
 def login(loginRequest: LoginRequest):
     # TODO: Implement user login
-    return {"TODO": "User logged in"}
+    return {
+        "TODO": "Received login request from {}, with password {}".format(
+            loginRequest.email, loginRequest.password
+        )
+    }
 
 
 @userRouter.post("/logout")
@@ -54,9 +58,12 @@ def logout(authUserID: int):
 
 
 @userRouter.post("/send-confirmation-email")
-def send_confirmation_email(email: str, authUserID: int):
+def send_confirmation_email(emailModel: EmailModel, authUserID: int):
     # TODO: Implement sending confirmation email
-    return {"TODO": "Confirmation email sent", "Reqested by": authUserID}
+    return {
+        "TODO": "Confirmation email sent to {}".format(emailModel.email),
+        "Reqested by": authUserID,
+    }
 
 
 @userRouter.post("/confirm-email")

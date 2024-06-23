@@ -44,6 +44,16 @@ class ResetPassword(BaseModel):
     )
 
 
+class EmailModel(BaseModel):
+    """
+    The Email schema is used when sending an email.
+    """
+
+    email: str = Field(
+        None, description="Email address of the user", example="dd@uvic.ca"
+    )
+
+
 class Location(BaseModel):
     """
     TODO: add description
