@@ -1,0 +1,43 @@
+name: Lighthouse Accessability Scan
+on:
+  pull_request:
+    branches:
+      - resops/workflow-test
+  push:
+    branches:
+      - resops/workflow-test
+
+jobs:
+  OWASP_Dependency:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v4.3.3
+      with:
+        # Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
+        # repo-token: # optional, default is ${{ github.token }}
+        # Don't block PRs below this severity. Possible values are `low`, `moderate`, `high`, `critical`.
+        fail-on-severity: 'critical' # optional
+        # The base git ref to be used for this check. Has a default value when the workflow event is `pull_request` or `pull_request_target`. Must be provided otherwise.
+        # base-ref: # optional
+        # The head git ref to be used for this check. Has a default value when the workflow event is `pull_request` or `pull_request_target`. Must be provided otherwise.
+        # head-ref: # optional
+        # A token for fetching external configuration file if it lives in another repository. It is required if the repository is private
+        # external-repo-token: # optional
+        # A boolean to determine if license checks should be performed
+        license-check: 'true' # optional
+        # A boolean to determine if vulnerability checks should be performed
+        vulnerability-check: 'true' # optional
+        # Determines if the summary is posted as a comment in the PR itself. Setting this to `always` or `on-failure` requires you to give the workflow the write permissions for pull-requests
+        comment-summary-in-pr: 'on-failure' # optional
+        # When set to `true` this action will always complete with success, overriding the `fail-on-severity` parameter.
+        # warn-only: # optional
+        # Show a summary of the OpenSSF Scorecard scores.
+        show-openssf-scorecard: 'true' # optional
+        # Numeric threshold for the OpenSSF Scorecard score. If the score is below this threshold, the action will warn you.
+        warn-on-openssf-scorecard-level: 0 # optional
+    - name: Upload artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: Dependency reports
+        path: ${{ github.workspace }}/tmp/artifacts
