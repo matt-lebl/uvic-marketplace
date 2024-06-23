@@ -60,3 +60,23 @@ export async function APIPatch<TResponse, TBody>(path: string, requestBody?: TBo
         throw new Error(`API request failed: ${error.message}`);
     }
 }
+
+export async function APIDelete(path: string, queryParams?: [string, string|number][]  ): Promise<void> {
+    try {
+        const queryString = queryParams?.map(
+            ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
+        ).join('&');
+
+        const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`;
+
+        const response: AxiosResponse = await axios.delete(url);
+        switch(response.status){
+            case 200:
+                break;
+            default:
+                throw new APIError(response.data as string, response.status);
+        }
+    } catch (error:any) {
+        throw new Error(`API request failed: ${error.message}`);
+    }
+}

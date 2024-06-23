@@ -1,6 +1,6 @@
 import jestOpenAPI from 'jest-openapi';
 import axios, { AxiosStatic } from 'axios';
-import APIError, { APIPost, APIGet, baseUrl, APIPatch } from '../APIlink';
+import APIError, { APIPost, APIGet, baseUrl, APIPatch, APIDelete } from '../APIlink';
 import ErrorResponse, {
   ListingRequest, ListingResponse, 
   NewReview, Review, 
@@ -493,4 +493,49 @@ describe('PATCH', () => {
     expect(testRequest).toSatisfySchemaInApiSpec('UpdateUser');
     expect(res).toSatisfySchemaInApiSpec('User');
   });
+});
+
+describe('DELETE', () => {
+  // Load your OpenAPI spec from a web endpoint
+  beforeAll(async () => {
+      const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
+      const openApiSpec = response.data;
+      jestOpenAPI(YAML.parse(openApiSpec));
+  });
+
+  it('/api/listing should satisfy OpenAPI spec', async () => {
+      const testURL:string ='/api/listing';
+      const testID:string = '/A23F29039B23';
+      mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
+      const res = await APIDelete(testURL + testID);
+      expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL + testID);
+      expect(res).toEqual(undefined); 
+  });
+
+  it('/api/review should satisfy OpenAPI spec', async () => {
+    const testURL:string ='/api/review';
+    const testID:string = '/A23F29039B23';
+    mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
+    const res = await APIDelete(testURL + testID);
+    expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL + testID);
+    expect(res).toEqual(undefined); 
+});
+
+it('/api/user/search-history should satisfy OpenAPI spec', async () => {
+  const testURL:string ='/api/user/search-history';
+  const queryParams: [string, string|number][] = [['searchID', "A23F29039B23"]];
+
+  mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
+  const res = await APIDelete(testURL, queryParams);
+  expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL + "?searchID=A23F29039B23");
+  expect(res).toEqual(undefined); 
+});
+
+it('/api/user should satisfy OpenAPI spec', async () => {
+  const testURL:string ='/api/user/search-history';
+  mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
+  const res = await APIDelete(testURL);
+  expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL);
+  expect(res).toEqual(undefined); 
+});
 });
