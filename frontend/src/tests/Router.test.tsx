@@ -4,13 +4,13 @@ import Router from '../pages/Router'
 import { MemoryRouter } from 'react-router'
 
 describe('Testing basic routes', () => {
-  test('Index Navigation', () => {
+  test('Homepage Navigation', () => {
     const t = render(
       <MemoryRouter initialEntries={['/']}>
         <Router />
       </MemoryRouter>
     )
-    expect(t.baseElement.innerHTML).toContain('<div class="Index">')
+    expect(t.baseElement.innerHTML).toContain('<div class="Home">')
   })
 
   test('Login Navigation', () => {
@@ -29,15 +29,6 @@ describe('Testing basic routes', () => {
       </MemoryRouter>
     )
     expect(t.baseElement.innerHTML).toContain('<div class="Registration">')
-  })
-
-  test('Homepage Navigation', () => {
-    const t = render(
-      <MemoryRouter initialEntries={['/home']}>
-        <Router />
-      </MemoryRouter>
-    )
-    expect(t.baseElement.innerHTML).toContain('<div class="Home">')
   })
 
   test('Profile page Navigation', () => {

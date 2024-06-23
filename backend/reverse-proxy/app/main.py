@@ -3,12 +3,19 @@ reverse-proxy\main.py
 
 >> Entry point for the overall backend. <<
 """
-from urllib.parse import urljoin
-from fastapi import FastAPI, HTTPException, Body, Depends
-import httpx
 
+from fastapi import FastAPI, Depends, Request
+import httpx
+from auth import JWTBearer, sign_jwt
+from services.backend_connect import send_request_to_backend_with_user_id
+
+from routers import users
 
 app = FastAPI()
+
+# Catch All routes that don't require authentication
+app.include_router(users.usersRouter)
+
 
 # TODO: Update for prod
 fastapi_backend_url = "http://localhost:8001"
@@ -18,27 +25,42 @@ TODO:
 
 - Reject all paths not used for:
     - fastapi-backend
-    - data-layer
     - TODO: other services
 
 - Websockets for live chat (if we continue to implement it)
-""" 
+"""
 
-@app.get("/api/{path:path}")
-async def proxy_api_request(path: str | None):
-    async with httpx.AsyncClient() as client:
-        try:
-            url = urljoin(fastapi_backend_url, f"/api/{path}")
-            response = await client.get(url)
-            return response.text
-        except httpx.HTTPError as exc:
-            raise HTTPException(status_code=exc.response.status_code, detail=str(exec))
+# Helper funtion to get a JWT token to test the endpoints
+# @app.get("/get-token/")
+# async def get_token():
+#     return sign_jwt("1")
 
 
-# Catch-all route to handle requests to other paths
-# @app.get("/{path:path}")
-# async def proxy_other_request(path: str | None):
-#     raise HTTPException(status_code=404, detail="Path not found")
+@app.get("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+async def proxy_api_get_request(path: str | None, token=Depends(JWTBearer())):
+    return await send_request_to_backend_with_user_id(path, "GET", token)
+
+
+@app.post("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+async def proxy_api_post_request(
+    path: str | None, request: Request, token=Depends(JWTBearer())
+):
+    data = await request.json()
+    return await send_request_to_backend_with_user_id(path, "POST", token, data)
+
+
+@app.patch("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+async def proxy_api_patch_request(
+    path: str | None, request: Request, token=Depends(JWTBearer())
+):
+    data = await request.json()
+    return await send_request_to_backend_with_user_id(path, "PATCH", token, data)
+
+
+@app.delete("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+async def proxy_api_patch_request(path: str | None, token=Depends(JWTBearer())):
+    return await send_request_to_backend_with_user_id(path, "DELETE", token)
+
 
 if __name__ == "__main__":
     import uvicorn
