@@ -18,6 +18,9 @@ const MarketplaceTheme = createTheme({
       fontWeight: 700,
     },
   },
+  components:{
+    
+  }
 })
 
 export default MarketplaceTheme

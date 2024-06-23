@@ -7,6 +7,6 @@ import LoginHeader from './LoginHeader'
 
 test('renders listing page', () => {
   render(<LoginHeader />)
-  const linkElement = screen.getByText(/Login Header/i)
+  const linkElement = screen.getByText(/UVic Marketplace/i)
   expect(linkElement).toBeInTheDocument()
 })
