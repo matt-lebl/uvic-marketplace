@@ -43,12 +43,12 @@ describe('Header', () => {
     );
 
     fireEvent.click(getByText('Browse'));
-    expect(history.location.pathname).toBe('/home');
+    expect(history.location.pathname).toBe('/profile');
 
     fireEvent.click(getByText('My Listings'));
     expect(history.location.pathname).toBe('/listing');
 
     fireEvent.click(getByText('+'));
-    expect(history.location.pathname).toBe('/home');
+    expect(history.location.pathname).toBe('/login');
   })
 })
