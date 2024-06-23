@@ -1,8 +1,17 @@
 import React, { useState } from 'react'
-import { Box, Grid, Typography } from '@mui/material'
+import {
+  Box,
+  Grid,
+  Typography,
+  List,
+  TextField,
+  IconButton,
+} from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
+import Message from './Components/Message'
+import SendIcon from '@mui/icons-material/Send'
 
-const messages = [
+const conversations = [
   {
     listing_id: 'L23434B090934',
     other_participant: {
@@ -155,47 +164,142 @@ const messages = [
   },
 ]
 
+const messages = [
+  {
+    sender_id: 'A23434B090934',
+    receiver_id: 'A23434B090936',
+    listing_id: 'L23434B090934',
+    content: 'Hello, is this still available?',
+    sent_at: 1625247600,
+  },
+  {
+    sender_id: 'A23434B090936',
+    receiver_id: 'A23434B090934',
+    listing_id: 'L23434B090934',
+    content: 'Yes, it is still available.',
+    sent_at: 1625248200,
+  },
+  {
+    sender_id: 'A23434B090934',
+    receiver_id: 'A23434B090936',
+    listing_id: 'L23434B090934',
+    content: 'Great! Can I come by tomorrow to check it out?',
+    sent_at: 1625248800,
+  },
+  {
+    sender_id: 'A23434B090936',
+    receiver_id: 'A23434B090934',
+    listing_id: 'L23434B090934',
+    content: 'Sure, what time works for you?',
+    sent_at: 1625249400,
+  },
+  {
+    sender_id: 'A23434B090934',
+    receiver_id: 'A23434B090936',
+    listing_id: 'L23434B090934',
+    content: 'How about 10 AM?',
+    sent_at: 1625250000,
+  },
+  {
+    sender_id: 'A23434B090936',
+    receiver_id: 'A23434B090934',
+    listing_id: 'L23434B090934',
+    content: '10 AM works for me. See you then!',
+    sent_at: 1625250600,
+  },
+  {
+    sender_id: 'A23434B090934',
+    receiver_id: 'A23434B090936',
+    listing_id: 'L23434B090934',
+    content: 'Great, see you tomorrow!',
+    sent_at: 1625251200,
+  },
+]
+
 const Messaging: React.FC = () => {
   const [selectedListingId, setSelectedListingId] = useState<string>(
-    messages[0].listing_id
+    conversations[0].listing_id
   )
+  const [messageInput, setMessageInput] = useState<string>('')
 
-  const handleNewMessage = () => {
-    console.log('New message')
+  const handleNewConversation = () => {
+    console.log('Creating new conversation')
+  }
+
+  const handleSendMessage = () => {
+    console.log('Sending message:', messageInput)
+    setMessageInput('')
   }
 
   const handleSelectMessage = (listing_id: string) => {
     setSelectedListingId(listing_id)
   }
 
-  const selectedConversation = messages.find(
-    (message) => message.listing_id === selectedListingId
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      handleSendMessage()
+    }
+  }
+
+  const selectedConversation = conversations.find(
+    (conversation) => conversation.listing_id === selectedListingId
   )
 
   return (
-    <Box sx={{ flexGrow: 1, height: '100vh' }}>
+    <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} sx={{ height: '100%' }}>
         <Grid item xs={3} sx={{ height: '100%' }}>
           <MessageSidebar
             selectedListingId={selectedListingId}
-            onCreateMessage={handleNewMessage}
-            messages={messages}
+            onCreateMessage={handleNewConversation}
+            messages={conversations}
             onSelectMessage={handleSelectMessage}
           />
         </Grid>
         <Grid item xs={9}>
-          <Box sx={{ padding: 2 }}>
-            {selectedConversation ? (
-              <Box>
-                <Typography variant="h6">
-                  Chat with {selectedConversation.other_participant.name}
-                </Typography>
-                <Typography variant="body1">
-                  {selectedConversation.last_message.content}
-                </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <Box sx={{ flexGrow: 1, overflowY: 'auto', padding: 2 }}>
+              {selectedConversation ? (
+                <List>
+                  {messages.map((msg, index) => (
+                    <Message
+                      key={index}
+                      content={msg.content}
+                      isSender={msg.sender_id === 'A23434B090936'}
+                    />
+                  ))}
+                </List>
+              ) : (
+                <Typography variant="h6">Select a conversation</Typography>
+              )}
+            </Box>
+            {selectedConversation && (
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: 2,
+                  borderTop: '1px solid #f0f0f0',
+                }}
+              >
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Write a message"
+                  value={messageInput}
+                  onKeyDown={handleKeyDown}
+                  onChange={(e) => setMessageInput(e.target.value)}
+                />
+                <IconButton color="primary" onClick={handleSendMessage}>
+                  <SendIcon />
+                </IconButton>
               </Box>
-            ) : (
-              <Typography variant="h6">Select a conversation</Typography>
             )}
           </Box>
         </Grid>
