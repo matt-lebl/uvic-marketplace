@@ -9,7 +9,6 @@ test('renders recommended section', () => {
 
   // Test that the recommendation section is created
   render(<Home />)
-  const recommended = screen.getByText(/Recommended/i)
+  const recommended = screen.getByText(/Recommended Listings/i)
   expect(recommended).toBeInTheDocument()
-
 })
