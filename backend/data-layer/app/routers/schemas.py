@@ -338,14 +338,6 @@ class UserPreferencesPayload(BaseModel):
     pass
 
 
-class MessageThread(BaseModel):
-    """
-    TODO: add description
-    """
-    # TODO
-    pass
-
-
 class MessageSchema(BaseModel):
     sender_id: str
     receiver_id: str
@@ -354,15 +346,19 @@ class MessageSchema(BaseModel):
     sent_at: datetime
 
 
-class SendMessage(BaseModel):
-    """
-    TODO: add description
-    """
-    # TODO
-    pass
-
-
 class MessageParticipant(BaseModel):
+    user_id: str
+    name: str
+    profilePicture: str
+
+
+class MessageThread(BaseModel):
+    listing_id: str
+    other_participant: MessageParticipant
+    last_message: MessageSchema
+
+
+class SendMessage(BaseModel):
     """
     TODO: add description
     """

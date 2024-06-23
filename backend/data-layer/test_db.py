@@ -25,7 +25,7 @@ data_factory = DataFactory()
 @pytest.mark.asyncio
 async def test_create_user():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
@@ -33,13 +33,13 @@ async def test_create_user():
 @pytest.mark.asyncio
 async def test_update_user():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     userID = response.json()["userID"]
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
     new_user = data_factory.generate_user()
-    response = client.patch(f"/users/{userID}", json=new_user)
+    response = client.patch(f"/user/{userID}", json=new_user)
     assert response.status_code == 200
     assert response.json()["username"] == new_user["username"]
 
@@ -47,28 +47,28 @@ async def test_update_user():
 @pytest.mark.asyncio
 async def test_delete_user():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     userID = response.json()["userID"]
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
-    response = client.delete(f"/users/{userID}")
+    response = client.delete(f"/user/{userID}")
     assert response.status_code == 200
 
-    response_get = client.get(f"/users/{userID}")
+    response_get = client.get(f"/user/{userID}")
     assert response_get.status_code == 404
 
-    resp_del = client.delete(f"/users/{userID}")
+    resp_del = client.delete(f"/user/{userID}")
     assert resp_del.status_code == 400
 
 
 @pytest.mark.asyncio
 async def test_get_user():
     user = data_factory.generate_user()
-    create_response = client.post("/users/", json=user)
+    create_response = client.post("/user/", json=user)
     userID = create_response.json()["userID"]
 
-    response = client.get(f"/users/{userID}")
+    response = client.get(f"/user/{userID}")
     assert response.status_code == 200
     assert response.json()["userID"] == userID
 
@@ -76,30 +76,31 @@ async def test_get_user():
 @pytest.mark.asyncio
 async def test_login():
     user = data_factory.generate_user()
-    create_response = client.post("/users/", json=user)
+    create_response = client.post("/user/", json=user)
     userID = create_response.json()["userID"]
 
     login_req = DataFactory.generate_login_request(user["email"], user["password"], user["totp_secret"])
-    response = client.post(f"/users/login", json=login_req)
+    response = client.post(f"/user/login", json=login_req)
     assert response.status_code == 200
 
     login_req2 = dict(login_req)
     login_req2["password"] = "asdlf[kj"
-    response = client.post(f"/users/login", json=login_req2)
+    response = client.post(f"/user/login", json=login_req2)
     assert response.status_code == 401
 
     login_req3 = dict(login_req)
     login_req3["totp_code"] = "asdlf[kj"
-    response = client.post(f"/users/login", json=login_req3)
+    response = client.post(f"/user/login", json=login_req3)
     assert response.status_code == 401
+
 
 @pytest.mark.asyncio
 async def test_get_all_users():
     user = data_factory.generate_user()
-    client.post("/users/", json=user)
+    client.post("/user/", json=user)
     user2 = data_factory.generate_user()
-    client.post("/users/", json=user2)
-    response = client.get("/users/")
+    client.post("/user/", json=user2)
+    response = client.get("/user/")
     assert response.status_code == 200
     assert len(response.json()) > 0
 
@@ -107,7 +108,7 @@ async def test_get_all_users():
 @pytest.mark.asyncio
 async def test_create_listing():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     listing = data_factory.generate_listing()
     seller_id = response.json()["userID"]
     response = client.post(f"/listing/{seller_id}", json=listing)
@@ -118,7 +119,7 @@ async def test_create_listing():
 @pytest.mark.asyncio
 async def test_get_listing():
     user = data_factory.generate_user()
-    user_response = client.post("/users/", json=user)
+    user_response = client.post("/user/", json=user)
     seller_id = user_response.json()["userID"]
     listing = data_factory.generate_listing()
     create_response = client.post(f"/listing/{seller_id}", json=listing)
@@ -132,7 +133,7 @@ async def test_get_listing():
 async def test_delete_listing():
     # Create a user
     user = data_factory.generate_user()
-    user_response = client.post("/users/", json=user)
+    user_response = client.post("/user/", json=user)
     user_id = user_response.json()["userID"]
 
     listing = data_factory.generate_listing()
@@ -151,7 +152,7 @@ async def test_delete_listing():
     assert get_response_after_delete.status_code == 404
 
     another_user = data_factory.generate_user()
-    another_user_response = client.post("/users/", json=another_user)
+    another_user_response = client.post("/user/", json=another_user)
     another_user_id = another_user_response.json()["userID"]
 
     another_listing = data_factory.generate_listing()
@@ -165,7 +166,7 @@ async def test_delete_listing():
 @pytest.mark.asyncio
 async def test_update_listing():
     user = data_factory.generate_user()
-    user_response = client.post("/users/", json=user)
+    user_response = client.post("/user/", json=user)
 
     seller_id = user_response.json()["userID"]
     listing = data_factory.generate_listing()
@@ -184,12 +185,12 @@ async def test_update_listing():
 @pytest.mark.asyncio
 async def test_create_message():
     user1 = data_factory.generate_user()
-    response = client.post("users/", json=user1)
+    response = client.post("/user/", json=user1)
     assert response.status_code == 200
     user1_id = response.json()["userID"]
 
     user2 = data_factory.generate_user()
-    response = client.post("/users/", json=user2)
+    response = client.post("/user/", json=user2)
     assert response.status_code == 200
     user2_id = response.json()["userID"]
 
@@ -205,9 +206,69 @@ async def test_create_message():
 
 
 @pytest.mark.asyncio
+async def test_get_overview():
+    users = []
+    listings = []
+    user_ids = []
+    listing_ids = []
+    for i in range(10):
+        users.append(data_factory.generate_user())
+        listings.append(data_factory.generate_listing())
+
+    for u in users:
+        response = client.post("/user/", json=u)
+        assert response.status_code == 200
+        user_ids.append(response.json()["userID"])
+
+    for i in range(10):
+        response = client.post(f"/listing/{user_ids[i]}", json=listings[i])
+        assert response.status_code == 200
+        listing_ids.append(response.json()["listingID"])
+
+    for lst in range(len(listing_ids)):
+        for usr in range(len(user_ids)):
+            if lst == usr:
+                continue
+            for i in range(5):
+                message = data_factory.generate_message(listing_ids[lst], user_ids[lst], user_ids[usr])
+                msg_response = client.post("/messages/", json=message)
+                assert msg_response.status_code == 200
+
+    final_resp = client.get(f"/messages/overview/{user_ids[0]}")
+    assert final_resp.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_get_thread():
+    user1 = data_factory.generate_user()
+    response = client.post("/user/", json=user1)
+    assert response.status_code == 200
+    user1_id = response.json()["userID"]
+
+    user2 = data_factory.generate_user()
+    response = client.post("/user/", json=user2)
+    assert response.status_code == 200
+    user2_id = response.json()["userID"]
+
+    listing = data_factory.generate_listing()
+    response = client.post(f"/listing/{user1_id}", json=listing)
+    assert response.status_code == 200
+    listingID = response.json()["listingID"]
+
+    for i in range(10):
+        message = data_factory.generate_message(listingID, user1_id, user2_id)
+        response = client.post("/messages/", json=message)
+        assert response.status_code == 200
+
+    final_response = client.get(f"/messages/thread/{listingID}/{user2_id}/{user1_id}")
+    assert final_response.status_code == 200
+    assert len(final_response.json()) == 10
+
+
+@pytest.mark.asyncio
 async def test_create_listing_review():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     userID = response.json()["userID"]
 
     listing = data_factory.generate_listing()
@@ -223,7 +284,7 @@ async def test_create_listing_review():
 @pytest.mark.asyncio
 async def test_get_listing_review():
     user = data_factory.generate_user()
-    user_response = client.post("/users/", json=user)
+    user_response = client.post("/user/", json=user)
     userID = user_response.json()["userID"]
     listing = data_factory.generate_listing()
     listing_response = client.post(f"/listing/{userID}", json=listing)
@@ -238,7 +299,7 @@ async def test_get_listing_review():
 @pytest.mark.asyncio
 async def test_update_review():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     userID = response.json()["userID"]
 
     listing = data_factory.generate_listing()
@@ -263,7 +324,7 @@ async def test_update_review():
 @pytest.mark.asyncio
 async def test_delete_review():
     user = data_factory.generate_user()
-    response = client.post("/users/", json=user)
+    response = client.post("/user/", json=user)
     userID = response.json()["userID"]
 
     listing = data_factory.generate_listing()
@@ -284,7 +345,7 @@ async def test_delete_review():
 # @pytest.mark.asyncio
 # async def test_get_all_listings():
 #     user = data_factory.generate_user()
-#     user_response = client.post("/users/", json=user)
+#     user_response = client.post("/user/", json=user)
 #     userID = user_response.json()["userID"]
 #     listing = data_factory.generate_listing()
 #     client.post(f"/listing/{userID}", json=listing)
@@ -299,9 +360,9 @@ async def test_delete_review():
 # @pytest.mark.asyncio
 # async def test_get_all_messages():
 #     user1 = data_factory.generate_user()
-#     user1_response = client.post("/users/", json=user1)
+#     user1_response = client.post("/user/", json=user1)
 #     user2 = data_factory.generate_user()
-#     user2_response = client.post("/users/", json=user2)
+#     user2_response = client.post("/user/", json=user2)
 #     user1ID = user1_response.json()["userID"]
 #     listing = data_factory.generate_listing()
 #     listing_response = client.post(f"/listing/{user1ID}", json=listing)
@@ -317,9 +378,9 @@ async def test_delete_review():
 # @pytest.mark.asyncio
 # async def test_get_message():
 #     user1 = data_factory.generate_user()
-#     user1_response = client.post("/users/", json=user1)
+#     user1_response = client.post("/user/", json=user1)
 #     user2 = data_factory.generate_user()
-#     user2_response = client.post("/users/", json=user2)
+#     user2_response = client.post("/user/", json=user2)
 #     user1ID = user1_response.json()["userID"]
 #     listing = data_factory.generate_listing()
 #     listing_response = client.post(f"/listing/{user1ID}", json=listing)

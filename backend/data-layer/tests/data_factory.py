@@ -44,7 +44,7 @@ class DataFactory:
         receiver_id = receiver
         listing_id = listing
         message_content = self.fake.text()
-        timestamp = self.fake.date_time_this_year().isoformat()
+        sent_at = self.fake.date_time_this_year().isoformat()
 
         message = {
             "message_id": message_id,
@@ -52,7 +52,7 @@ class DataFactory:
             "receiver_id": receiver_id,
             "listing_id": listing_id,
             "content": message_content,
-            "sent_at": timestamp
+            "sent_at": sent_at
         }
         return message
 
