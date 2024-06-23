@@ -12,7 +12,7 @@ router = APIRouter(
 @router.post("/", response_model=User)
 def create_user(user: UserBase, session: Session = Depends(get_session)):
     user_data = user.dict()
-    user_data["user_id"] = str(uuid.uuid4())
+    user_data["userID"] = str(uuid.uuid4())
     new_user = User.create(session=session, **user_data)
     return new_user
 
