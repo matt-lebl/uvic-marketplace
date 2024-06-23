@@ -10,30 +10,15 @@ class DataFactory:
         self.fake = Faker()
 
     def generate_user(self):
-        username = self.fake.user_name()
-        email = self.fake.email()
-        name = self.fake.name()
-        password = self.fake.password()
-        profile_picture_url = self.fake.image_url()
-        location = json.dumps({"latitude": str(self.fake.latitude()), "longitude": str(self.fake.longitude())})
-        joining_date = self.fake.date_time_this_decade().isoformat()
-        items_sold = [self.fake.uuid4() for _ in range(random.randint(1, 5))]
-        items_purchased = [self.fake.uuid4() for _ in range(random.randint(1, 5))]
-        bio = json.dumps({"bio": self.fake.text()})
-
-        user = {
-            "username": username,
-            "name": name,
-            "email": email,
-            "password": password,
-            "profilePictureUrl": profile_picture_url,
-            "location": location,
-            "joining_date": joining_date,
-            "items_sold": items_sold,
-            "items_purchased": items_purchased,
-            "bio": bio
+        user_data = {
+            "username": self.fake.user_name(),
+            "name": self.fake.name(),
+            "bio": self.fake.text(max_nb_chars=200),
+            "profileUrl": self.fake.url(),
+            "email": self.fake.email(),
+            "totp_secret": self.fake.sha256()[:16]  # Simulating a TOTP secret
         }
-        return user
+        return user_data
 
     def generate_listing(self):
         title = self.fake.catch_phrase()
