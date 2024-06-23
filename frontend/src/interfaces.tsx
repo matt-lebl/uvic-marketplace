@@ -1,4 +1,4 @@
-export interface ErrorResponse {
+export default interface ErrorResponse {
     error: string;
 }
 
@@ -70,4 +70,35 @@ export interface ReviewResponse {
     listingID: string;
     dateCreated: string;
     dateModified: string;
+}
+
+export interface UserRequest {
+    username: string;
+    name: string;
+    email: string;
+    password: string;
+}
+
+export interface UserResponse {
+    userID: string;
+    username: string;
+    name: string;
+    bio: string;
+    profileUrl: string;
+    email: string;
+    totp_secret: string;
+}
+
+export interface EmailRequest{
+    email: string;
+}
+
+export interface LoginRequest{
+    email: string;
+    password: string;
+    totp_code: string;
+}
+
+export interface emailConfirmationRequest{
+    code: string;
 }
