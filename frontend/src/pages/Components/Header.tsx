@@ -31,7 +31,7 @@ export default function LoginHeader() {
             component="div"
             sx={{ flexGrow: 0, mr: '40px' }}
           >
-            Header
+            UVic Marketplace
           </Typography>
           <Box sx={{ flexGrow: 1 }}>
             <Searchbox
@@ -42,7 +42,7 @@ export default function LoginHeader() {
                 p: '4px 4px',
                 display: 'flex',
                 alignItems: 'center',
-                width: 400,
+                width: '70%',
               }}
               submit={handleSearch}
             />

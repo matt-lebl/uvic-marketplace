@@ -7,6 +7,6 @@ import Header from '../../pages/Components/Header'
 
 test('renders listing page', () => {
   render(<Header />)
-  const linkElement = screen.getByText(/Header/i)
+  const linkElement = screen.getByText(/UVic Marketplace/i)
   expect(linkElement).toBeInTheDocument()
 })
