@@ -1,12 +1,12 @@
 import jestOpenAPI from 'jest-openapi';
 import axios, { AxiosStatic } from 'axios';
-import APIError, { APIPost, APIGet, baseUrl } from '../APIlink';
+import APIError, { APIPost, APIGet, baseUrl, APIPatch } from '../APIlink';
 import ErrorResponse, {
   ListingRequest, ListingResponse, 
-  ReviewRequest, ReviewResponse, 
-  UserRequest, UserResponse,
+  NewReview, Review, 
+  NewUserReq, NewUser,
   EmailRequest,
-  LoginRequest,
+  LoginRequest, User,
   EmailConfirmationRequest,
   SearchResultsResponse,
   ListingEntity,
@@ -14,7 +14,10 @@ import ErrorResponse, {
   SearchHistoryResponse,
   UserProfile,
   MessageThread,
-  Message
+  Message,
+  ListingPatchRequest,
+  ItemStatus,
+  UpdateUser
 } from '../interfaces';
 import YAML from 'yaml';
 
@@ -94,20 +97,20 @@ describe('POST', () => {
 
         const res = await APIPost<ListingResponse, ListingRequest>(testURL,testRequest);
         // // expect(res.status).toEqual(200);
-        expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+        expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
         expect(testRequest.listing).toSatisfySchemaInApiSpec('NewListing');
         expect(res?.listing).toSatisfySchemaInApiSpec('Listing');
     });
 
     it('/api/review should satisfy OpenAPI spec', async () => {
       const testURL:string ='/api/review';
-      const testRequest:ReviewRequest = {
+      const testRequest:NewReview = {
         listing_rating_id: "A23F29039B23",
         stars: 5,
         comment: "Great seller, the item was exactly as described and in perfect condition.",
         listingID: "A23F29039B23"
       };
-      const testResponse:ReviewResponse = {
+      const testResponse:Review = {
             listing_review_id: "A23F29039B23",
             reviewerName: "John Doe",
             stars: 5,
@@ -118,8 +121,8 @@ describe('POST', () => {
             dateModified: "2024-05-23T15:30:00Z"
       };
       mockedAxios.post.mockResolvedValueOnce({ status:201, data: testResponse });
-      const res = await APIPost<ReviewResponse, ReviewRequest>(testURL, testRequest);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+      const res = await APIPost<Review, NewReview>(testURL, testRequest);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
       expect(testRequest).toSatisfySchemaInApiSpec('NewReview');
       expect(res).toSatisfySchemaInApiSpec('Review');
     });
@@ -129,19 +132,19 @@ describe('POST', () => {
       const testID:string = '/A23F29039B23';
       mockedAxios.post.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIPost(testURL +  testID);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL +  testID, undefined);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL +  testID, undefined);
       expect(res).toEqual(null);
     });
 
     it('/api/user should satisfy OpenAPI spec', async () => {
       const testURL:string ='/api/user';
-      const testRequest:UserRequest = {
+      const testRequest:NewUserReq = {
         username: "hubert123",
         name: "Bartholomew Hubert",
         email: "A23434B090934",
         password: "securepassword123"
       };
-      const testResponse:UserResponse = {
+      const testResponse:NewUser = {
         userID: "A12334B345",
         username: "hubert123",
         name: "Bartholomew Hubert",
@@ -151,8 +154,8 @@ describe('POST', () => {
         totp_secret: "60b725f10c9c85c70d97880dfe8191b3"
       };
       mockedAxios.post.mockResolvedValueOnce({ status:201, data: testResponse });
-      const res = await APIPost<UserResponse, UserRequest>(testURL, testRequest);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+      const res = await APIPost<NewUser, NewUserReq>(testURL, testRequest);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
       expect(testRequest).toSatisfySchemaInApiSpec('NewUserReq');
       expect(res).toSatisfySchemaInApiSpec('NewUser');
     });
@@ -164,7 +167,7 @@ describe('POST', () => {
       };
       mockedAxios.post.mockResolvedValueOnce({ status:201, data: null });
       const res = await APIPost<undefined, EmailRequest>(testURL, testRequest);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
       expect(res).toEqual(null);
     });
 
@@ -175,18 +178,17 @@ describe('POST', () => {
         password: "securepassword123",
         totp_code: "123456"
       };
-      const testResponse:UserResponse = {
+      const testResponse:User = {
         userID: "A12334B345",
         username: "hubert123",
         name: "Bartholomew Hubert",
         bio: "I wish my parents didn't name me Bartholomew Hubert",
         profileUrl: "https://example.com/image.png",
         email: "A23434B090934",
-        totp_secret: "60b725f10c9c85c70d97880dfe8191b3"
       };
       mockedAxios.post.mockResolvedValueOnce({ status:201, data: testResponse });
-      const res = await APIPost<UserResponse, LoginRequest>(testURL, testRequest);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+      const res = await APIPost<User, LoginRequest>(testURL, testRequest);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
       expect(testRequest).toSatisfySchemaInApiSpec('LoginRequest');
       expect(res).toSatisfySchemaInApiSpec('User');
     });
@@ -203,7 +205,7 @@ describe('POST', () => {
       const testURL:string ='/api/user/send-confirmation-email';
       mockedAxios.post.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIPost(testURL);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, undefined);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined);
       expect(res).toEqual(null);
     });
 
@@ -214,7 +216,7 @@ describe('POST', () => {
       };
       mockedAxios.post.mockResolvedValueOnce({ status:201, data: null });
       const res = await APIPost<undefined, EmailConfirmationRequest>(testURL, testRequest);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, testRequest);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, testRequest);
       expect(res).toEqual(null);
     });
 });
@@ -271,7 +273,7 @@ describe('GET', () => {
       mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
 
       const res = await APIGet<ListingEntity>(testURL + testID);
-      expect(mockedAxios.get).toHaveBeenCalledWith(testURL + testID);
+      expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + testID);
       expect(res).toSatisfySchemaInApiSpec('Listing');
   });
 
@@ -295,7 +297,7 @@ describe('GET', () => {
     };
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<SearchResultsResponse>(testURL , queryParams);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL+ "?query=textbook&minPricez=0");
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL+ "?query=textbook&minPricez=0");
     expect(res?.items[0]).toSatisfySchemaInApiSpec('ListingSummary');
     expect(res?.totalItems).toEqual(res?.items.length);
   });
@@ -316,7 +318,7 @@ describe('GET', () => {
 
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<ListingSummary[]>(testURL, queryParams);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL + "?page=1&limit=1");
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + "?page=1&limit=1");
     expect((res)[0]).toSatisfySchemaInApiSpec('ListingSummary');
   });
 
@@ -332,7 +334,7 @@ describe('GET', () => {
     };
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<SearchHistoryResponse>(testURL);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL);
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL);
     expect(testResponse).toSatisfySchemaInApiSpec('SearchHistory');
   });
 
@@ -348,7 +350,7 @@ describe('GET', () => {
     };
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<UserProfile>(testURL + testID);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL + testID);
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + testID);
     expect(res).toSatisfySchemaInApiSpec("UserProfile");
   });
 
@@ -375,7 +377,7 @@ describe('GET', () => {
 
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<MessageThread[]>(testURL, queryParams);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL + "?num_items=1&offset=1");
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + "?num_items=1&offset=1");
     expect((res)[0]).toSatisfySchemaInApiSpec('MessageThread');
   });
 
@@ -396,9 +398,99 @@ describe('GET', () => {
 
     mockedAxios.get.mockResolvedValueOnce({ status:200, data: testResponse });
     const res = await APIGet<Message[]>(testURL + testListingID +  testReciverID, queryParams);
-    expect(mockedAxios.get).toHaveBeenCalledWith(testURL + testListingID +  testReciverID + "?num_items=1&offset=1");
+    expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + testListingID +  testReciverID + "?num_items=1&offset=1");
     expect((res)[0]).toSatisfySchemaInApiSpec('Message');
   });
 
   //Need to figure out how the GET /api/messages/connect works
+});
+
+describe('PATCH', () => {
+  // Load your OpenAPI spec from a web endpoint
+  beforeAll(async () => {
+      const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
+      const openApiSpec = response.data;
+      jestOpenAPI(YAML.parse(openApiSpec));
+  });
+
+  it('/api/listing should satisfy OpenAPI spec', async () => {
+      const testURL:string ='/api/listing';
+      const testID:string = '/A23F29039B23';
+      const testRequest:ListingPatchRequest = {
+        listing: {
+            title: "Used Calculus Textbook",
+            description: "No wear and tear, drop-off available.",
+            price: 50,
+            location: {
+                latitude: 34.23551,
+                longitude: -104.54451
+            },
+            images: [
+                {
+                  url: "https://example.com/image"
+                }
+              ]
+            },
+        status: ItemStatus.AVAILABLE
+    };
+
+      
+      mockedAxios.patch.mockResolvedValueOnce({ status:200, data: null });
+      const res = await APIPatch<undefined, ListingPatchRequest>(testURL + testID, testRequest);
+      expect(mockedAxios.patch).toHaveBeenCalledWith(baseUrl + testURL + testID, testRequest);
+      expect(testRequest?.listing).toSatisfySchemaInApiSpec('NewListing');
+      expect(testRequest?.status).toSatisfySchemaInApiSpec('ItemStatus');
+      expect(res).toEqual(null); 
+  });
+
+  it('/api/review should satisfy OpenAPI spec', async () => {
+    const testURL:string ='/api/review';
+    const testID:string = '/A23F29039B23';
+    const testRequest:NewReview = {
+      listing_rating_id: "A23F29039B23",
+      stars: 5,
+      comment: "Great seller, the item was exactly as described and in perfect condition.",
+      listingID: "A23F29039B23"
+    };
+    const testResponse:Review = {
+          listing_review_id: "A23F29039B23",
+          reviewerName: "John Doe",
+          stars: 5,
+          comment: "Great seller, the item was exactly as described and in perfect condition.",
+          userID: "A23434B090934",
+          listingID: "A23F29039B23",
+          dateCreated: "2024-05-23T15:30:00Z",
+          dateModified: "2024-05-23T15:30:00Z"
+    };
+    mockedAxios.patch.mockResolvedValueOnce({ status:200, data: testResponse });
+    const res = await APIPatch<Review, NewReview>(testURL + testID, testRequest);
+    expect(mockedAxios.patch).toHaveBeenCalledWith(baseUrl + testURL + testID, testRequest);
+    expect(testRequest).toSatisfySchemaInApiSpec('NewReview');
+    expect(res).toSatisfySchemaInApiSpec('Review');
+  });
+
+  it('/api/user should satisfy OpenAPI spec', async () => {
+    const testURL:string ='/api/user';
+    const testID:string = '/A23F29039B23';
+    const testRequest:UpdateUser = {
+      username: "hubert123",
+      name: "Bartholomew Hubert",
+      password: "securepassword123",
+      bio: "I love stuff",
+      profilePictureUrl: "https://example.com/image.png"
+    };
+    const testResponse:User = {
+      userID: "A12334B345",
+      username: "hubert123",
+      name: "Bartholomew Hubert",
+      bio: "I wish my parents didn't name me Bartholomew Hubert",
+      profileUrl: "https://example.com/image.png",
+      email: "A23434B090934",
+    };
+    mockedAxios.patch.mockResolvedValueOnce({ status:200, data: testResponse });
+    const res = await APIPatch<User, UpdateUser>(testURL + testID, testRequest);
+    expect(mockedAxios.patch).toHaveBeenCalledWith(baseUrl + testURL + testID, testRequest);
+    expect(testRequest).toSatisfySchemaInApiSpec('UpdateUser');
+    expect(res).toSatisfySchemaInApiSpec('User');
+  });
 });

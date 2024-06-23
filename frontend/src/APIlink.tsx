@@ -11,7 +11,6 @@ export default class APIError extends Error {
     }
 }
 
-
 export async function APIPost<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
     try {
         const response: AxiosResponse<TResponse> = await axios.post(baseUrl+path, requestBody);
@@ -39,6 +38,20 @@ export async function APIGet<TResponse>(path: string, queryParams?: [string, str
         switch(response.status){
             case 200:
             case 101:
+                return response.data;
+            default:
+                throw new APIError(response.data as string, response.status);
+        }
+    } catch (error:any) {
+        throw new Error(`API request failed: ${error.message}`);
+    }
+}
+
+export async function APIPatch<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
+    try {
+        const response: AxiosResponse<TResponse> = await axios.patch(baseUrl+path, requestBody);
+        switch(response.status){
+            case 200:
                 return response.data;
             default:
                 throw new APIError(response.data as string, response.status);
