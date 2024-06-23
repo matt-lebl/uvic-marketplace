@@ -67,6 +67,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "globals": "^15.4.0",
     "jest-openapi": "^0.14.2",
+    "jest": "^26.6.3",
     "prettier": "^3.3.1",
     "typescript-eslint": "^7.12.0"
   }
