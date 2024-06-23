@@ -16,7 +16,8 @@ class DataFactory:
             "bio": self.fake.text(max_nb_chars=200),
             "profileUrl": self.fake.url(),
             "email": self.fake.email(),
-            "totp_secret": self.fake.sha256()[:16]  # Simulating a TOTP secret
+            "totp_secret": self.fake.sha256()[:16],
+            "password": self.fake.password()
         }
         return user_data
 
@@ -68,3 +69,11 @@ class DataFactory:
             "stars": stars
         }
         return review
+
+    @classmethod
+    def generate_login_request(cls, email, password, totp_code):
+        return {
+            "email": email,
+            "password": password,
+            "totp_code": totp_code
+        }

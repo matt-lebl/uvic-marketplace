@@ -31,6 +31,38 @@ async def test_create_user():
 
 
 @pytest.mark.asyncio
+async def test_update_user():
+    user = data_factory.generate_user()
+    response = client.post("/users/", json=user)
+    userID = response.json()["userID"]
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    new_user = data_factory.generate_user()
+    response = client.patch(f"/users/{userID}", json=new_user)
+    assert response.status_code == 200
+    assert response.json()["username"] == new_user["username"]
+
+
+@pytest.mark.asyncio
+async def test_delete_user():
+    user = data_factory.generate_user()
+    response = client.post("/users/", json=user)
+    userID = response.json()["userID"]
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    response = client.delete(f"/users/{userID}")
+    assert response.status_code == 200
+
+    response_get = client.get(f"/users/{userID}")
+    assert response_get.status_code == 404
+
+    resp_del = client.delete(f"/users/{userID}")
+    assert resp_del.status_code == 400
+
+
+@pytest.mark.asyncio
 async def test_get_user():
     user = data_factory.generate_user()
     create_response = client.post("/users/", json=user)
@@ -40,6 +72,26 @@ async def test_get_user():
     assert response.status_code == 200
     assert response.json()["userID"] == userID
 
+
+@pytest.mark.asyncio
+async def test_login():
+    user = data_factory.generate_user()
+    create_response = client.post("/users/", json=user)
+    userID = create_response.json()["userID"]
+
+    login_req = DataFactory.generate_login_request(user["email"], user["password"], user["totp_secret"])
+    response = client.post(f"/users/login", json=login_req)
+    assert response.status_code == 200
+
+    login_req2 = dict(login_req)
+    login_req2["password"] = "asdlf[kj"
+    response = client.post(f"/users/login", json=login_req2)
+    assert response.status_code == 401
+
+    login_req3 = dict(login_req)
+    login_req3["totp_code"] = "asdlf[kj"
+    response = client.post(f"/users/login", json=login_req3)
+    assert response.status_code == 401
 
 @pytest.mark.asyncio
 async def test_get_all_users():

@@ -1,6 +1,6 @@
 import json
 from sqlalchemy import Column, ARRAY, String
-from sqlmodel import SQLModel, Field, Relationship, Session, select
+from sqlmodel import SQLModel, Field, Relationship, Session, select, and_
 from datetime import datetime
 from .schemas import ListingSchema, UserProfile
 from fastapi import HTTPException
@@ -14,6 +14,7 @@ class UserBase(SQLModel):
     profileUrl: str | None = None
     email: str = Field(unique=True, index=True)
     totp_secret: str
+    password: str
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
 
@@ -32,6 +33,31 @@ class User(UserBase, table=True):
         return user
 
     @classmethod
+    def update(cls, userID: str, session: Session, **kwargs):
+        statement = select(cls).where(cls.userID == userID)
+        user = session.exec(statement).first()
+        for key, value in kwargs.items():
+            setattr(user, key, value)
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        return user
+
+    @classmethod
+    def delete(cls, userID: str, session: Session):
+        statement = select(cls).where(cls.userID == userID)
+        user = session.exec(statement).first()
+
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid request")
+
+        session.delete(user)
+        session.commit()
+
+        return {"message": "Listing deleted successfully"}
+
+    @classmethod
     def get_by_id(cls, session: Session, userID: str):
         statement = select(cls).where(cls.userID == userID)
         return session.exec(statement).first()
@@ -40,6 +66,16 @@ class User(UserBase, table=True):
     def get_all(cls, session: Session):
         statement = select(cls)
         return session.exec(statement).all()
+
+    @classmethod
+    def login(cls, session: Session, **kwargs):
+        email = kwargs["email"]
+        password = kwargs["password"]
+        totp_code = kwargs["totp_code"]
+        statement = select(cls).where(and_(cls.email == email,
+                                           cls.password == password,
+                                           cls.totp_secret == totp_code))
+        return session.exec(statement).first()
 
 
 class ListingBase(SQLModel):

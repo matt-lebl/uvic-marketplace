@@ -2,7 +2,7 @@ import uuid
 from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
-from .schemas import UserSchema, NewUser
+from .schemas import UserSchema, NewUser, LoginRequest
 
 router = APIRouter(
     prefix="/users",
@@ -18,6 +18,18 @@ def create_user(user: NewUser, session: Session = Depends(get_session)):
     return new_user
 
 
+@router.patch("/{userID}", response_model=UserSchema)
+def create_user(userID: str, user: NewUser, session: Session = Depends(get_session)):
+    user_data = user.dict()
+    new_user = User.update(userID=userID, session=session, **user_data)
+    return new_user
+
+
+@router.delete("/{userID}")
+def delete_user(userID: str, session: Session = Depends(get_session)):
+    return User.delete(userID, session)
+
+
 @router.get("/", response_model=list[UserSchema])
 def get_all_users(session: Session = Depends(get_session)):
     return User.get_all(session)
@@ -31,3 +43,9 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
     return user
 
 
+@router.post("/login", response_model=UserSchema)
+def login(request: LoginRequest, session: Session = Depends(get_session)):
+    user = User.login(session, **request.dict())
+    if not user:
+        raise HTTPException(status_code=401)
+    return user

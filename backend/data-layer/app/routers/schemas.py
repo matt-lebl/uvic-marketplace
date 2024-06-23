@@ -235,11 +235,9 @@ class ListingSummary(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    """
-    TODO: add description
-    """
-    # TODO
-    pass
+    email: str
+    password: str
+    totp_code: str
 
 
 class NewUser(BaseModel):
@@ -249,6 +247,7 @@ class NewUser(BaseModel):
     profileUrl: str
     email: str
     totp_secret: str
+    password: str
 
 
 class UserSchema(BaseModel):
