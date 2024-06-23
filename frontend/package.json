@@ -14,6 +14,7 @@
     "@types/node": "^16.18.98",
     "@types/react": "^18.3.3",
     "formik": "^2.4.6",
+    "history": "^5.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
@@ -75,7 +76,11 @@
     "typescript-eslint": "^7.12.0"
   },
   "babel": {
-    "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"]
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react",
+      "@babel/preset-typescript"
+    ]
   },
   "jest": {
     "transform": {
