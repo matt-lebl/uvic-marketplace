@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from auth import get_user_id_from_token
 
 FASTAPI_BACKEND_URL = "http://localhost:8001"
+USER_ID_FIELD = "authUserID"
 
 
 async def perform_http_request(method: str, url: str, data: dict | None = None):
@@ -32,5 +33,5 @@ async def send_request_to_backend_with_user_id(
     if user_id is None:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-    url = urljoin(FASTAPI_BACKEND_URL, f"/api/{path}?userID={user_id}")
+    url = urljoin(FASTAPI_BACKEND_URL, f"/api/{path}?{USER_ID_FIELD}={user_id}")
     return await perform_http_request(method, url, data)
