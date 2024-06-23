@@ -1,6 +1,7 @@
 import React from 'react'
-import { List, Typography, Box } from '@mui/material'
+import { List, Typography, Box, ButtonBase } from '@mui/material'
 import MessageItem from './MessageItem'
+import ModeRoundedIcon from '@mui/icons-material/ModeRounded'
 
 interface MessageSidebarProps {
   messages: Array<{
@@ -18,12 +19,16 @@ interface MessageSidebarProps {
       sent_at: number
     }
   }>
+  onCreateMessage: () => void
   onSelectMessage: (listing_id: string) => void
+  selectedListingId: string
 }
 
 const MessageSidebar: React.FC<MessageSidebarProps> = ({
   messages,
   onSelectMessage,
+  onCreateMessage,
+  selectedListingId,
 }) => {
   return (
     <Box
@@ -36,15 +41,39 @@ const MessageSidebar: React.FC<MessageSidebarProps> = ({
         borderColor: 'divider',
       }}
     >
-      <Typography variant="h6" style={{ padding: '10px' }}>
-        Conversations
-      </Typography>
-      <List>
+      <Box
+        sx={{
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          padding: 2,
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
+        <Typography variant="h6">Conversations</Typography>
+        <Box border={2} borderRadius={3}>
+          <ButtonBase
+            style={{
+              display: 'flex',
+              padding: '10px',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onClick={onCreateMessage}
+          >
+            <ModeRoundedIcon />
+          </ButtonBase>
+        </Box>
+      </Box>
+      <List style={{ padding: 0 }}>
         {messages.map((message, index) => (
           <MessageItem
             key={index}
             message={message}
             onClick={() => onSelectMessage(message.listing_id)}
+            selected={message.listing_id === selectedListingId}
           />
         ))}
       </List>

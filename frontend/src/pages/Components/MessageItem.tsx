@@ -1,5 +1,10 @@
 import React from 'react'
-import { ListItem, ListItemAvatar, ListItemText, Avatar } from '@mui/material'
+import {
+  ListItemButton,
+  ListItemAvatar,
+  ListItemText,
+  Avatar,
+} from '@mui/material'
 
 interface MessageItemProps {
   message: {
@@ -18,16 +23,22 @@ interface MessageItemProps {
     }
   }
   onClick: () => void
+  selected: boolean
 }
 
-const MessageItem: React.FC<MessageItemProps> = ({ message, onClick }) => {
+const MessageItem: React.FC<MessageItemProps> = ({
+  message,
+  onClick,
+  selected,
+}) => {
   return (
-    <ListItem
-      button
+    <ListItemButton
       onClick={onClick}
+      selected={selected}
       style={{
         borderBottom: '1px solid #f0f0f0',
         padding: '10px',
+        backgroundColor: selected ? '#f0f0f0' : 'white',
       }}
     >
       <ListItemAvatar>
@@ -37,7 +48,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message, onClick }) => {
         primary={message.other_participant.name}
         secondary={message.last_message.content}
       />
-    </ListItem>
+    </ListItemButton>
   )
 }
 

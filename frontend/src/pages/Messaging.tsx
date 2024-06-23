@@ -160,6 +160,10 @@ const Messaging: React.FC = () => {
     messages[0].listing_id
   )
 
+  const handleNewMessage = () => {
+    console.log('New message')
+  }
+
   const handleSelectMessage = (listing_id: string) => {
     setSelectedListingId(listing_id)
   }
@@ -173,6 +177,8 @@ const Messaging: React.FC = () => {
       <Grid container spacing={2} sx={{ height: '100%' }}>
         <Grid item xs={3} sx={{ height: '100%' }}>
           <MessageSidebar
+            selectedListingId={selectedListingId}
+            onCreateMessage={handleNewMessage}
             messages={messages}
             onSelectMessage={handleSelectMessage}
           />
