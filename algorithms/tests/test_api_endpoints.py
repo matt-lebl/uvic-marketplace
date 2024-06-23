@@ -179,7 +179,8 @@ async def test_search_response():
         
         # Assert - Check all fields of search response
         assert response.status_code == 200
-        listings = response.json()
+        listings = response.json()['items']
+        print(listings)
         assert len(listings) > 0
         for listing in listings:
             assert "listingID" in listing
