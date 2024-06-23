@@ -12,7 +12,7 @@ export default class APIError extends Error {
 }
 
 export async function APIPost<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
-    try {
+    //try {
         const response: AxiosResponse<TResponse> = await axios.post(baseUrl+path, requestBody);
         switch(response.status){
             case 200:
@@ -21,13 +21,13 @@ export async function APIPost<TResponse, TBody>(path: string, requestBody?: TBod
             default:
                 throw new APIError(response.data as string, response.status);
         }
-    } catch (error:any) {
-        throw new Error(`API request failed: ${error.message}`);
-    }
+    // } catch (error:any) {
+    //     throw new Error(`API request failed: ${error.message}`);
+    // }
 }
 
 export async function APIGet<TResponse>(path: string, queryParams?: [string, string|number][] ): Promise<TResponse> {
-    try {
+    //try {
         const queryString = queryParams?.map(
             ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
         ).join('&');
@@ -42,13 +42,13 @@ export async function APIGet<TResponse>(path: string, queryParams?: [string, str
             default:
                 throw new APIError(response.data as string, response.status);
         }
-    } catch (error:any) {
-        throw new Error(`API request failed: ${error.message}`);
-    }
+    // } catch (error:any) {
+    //     throw new Error(`API request failed: ${error.message}`);
+    // }
 }
 
 export async function APIPatch<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
-    try {
+    //try {
         const response: AxiosResponse<TResponse> = await axios.patch(baseUrl+path, requestBody);
         switch(response.status){
             case 200:
@@ -56,13 +56,13 @@ export async function APIPatch<TResponse, TBody>(path: string, requestBody?: TBo
             default:
                 throw new APIError(response.data as string, response.status);
         }
-    } catch (error:any) {
-        throw new Error(`API request failed: ${error.message}`);
-    }
+    // } catch (error:any) {
+    //     throw new Error(`API request failed: ${error.message}`);
+    // }
 }
 
 export async function APIDelete(path: string, queryParams?: [string, string|number][]  ): Promise<void> {
-    try {
+    //try {
         const queryString = queryParams?.map(
             ([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`
         ).join('&');
@@ -76,7 +76,7 @@ export async function APIDelete(path: string, queryParams?: [string, string|numb
             default:
                 throw new APIError(response.data as string, response.status);
         }
-    } catch (error:any) {
-        throw new Error(`API request failed: ${error.message}`);
-    }
+    //} catch (error:any) {
+        //throw new Error(`API request failed: ${error.message}`);
+    //}
 }
