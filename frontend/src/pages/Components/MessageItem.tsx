@@ -22,7 +22,14 @@ interface MessageItemProps {
 
 const MessageItem: React.FC<MessageItemProps> = ({ message, onClick }) => {
   return (
-    <ListItem button onClick={onClick}>
+    <ListItem
+      button
+      onClick={onClick}
+      style={{
+        borderBottom: '1px solid #f0f0f0',
+        padding: '10px',
+      }}
+    >
       <ListItemAvatar>
         <Avatar src={message.other_participant.profilePicture} />
       </ListItemAvatar>

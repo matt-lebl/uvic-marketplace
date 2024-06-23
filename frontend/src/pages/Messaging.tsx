@@ -169,16 +169,16 @@ const Messaging: React.FC = () => {
   )
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        <Grid item xs={3}>
+    <Box sx={{ flexGrow: 1, height: '100vh' }}>
+      <Grid container spacing={2} sx={{ height: '100%' }}>
+        <Grid item xs={3} sx={{ height: '100%' }}>
           <MessageSidebar
             messages={messages}
             onSelectMessage={handleSelectMessage}
           />
         </Grid>
         <Grid item xs={9}>
-          <Box>
+          <Box sx={{ padding: 2 }}>
             {selectedConversation ? (
               <Box>
                 <Typography variant="h6">

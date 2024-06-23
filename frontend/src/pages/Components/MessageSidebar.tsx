@@ -1,5 +1,5 @@
 import React from 'react'
-import { List } from '@mui/material'
+import { List, Typography, Box } from '@mui/material'
 import MessageItem from './MessageItem'
 
 interface MessageSidebarProps {
@@ -26,15 +26,29 @@ const MessageSidebar: React.FC<MessageSidebarProps> = ({
   onSelectMessage,
 }) => {
   return (
-    <List>
-      {messages.map((message, index) => (
-        <MessageItem
-          key={index}
-          message={message}
-          onClick={() => onSelectMessage(message.listing_id)}
-        />
-      ))}
-    </List>
+    <Box
+      sx={{
+        width: '100%',
+        height: '100vh',
+        overflowY: 'auto',
+        maxWidth: 360,
+        borderRight: 1,
+        borderColor: 'divider',
+      }}
+    >
+      <Typography variant="h6" style={{ padding: '10px' }}>
+        Conversations
+      </Typography>
+      <List>
+        {messages.map((message, index) => (
+          <MessageItem
+            key={index}
+            message={message}
+            onClick={() => onSelectMessage(message.listing_id)}
+          />
+        ))}
+      </List>
+    </Box>
   )
 }
 
