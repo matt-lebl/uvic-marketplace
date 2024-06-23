@@ -97,7 +97,7 @@ class UserProfile(BaseModel):
     username: str
     name: str
     bio: str | None
-    profilePictureUrl: str | None
+    profileUrl: str | None
 
 
 class ListingSchema(BaseModel):
@@ -243,14 +243,15 @@ class LoginRequest(BaseModel):
 
 
 class NewUser(BaseModel):
-    """
-    TODO: add description
-    """
-    # TODO
-    pass
+    username: str
+    name: str
+    bio: str
+    profileUrl: str
+    email: str
+    totp_secret: str
 
 
-class User(BaseModel):
+class UserSchema(BaseModel):
     userID: str = Field(
         None,
         description="Unique identifier for the user",

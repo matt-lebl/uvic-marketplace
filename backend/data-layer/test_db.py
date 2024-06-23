@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
