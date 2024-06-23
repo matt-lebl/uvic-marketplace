@@ -6,7 +6,6 @@ import Home from '../pages/Home'
 // Invoke with `yarn test` or `npm test`
 
 test('renders recommended section', () => {
-
   // Test that the recommendation section is created
   render(<Home />)
   const recommended = screen.getByText(/Recommended Listings/i)
