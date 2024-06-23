@@ -5,6 +5,7 @@ import Registration from './Registration'
 import Home from './Home'
 import Profile from './Profile'
 import Listing from './Listing'
+import Messaging from './Messaging'
 import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
 /*
@@ -25,6 +26,7 @@ const Router = () => {
         <Route path="register" element={<Registration />} />
         <Route path="profile" element={<Profile />} />
         <Route path="listing" element={<Listing />} />
+        <Route path="messaging" element={<Messaging />} />
       </Route>
     </Routes>
   )
