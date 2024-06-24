@@ -4,28 +4,21 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
+import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
+import { useNavigate } from 'react-router-dom'
 
-export default function LoginHeader() {
+export default function Header() {
   const handleSearch = (query: string) => {
     console.log(query)
   }
+
+  const navigate = useNavigate()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
           <Typography
             variant="h6"
             component="div"
@@ -42,12 +35,25 @@ export default function LoginHeader() {
                 p: '4px 4px',
                 display: 'flex',
                 alignItems: 'center',
-                width: '70%',
+                width: 400,
+                borderRadius: 2,
+                border: '1px solid',
               }}
               submit={handleSearch}
             />
           </Box>
-          <Button color="inherit">Login</Button>
+          <Button variant='text'  onClick={() => navigate('/profile')} color='inherit' sx={{ mr:'40px'}}>Browse</Button>
+          <Button variant='text' onClick={() => navigate('/listing')} color='inherit' sx={{ mr:'40px'}}>My Listings</Button>
+          <Button variant='contained'  onClick={() => navigate('/login')} sx={{
+            width:'10px',
+            height:'40px',
+            backgroundColor:'#25496A',
+            color:'#B5DBFF',
+            fontSize:'30px',
+            borderRadius: '10px',
+            mr:'60px'
+          }}>+</Button>
+          <ProfileIcon id='header-pfp' name='header-pfp' imageSrc='./Test_Resources/TestProfileImage.jpg' />
         </Toolbar>
       </AppBar>
     </Box>
