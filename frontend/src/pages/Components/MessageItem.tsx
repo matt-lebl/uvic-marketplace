@@ -39,6 +39,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
         borderBottom: '1px solid #f0f0f0',
         padding: '10px',
         backgroundColor: selected ? '#f0f0f0' : 'white',
+        maxHeight: '10vh',
       }}
     >
       <ListItemAvatar>
@@ -46,7 +47,20 @@ const MessageItem: React.FC<MessageItemProps> = ({
       </ListItemAvatar>
       <ListItemText
         primary={message.other_participant.name}
-        secondary={message.last_message.content}
+        secondary={
+          <span
+            style={{
+              display: '-webkit-box',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              maxHeight: '3em',
+            }}
+          >
+            {message.last_message.content}
+          </span>
+        }
       />
     </ListItemButton>
   )
