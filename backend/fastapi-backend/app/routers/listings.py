@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 from schemas import NewListing, NewReview
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
+from services.data_layer_connect import send_request_to_data_layer
 
 # Development note: The DataSyncKafkaProducer class is used to send messages to Kafka.
 # If you want to disable sending messages to Kafka, you can set disable=True when initializing the DataSyncKafkaProducer class.
@@ -14,10 +15,11 @@ listingsRouter = APIRouter(
 
 
 @listingsRouter.get("/{id}")
-async def get_listing(id: int):
+async def get_listing(id: str):
     dsKafkaProducer.push_viewed_listing(id)
     # TODO
-    return {"id": id}
+    data = await send_request_to_data_layer("listing/{id}", "GET")
+    return data
 
 
 @listingsRouter.post("/")
@@ -28,14 +30,14 @@ async def create_listing(listing: NewListing):
 
 
 @listingsRouter.patch("/{id}")
-async def update_listing(id: int, listing: NewListing):
+async def update_listing(id: str, listing: NewListing):
     dsKafkaProducer.push_updated_listing(id, listing)
     # TODO
     return {"id": id, "listingID": listing.listingID}
 
 
 @listingsRouter.delete("/{id}")
-async def delete_listing(id: int):
+async def delete_listing(id: str):
     dsKafkaProducer.push_deleted_listing(id)
     # TODO
     return {"id": id}
@@ -49,14 +51,14 @@ async def create_review(review: NewReview):
 
 
 @listingsRouter.patch("/review/{id}")
-async def update_review(id: int, review: NewReview):
+async def update_review(id: str, review: NewReview):
     dsKafkaProducer.push_updated_review(review)
     # TODO
     return {"id": id, "reviewID": review.reviewID}
 
 
 @listingsRouter.delete("/review/{id}")
-async def delete_review(id: int):
+async def delete_review(id: str):
     dsKafkaProducer.push_deleted_review(id)
     # TODO
     return {"id": id}

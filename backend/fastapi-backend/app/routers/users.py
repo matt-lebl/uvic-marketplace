@@ -16,19 +16,19 @@ def create_user(user: NewUser):
 
 
 @userRouter.get("/{id}")
-def get_user(id: int, authUserID: int):
+def get_user(id: str, authUserID: str):
     # TODO: Implement user retrieval
     return {"TODO": id, "Reqested by": authUserID}
 
 
 @userRouter.patch("/")
-def edit_user(user: UpdateUser, authUserID: int):
+def edit_user(user: UpdateUser, authUserID: str):
     # TODO: Implement user update
     return {"TODO": "User updated", "Reqested by": authUserID}
 
 
 @userRouter.delete("/")
-def delete_user(authUserID: int):
+def delete_user(authUserID: str):
     # TODO: Implement user deletion
     return {"TODO": "User deleted", "Reqested by": authUserID}
 
@@ -52,13 +52,13 @@ def login(loginRequest: LoginRequest):
 
 
 @userRouter.post("/logout")
-def logout(authUserID: int):
+def logout(authUserID: str):
     # TODO: Implement user logout
     return {"TODO": "User logged out", "Reqested by": authUserID}
 
 
 @userRouter.post("/send-confirmation-email")
-def send_confirmation_email(emailModel: EmailModel, authUserID: int):
+def send_confirmation_email(emailModel: EmailModel, authUserID: str):
     # TODO: Implement sending confirmation email
     return {
         "TODO": "Confirmation email sent to {}".format(emailModel.email),
@@ -67,6 +67,6 @@ def send_confirmation_email(emailModel: EmailModel, authUserID: int):
 
 
 @userRouter.post("/confirm-email")
-def confirm_email(token: str, authUserID: int):
+def confirm_email(token: str, authUserID: str):
     # TODO: Implement email confirmation
     return {"TODO": "Email confirmed", "Reqested by": authUserID}
