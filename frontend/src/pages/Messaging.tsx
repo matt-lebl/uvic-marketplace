@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   Box,
   Grid,
@@ -69,6 +69,7 @@ const Messaging: React.FC = () => {
   )
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>(messageThreads)
+  const messageEndRef = useRef<HTMLDivElement>(null)
 
   const handleNewConversation = () => {
     console.log('Creating new conversation')
@@ -96,6 +97,13 @@ const Messaging: React.FC = () => {
 
     setThreads([...threads])
     setMessageInput('')
+    scrollToBottom()
+  }
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, 100)
   }
 
   const handleSelectMessage = (listing_id: string) => {
@@ -121,8 +129,12 @@ const Messaging: React.FC = () => {
     )
   }, [threads])
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages[selectedListingId]])
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, maxHeight: '90vh' }}>
       <Grid container spacing={2} sx={{ height: '100%' }}>
         <Grid item xs={3} sx={{ height: '100%' }}>
           <MessageSidebar
@@ -134,12 +146,16 @@ const Messaging: React.FC = () => {
         </Grid>
         <Grid item xs={9}>
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-            }}
+            sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
           >
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', padding: 2 }}>
+            <Box
+              sx={{
+                flexGrow: 1,
+                overflowY: 'auto',
+                padding: 2,
+                maxHeight: 'calc(100vh - 64px)',
+              }}
+            >
               {selectedConversation ? (
                 <List>
                   {messages[selectedListingId].map((message, index) => (
@@ -149,6 +165,7 @@ const Messaging: React.FC = () => {
                       isSender={message.sender_id === 'user-1'}
                     />
                   ))}
+                  <div ref={messageEndRef} />
                 </List>
               ) : (
                 <Typography variant="h6">Select a conversation</Typography>
@@ -161,6 +178,7 @@ const Messaging: React.FC = () => {
                   alignItems: 'center',
                   padding: 2,
                   borderTop: '1px solid #f0f0f0',
+                  flexShrink: 0,
                 }}
               >
                 <TextField
