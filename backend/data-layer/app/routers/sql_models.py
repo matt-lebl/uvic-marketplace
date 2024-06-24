@@ -78,6 +78,19 @@ class User(UserBase, table=True):
         statement = select(cls.totp_secret).where(cls.userID == userID)
         return session.exec(statement).first()
 
+    @classmethod
+    def add_totp_secret(cls, totp_secret: str, userID: str, session: Session):
+        statement = select(cls).where(cls.userID == userID)
+        sec = session.exec(statement).first()
+        if not sec:
+            raise HTTPException(status_code=400, detail="Invalid request")
+        setattr(sec, "totp_secret", totp_secret)
+        session.add(sec)
+        session.commit()
+
+        return {"message": "totp added successfully"}
+
+
 
 class ListingBase(SQLModel):
     listingID: str = Field(default=None, primary_key=True)

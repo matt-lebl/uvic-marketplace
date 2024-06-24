@@ -90,6 +90,22 @@ async def test_login():
 
 
 @pytest.mark.asyncio
+async def test_totp():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    userID = response.json()["userID"]
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    enc_key = data_factory.generate_totp_secret_encrypted()
+    response = client.post(f"/user/add-totp-secret/{enc_key}/{userID}")
+    assert response.status_code == 200
+
+    response = client.get(f"/user/totp-secret/{userID}")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
 async def test_get_all_users():
     user = data_factory.generate_user()
     client.post("/user/", json=user)
