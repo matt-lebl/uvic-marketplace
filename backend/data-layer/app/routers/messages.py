@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.post("/", response_model=MessageSchema)
 def create_message(message: MessageBase, session: Session = Depends(get_session)):
-    message_data = message.dict()
+    message_data = message.model_dump()
     message_data["message_id"] = str(uuid.uuid4())
     new_message = Message.create(session=session, **message_data)
     return new_message
