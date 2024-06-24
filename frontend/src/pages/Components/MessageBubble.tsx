@@ -1,12 +1,12 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material'
 
-interface MessageProps {
+interface MessageBubbleProps {
   content: string
   isSender: boolean
 }
 
-const Message: React.FC<MessageProps> = ({ content, isSender }) => {
+const MessageBubble: React.FC<MessageBubbleProps> = ({ content, isSender }) => {
   return (
     <Box
       sx={{
@@ -30,4 +30,4 @@ const Message: React.FC<MessageProps> = ({ content, isSender }) => {
   )
 }
 
-export default Message
+export default MessageBubble

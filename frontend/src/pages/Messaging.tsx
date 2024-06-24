@@ -8,217 +8,63 @@ import {
   IconButton,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
-import Message from './Components/Message'
+import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
+import { MessageThread, Message } from '../interfaces'
 
-const conversations = [
-  {
-    listing_id: 'L23434B090934',
-    other_participant: {
-      user_id: 'A23434B090934',
-      name: 'John Doe',
-      profilePicture: 'https://example.com/image1.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090934',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090934',
-      content: 'Hello, is this still available?',
-      sent_at: 1625247600,
-    },
-  },
-  {
-    listing_id: 'L23434B090935',
-    other_participant: {
-      user_id: 'A23434B090934',
-      name: 'Jane Doe',
-      profilePicture: 'https://example.com/image2.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090934',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090935',
-      content: 'Hello, is this still available?',
-      sent_at: 1625247600,
-    },
-  },
-  {
-    listing_id: 'L23434B090936',
-    other_participant: {
-      user_id: 'A23434B090937',
-      name: 'Alice Johnson',
-      profilePicture: 'https://example.com/image3.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090937',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090936',
-      content: 'Can you provide more details?',
-      sent_at: 1625248600,
-    },
-  },
-  {
-    listing_id: 'L23434B090937',
-    other_participant: {
-      user_id: 'A23434B090938',
-      name: 'Bob Smith',
-      profilePicture: 'https://example.com/image4.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090938',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090937',
-      content: 'Is the price negotiable?',
-      sent_at: 1625249600,
-    },
-  },
-  {
-    listing_id: 'L23434B090938',
-    other_participant: {
-      user_id: 'A23434B090939',
-      name: 'Charlie Davis',
-      profilePicture: 'https://example.com/image5.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090939',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090938',
-      content: 'When can I see it?',
-      sent_at: 1625250600,
-    },
-  },
-  {
-    listing_id: 'L23434B090939',
-    other_participant: {
-      user_id: 'A23434B090940',
-      name: 'David Evans',
-      profilePicture: 'https://example.com/image6.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090940',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090939',
-      content: "I'm interested, let's talk.",
-      sent_at: 1625251600,
-    },
-  },
-  {
-    listing_id: 'L23434B090940',
-    other_participant: {
-      user_id: 'A23434B090941',
-      name: 'Eva Green',
-      profilePicture: 'https://example.com/image7.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090941',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090940',
-      content: 'Is this item new?',
-      sent_at: 1625252600,
-    },
-  },
-  {
-    listing_id: 'L23434B090941',
-    other_participant: {
-      user_id: 'A23434B090942',
-      name: 'Fiona Harris',
-      profilePicture: 'https://example.com/image8.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090942',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090941',
-      content: 'Can I come by tomorrow?',
-      sent_at: 1625253600,
-    },
-  },
-  {
-    listing_id: 'L23434B090942',
-    other_participant: {
-      user_id: 'A23434B090943',
-      name: 'George Ivan',
-      profilePicture: 'https://example.com/image9.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090943',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090942',
-      content: 'Can you hold it for me?',
-      sent_at: 1625254600,
-    },
-  },
-  {
-    listing_id: 'L23434B090943',
-    other_participant: {
-      user_id: 'A23434B090944',
-      name: 'Hannah Jacobs',
-      profilePicture: 'https://example.com/image10.png',
-    },
-    last_message: {
-      sender_id: 'A23434B090944',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090943',
-      content: "What's the condition of this?",
-      sent_at: 1625255600,
-    },
-  },
-]
+const generateMessageThreads = (count: number): MessageThread[] => {
+  const threads: MessageThread[] = []
 
-const messages = [
-  {
-    sender_id: 'A23434B090934',
-    receiver_id: 'A23434B090936',
-    listing_id: 'L23434B090934',
-    content: 'Hello, is this still available?',
-    sent_at: 1625247600,
-  },
-  {
-    sender_id: 'A23434B090936',
-    receiver_id: 'A23434B090934',
-    listing_id: 'L23434B090934',
-    content: 'Yes, it is still available.',
-    sent_at: 1625248200,
-  },
-  {
-    sender_id: 'A23434B090934',
-    receiver_id: 'A23434B090936',
-    listing_id: 'L23434B090934',
-    content: 'Great! Can I come by tomorrow to check it out?',
-    sent_at: 1625248800,
-  },
-  {
-    sender_id: 'A23434B090936',
-    receiver_id: 'A23434B090934',
-    listing_id: 'L23434B090934',
-    content: 'Sure, what time works for you?',
-    sent_at: 1625249400,
-  },
-  {
-    sender_id: 'A23434B090934',
-    receiver_id: 'A23434B090936',
-    listing_id: 'L23434B090934',
-    content: 'How about 10 AM?',
-    sent_at: 1625250000,
-  },
-  {
-    sender_id: 'A23434B090936',
-    receiver_id: 'A23434B090934',
-    listing_id: 'L23434B090934',
-    content: '10 AM works for me. See you then!',
-    sent_at: 1625250600,
-  },
-  {
-    sender_id: 'A23434B090934',
-    receiver_id: 'A23434B090936',
-    listing_id: 'L23434B090934',
-    content: 'Great, see you tomorrow!',
-    sent_at: 1625251200,
-  },
-]
+  for (let i = 1; i <= count; i++) {
+    threads.push({
+      listing_id: `listing-${i}`,
+      other_participant: {
+        user_id: `user-${i}`,
+        name: `User ${i}`,
+        profilePicture: `https://example.com/profile-${i}.jpg`,
+      },
+      last_message: {
+        sender_id: `user-${i}`,
+        receiver_id: 'user-1',
+        listing_id: `listing-${i}`,
+        content: `This is the last message for listing ${i}`,
+        sent_at: Date.now(),
+      },
+    })
+  }
+
+  return threads
+}
+
+const generateMessagesForThread = (
+  threadId: string,
+  count: number
+): Message[] => {
+  const messages: Message[] = []
+
+  for (let i = 1; i <= count; i++) {
+    messages.push({
+      sender_id: i % 2 === 0 ? 'user-1' : threadId.split('-')[1],
+      receiver_id: i % 2 === 0 ? threadId.split('-')[1] : 'user-1',
+      listing_id: threadId,
+      content: `Message ${i} for ${threadId}`,
+      sent_at: Date.now() - (count - i) * 60000,
+    })
+  }
+
+  return messages
+}
+
+const messageThreads: MessageThread[] = generateMessageThreads(25)
+const messages: Record<string, Message[]> = {}
+
+messageThreads.forEach((thread) => {
+  messages[thread.listing_id] = generateMessagesForThread(thread.listing_id, 10)
+})
 
 const Messaging: React.FC = () => {
   const [selectedListingId, setSelectedListingId] = useState<string>(
-    conversations[0].listing_id
+    messageThreads[0].listing_id
   )
   const [messageInput, setMessageInput] = useState<string>('')
 
@@ -242,8 +88,8 @@ const Messaging: React.FC = () => {
     }
   }
 
-  const selectedConversation = conversations.find(
-    (conversation) => conversation.listing_id === selectedListingId
+  const selectedConversation = messageThreads.find(
+    (thread) => thread.listing_id === selectedListingId
   )
 
   return (
@@ -253,7 +99,7 @@ const Messaging: React.FC = () => {
           <MessageSidebar
             selectedListingId={selectedListingId}
             onCreateMessage={handleNewConversation}
-            messages={conversations}
+            messages={messageThreads}
             onSelectMessage={handleSelectMessage}
           />
         </Grid>
@@ -267,11 +113,11 @@ const Messaging: React.FC = () => {
             <Box sx={{ flexGrow: 1, overflowY: 'auto', padding: 2 }}>
               {selectedConversation ? (
                 <List>
-                  {messages.map((msg, index) => (
-                    <Message
+                  {messages[selectedListingId].map((message, index) => (
+                    <MessageBubble
                       key={index}
-                      content={msg.content}
-                      isSender={msg.sender_id === 'A23434B090936'}
+                      content={message.content}
+                      isSender={message.sender_id === 'user-1'}
                     />
                   ))}
                 </List>
