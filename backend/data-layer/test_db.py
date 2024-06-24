@@ -38,7 +38,7 @@ async def test_update_user():
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
-    new_user = data_factory.generate_user()
+    new_user = data_factory.generate_user_update()
     response = client.patch(f"/user/{userID}", json=new_user)
     assert response.status_code == 200
     assert response.json()["username"] == new_user["username"]
@@ -79,18 +79,13 @@ async def test_login():
     create_response = client.post("/user/", json=user)
     userID = create_response.json()["userID"]
 
-    login_req = DataFactory.generate_login_request(user["email"], user["password"], user["totp_secret"])
+    login_req = DataFactory.generate_login_request(user["email"], user["password"])
     response = client.post(f"/user/login", json=login_req)
     assert response.status_code == 200
 
     login_req2 = dict(login_req)
     login_req2["password"] = "asdlf[kj"
     response = client.post(f"/user/login", json=login_req2)
-    assert response.status_code == 401
-
-    login_req3 = dict(login_req)
-    login_req3["totp_code"] = "asdlf[kj"
-    response = client.post(f"/user/login", json=login_req3)
     assert response.status_code == 401
 
 

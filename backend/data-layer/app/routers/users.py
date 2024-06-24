@@ -2,7 +2,7 @@ import uuid
 from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
-from .schemas import UserSchema, NewUser, LoginRequest
+from .schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
 
 router = APIRouter(
     prefix="/user",
@@ -10,8 +10,8 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=UserSchema)
-def create_user(user: NewUser, session: Session = Depends(get_session)):
+@router.post("/", response_model=NewUser)
+def create_user(user: NewUserReq, session: Session = Depends(get_session)):
     user_data = user.dict()
     user_data["userID"] = str(uuid.uuid4())
     new_user = User.create(session=session, **user_data)
@@ -19,8 +19,10 @@ def create_user(user: NewUser, session: Session = Depends(get_session)):
 
 
 @router.patch("/{userID}", response_model=UserSchema)
-def create_user(userID: str, user: NewUser, session: Session = Depends(get_session)):
+def update_user(userID: str, user: UpdateUser, session: Session = Depends(get_session)):
     user_data = user.dict()
+    user_data["profileUrl"] = user_data["profilePictureUrl"]
+    del user_data["profilePictureUrl"]
     new_user = User.update(userID=userID, session=session, **user_data)
     return new_user
 

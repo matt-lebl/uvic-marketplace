@@ -13,13 +13,18 @@ class DataFactory:
         user_data = {
             "username": self.fake.user_name(),
             "name": self.fake.name(),
-            "bio": self.fake.text(max_nb_chars=200),
-            "profileUrl": self.fake.url(),
             "email": self.fake.email(),
-            "totp_secret": self.fake.sha256()[:16],
             "password": self.fake.password()
         }
         return user_data
+
+    def generate_user_update(self):
+        return {
+            "username": self.fake.user_name(),
+            "name": self.fake.name(),
+            "bio": self.fake.text(),
+            "profilePictureUrl": self.fake.image_url()
+        }
 
     def generate_listing(self):
         title = self.fake.catch_phrase()
@@ -71,9 +76,8 @@ class DataFactory:
         return review
 
     @classmethod
-    def generate_login_request(cls, email, password, totp_code):
+    def generate_login_request(cls, email, password):
         return {
             "email": email,
             "password": password,
-            "totp_code": totp_code
         }
