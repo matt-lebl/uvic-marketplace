@@ -2,10 +2,8 @@ name: OWASP Dependency Scan
 on:
   pull_request:
     branches:
-      - resops/workflow-test
-  push:
-    branches:
-      - resops/workflow-test
+      - develop
+      - master
 
 jobs:
   OWASP_Dependency:
