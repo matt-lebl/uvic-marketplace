@@ -51,3 +51,8 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
     if not user:
         raise HTTPException(status_code=401)
     return user
+
+
+@router.get("/totp_secret/{userID}")
+def get_totp_secret(userID: str, session: Session = Depends(get_session)):
+    return User.get_totp_secret(userID, session)
