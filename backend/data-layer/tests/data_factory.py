@@ -15,7 +15,7 @@ class DataFactory:
             "username": self.fake.user_name(),
             "name": self.fake.name(),
             "email": self.fake.email(),
-            "password": self.fake.password()
+            "password": self.fake.password(),
         }
         return user_data
 
@@ -24,14 +24,16 @@ class DataFactory:
             "username": self.fake.user_name(),
             "name": self.fake.name(),
             "bio": self.fake.text(),
-            "profilePictureUrl": self.fake.image_url()
+            "profilePictureUrl": self.fake.image_url(),
         }
 
     def generate_listing(self):
         title = self.fake.catch_phrase()
         description = self.fake.text()
         price = float(round(random.uniform(10, 1000), 2))
-        image_urls = [{"url": self.fake.image_url()} for _ in range(random.randint(1, 5))]
+        image_urls = [
+            {"url": self.fake.image_url()} for _ in range(random.randint(1, 5))
+        ]
         latitude = float(self.fake.latitude())
         longitude = float(self.fake.longitude())
 
@@ -40,7 +42,7 @@ class DataFactory:
             "price": price,
             "description": description,
             "images": image_urls,
-            "location": {"latitude": latitude, "longitude": longitude}
+            "location": {"latitude": latitude, "longitude": longitude},
         }
         return listing
 
@@ -58,7 +60,7 @@ class DataFactory:
             "receiver_id": receiver_id,
             "listing_id": listing_id,
             "content": message_content,
-            "sent_at": sent_at
+            "sent_at": sent_at,
         }
         return message
 
@@ -72,7 +74,7 @@ class DataFactory:
             "listing_review_id": listing_review_id,
             "listingID": reviewed_listing_id,
             "comment": review_content,
-            "stars": stars
+            "stars": stars,
         }
         return review
 

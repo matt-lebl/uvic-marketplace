@@ -4,10 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 from .schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
 
-router = APIRouter(
-    prefix="/user",
-    tags=["users"]
-)
+router = APIRouter(prefix="/user", tags=["users"])
 
 
 @router.post("/", response_model=NewUser)
@@ -59,5 +56,7 @@ def get_totp_secret(userID: str, session: Session = Depends(get_session)):
 
 
 @router.post("/add-totp-secret/{totp_secret}/{userID}")
-def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(get_session)):
+def add_totp_secret(
+    totp_secret: str, userID: str, session: Session = Depends(get_session)
+):
     User.add_totp_secret(totp_secret, userID, session)

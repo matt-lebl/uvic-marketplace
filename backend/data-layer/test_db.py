@@ -241,7 +241,9 @@ async def test_get_overview():
             if lst == usr:
                 continue
             for i in range(5):
-                message = data_factory.generate_message(listing_ids[lst], user_ids[lst], user_ids[usr])
+                message = data_factory.generate_message(
+                    listing_ids[lst], user_ids[lst], user_ids[usr]
+                )
                 msg_response = client.post("/messages/", json=message)
                 assert msg_response.status_code == 200
 
@@ -351,6 +353,7 @@ async def test_delete_review():
 
     response2 = client.delete(f"/review/{review_id}/{userID}")
     assert response2.status_code == 200
+
 
 # Deprecated
 # @pytest.mark.asyncio

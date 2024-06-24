@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, HttpUrl, EmailStr
 # TODO: add Annotated to improve type hints
 # https://docs.pydantic.dev/1.10/usage/schema/
 
+
 class Location(BaseModel):
     longitude: float
     latitude: float
@@ -20,47 +21,41 @@ class ReviewSchema(BaseModel):
     """
     TODO: add description
     """
+
     # TODO: this is not a required field based on http://market.lebl.ca/openapi/ check if this can be optional
     listing_review_id: str = Field(
-        None,
-        description="Unique identifier for the review",
-        example="A23F29039B23"
+        None, description="Unique identifier for the review", example="A23F29039B23"
     )
     reviewerName: str = Field(
-        ...,
-        description="Name of the reviewer",
-        example="John Doe"
+        ..., description="Name of the reviewer", example="John Doe"
     )
     stars: int = Field(
         None,
         description="Star rating given by the reviewer, from 1 to 5",
         example=5,
-        ge=1, le=5
+        ge=1,
+        le=5,
     )
     comment: str | None = Field(
         None,
         description="Review comment",
-        example="Great seller, the item was exactly as described and in perfect condition."
+        example="Great seller, the item was exactly as described and in perfect condition.",
     )
     userID: str | None = Field(
-        None,
-        description="Unique identifier for the user",
-        example="A23434B090934"
+        None, description="Unique identifier for the user", example="A23434B090934"
     )
     listingID: str = Field(
-        ...,
-        description="Unique identifier for the listing",
-        example="A23F29039B23"
+        ..., description="Unique identifier for the listing", example="A23F29039B23"
     )
     dateCreated: datetime | None = Field(
         None,
         description="Date when the review was created",
-        example="2024-05-23T15:30:00Z"
+        example="2024-05-23T15:30:00Z",
     )
     dateModified: datetime | None = Field(
         None,
         description="Date when the review was last modified",
-        example="2024-05-23T15:30:00Z"
+        example="2024-05-23T15:30:00Z",
     )
 
 
@@ -68,27 +63,25 @@ class NewReview(BaseModel):
     """
     TODO: add description
     """
+
     # TODO: this is not a required field based on http://market.lebl.ca/openapi/ check if this can be optional
     listing_review_id: str = Field(
-        None,
-        description="Unique identifier for the review",
-        example="A23F29039B23"
+        None, description="Unique identifier for the review", example="A23F29039B23"
     )
     stars: int = Field(
         ...,
         description="Star rating given by the reviewer, from 1 to 5",
         example=5,
-        ge=1, le=5
+        ge=1,
+        le=5,
     )
     comment: str | None = Field(
         None,
         description="Review comment",
-        example="Great seller, the item was exactly as described and in perfect condition."
+        example="Great seller, the item was exactly as described and in perfect condition.",
     )
     listingID: str = Field(
-        ...,
-        description="Unique identifier for the listing",
-        example="A23F29039B23"
+        ..., description="Unique identifier for the listing", example="A23F29039B23"
     )
 
 
@@ -104,134 +97,73 @@ class ListingSchema(BaseModel):
     """
     TODO: add description
     """
+
     listingID: str = Field(
-        None,
-        description="Unique identifier for the listing",
-        example="A23F29039B23"
+        None, description="Unique identifier for the listing", example="A23F29039B23"
     )
     seller_profile: UserProfile = Field(
-        None,
-        description="User profile of the seller",
-        example="TODO"
+        None, description="User profile of the seller", example="TODO"
     )
-    title: str = Field(
-        ...,
-        description="Title of the listing",
-        example="Vintage Chair"
-    )
+    title: str = Field(..., description="Title of the listing", example="Vintage Chair")
     description: str = Field(
         ...,
         description="Detailed description of the listing",
-        example="A beautifully restored vintage chair from the 1950s."
+        example="A beautifully restored vintage chair from the 1950s.",
     )
-    price: float = Field(
-        ...,
-        description="Price of the listing",
-        example=150.00,
-        gt=0
-    )
-    location: Location = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    price: float = Field(..., description="Price of the listing", example=150.00, gt=0)
+    location: Location = Field(None, description="TODO", example="TODO")
     dateCreated: datetime | None = Field(
         None,
         description="Date when the listing was created",
-        example="2024-05-23T15:30:00Z"
+        example="2024-05-23T15:30:00Z",
     )
     dateModified: datetime | None = Field(
         None,
         description="Date when the listing was last modified",
-        example="2024-05-23T15:30:00Z"
+        example="2024-05-23T15:30:00Z",
     )
-    reviews: list[ReviewSchema] = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
-    images: list = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    reviews: list[ReviewSchema] = Field(None, description="TODO", example="TODO")
+    images: list = Field(None, description="TODO", example="TODO")
 
 
 class NewListing(BaseModel):
-    title: str = Field(
-        ...,
-        description="Title of the listing",
-        example="Vintage Chair"
-    )
+    title: str = Field(..., description="Title of the listing", example="Vintage Chair")
     description: str = Field(
         ...,
         description="Detailed description of the listing",
-        example="A beautifully restored vintage chair from the 1950s."
+        example="A beautifully restored vintage chair from the 1950s.",
     )
-    price: float = Field(
-        ...,
-        description="Price of the listing",
-        example=150.00,
-        gt=0
-    )
-    location: Location = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
-    images: list[Image] = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    price: float = Field(..., description="Price of the listing", example=150.00, gt=0)
+    location: Location = Field(None, description="TODO", example="TODO")
+    images: list[Image] = Field(None, description="TODO", example="TODO")
 
 
 class ListingSummary(BaseModel):
     """
     TODO: add description
     """
+
     listingID: str = Field(
-        ...,
-        description="Unique identifier for the listing",
-        example="A23F29039B23"
+        ..., description="Unique identifier for the listing", example="A23F29039B23"
     )
     sellerID: str = Field(
-        ...,
-        description="Unique identifier for the seller",
-        example="A23F29039B23"
+        ..., description="Unique identifier for the seller", example="A23F29039B23"
     )
-    seller_Name: str = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
-    title: str = Field(
-        ...,
-        description="Title of the listing",
-        example="Vintage Chair"
-    )
+    seller_Name: str = Field(None, description="TODO", example="TODO")
+    title: str = Field(..., description="Title of the listing", example="Vintage Chair")
     description: str = Field(
         None,
         description="Detailed description of the listing",
-        example="A beautifully restored vintage chair from the 1950s."
+        example="A beautifully restored vintage chair from the 1950s.",
     )
-    price: float = Field(
-        ...,
-        description="Price of the listing",
-        example=150.00,
-        gt=0
-    )
+    price: float = Field(..., description="Price of the listing", example=150.00, gt=0)
     dateCreated: datetime = Field(
         ...,
         description="Date when the listing was created",
-        example="2024-05-23T15:30:00Z"
+        example="2024-05-23T15:30:00Z",
     )
     # TODO: validate url
-    imageUrl: str = Field(
-        None,
-        description="TODO",
-        examples="TODO"
-    )
+    imageUrl: str = Field(None, description="TODO", examples="TODO")
 
 
 class LoginRequest(BaseModel):
@@ -264,48 +196,25 @@ class UpdateUser(BaseModel):
 
 class UserSchema(BaseModel):
     userID: str = Field(
-        None,
-        description="Unique identifier for the user",
-        example="A23434B090934"
+        None, description="Unique identifier for the user", example="A23434B090934"
     )
-    username: str = Field(
-        None,
-        description="Username of the user",
-        example="john_doe"
-    )
-    name: str = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
-    bio: str | None = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    username: str = Field(None, description="Username of the user", example="john_doe")
+    name: str = Field(None, description="TODO", example="TODO")
+    bio: str | None = Field(None, description="TODO", example="TODO")
     # TODO: validate url
-    profileUrl: str | None = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    profileUrl: str | None = Field(None, description="TODO", example="TODO")
 
     email: str = Field(
-        None,
-        description="Email address of the user",
-        example="john.doe@example.com"
+        None, description="Email address of the user", example="john.doe@example.com"
     )
-    totp_secret: str | None = Field(
-        None,
-        description="TODO",
-        example="TODO"
-    )
+    totp_secret: str | None = Field(None, description="TODO", example="TODO")
 
 
 class Search(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -314,6 +223,7 @@ class SearchHistory(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -322,6 +232,7 @@ class Location(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -330,6 +241,7 @@ class ItemStatus(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -338,6 +250,7 @@ class ItemSort(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -346,6 +259,7 @@ class UserPreferencesPayload(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass
 
@@ -374,5 +288,6 @@ class SendMessage(BaseModel):
     """
     TODO: add description
     """
+
     # TODO
     pass

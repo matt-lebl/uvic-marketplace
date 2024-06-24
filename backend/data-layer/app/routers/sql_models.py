@@ -1,5 +1,17 @@
 import json
-from sqlmodel import SQLModel, Field, Relationship, Session, select, and_, func, Column, ARRAY, String, or_
+from sqlmodel import (
+    SQLModel,
+    Field,
+    Relationship,
+    Session,
+    select,
+    and_,
+    func,
+    Column,
+    ARRAY,
+    String,
+    or_,
+)
 from datetime import datetime
 from .schemas import ListingSchema, UserProfile
 from fastapi import HTTPException
@@ -70,7 +82,9 @@ class User(UserBase, table=True):
     def login(cls, session: Session, **kwargs):
         email = kwargs["email"]
         password = kwargs["password"]
-        statement = select(cls).where(and_(cls.email == email,cls.password == password))
+        statement = select(cls).where(
+            and_(cls.email == email, cls.password == password)
+        )
         return session.exec(statement).first()
 
     @classmethod
@@ -91,7 +105,6 @@ class User(UserBase, table=True):
         return {"message": "totp added successfully"}
 
 
-
 class ListingBase(SQLModel):
     listingID: str = Field(default=None, primary_key=True)
     sellerId: str = Field(foreign_key="user.userID", index=True)
@@ -109,7 +122,9 @@ class ListingBase(SQLModel):
 class Listing(ListingBase, table=True):
     seller: User = Relationship(back_populates="listings")
     messages: list["Message"] | None = Relationship(back_populates="listing")
-    reviews: list["ListingReview"] | None = Relationship(back_populates="reviewed_listing")
+    reviews: list["ListingReview"] | None = Relationship(
+        back_populates="reviewed_listing"
+    )
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -189,7 +204,9 @@ class Listing(ListingBase, table=True):
         return user_profile.dict()
 
     def get_reviews(self, session: Session):
-        review_statement = select(ListingReview).where(ListingReview.listingID == self.listingID)
+        review_statement = select(ListingReview).where(
+            ListingReview.listingID == self.listingID
+        )
         reviews = session.exec(review_statement).all()
         return [r.dict() for r in reviews]
 
@@ -299,30 +316,39 @@ class Message(MessageBase, table=True):
 
     @classmethod
     def get_overview(cls, userID: str, session: Session):
-        subquery = (session.query(
-            Message.sender_id,
-            Message.receiver_id,
-            func.max(Message.sent_at).label("max_timestamp")
-        ).filter(or_(Message.sender_id == userID, Message.receiver_id == userID))
-                    .group_by(Message.sender_id, Message.receiver_id).subquery())
+        subquery = (
+            session.query(
+                Message.sender_id,
+                Message.receiver_id,
+                func.max(Message.sent_at).label("max_timestamp"),
+            )
+            .filter(or_(Message.sender_id == userID, Message.receiver_id == userID))
+            .group_by(Message.sender_id, Message.receiver_id)
+            .subquery()
+        )
 
         query = (
             session.query(
-                Message,
-                User.userID.label("other_user_id"),
-                User.name,
-                User.profileUrl
-            ).join(
+                Message, User.userID.label("other_user_id"), User.name, User.profileUrl
+            )
+            .join(
                 subquery,
-                and_(Message.sender_id == subquery.c.sender_id,
-                     Message.receiver_id == subquery.c.receiver_id,
-                     Message.sent_at == subquery.c.max_timestamp)
-            ).join(
+                and_(
+                    Message.sender_id == subquery.c.sender_id,
+                    Message.receiver_id == subquery.c.receiver_id,
+                    Message.sent_at == subquery.c.max_timestamp,
+                ),
+            )
+            .join(
                 User,
                 or_(
-                    and_(User.userID == Message.sender_id, Message.receiver_id == userID),
-                    and_(User.userID == Message.receiver_id, Message.sender_id == userID)
-                )
+                    and_(
+                        User.userID == Message.sender_id, Message.receiver_id == userID
+                    ),
+                    and_(
+                        User.userID == Message.receiver_id, Message.sender_id == userID
+                    ),
+                ),
             )
         )
 
@@ -330,28 +356,35 @@ class Message(MessageBase, table=True):
 
         overview = []
         for message, other_user_id, name, profileUrl in messages:
-            overview.append({
-                "listing_id": message.listing_id,
-                "other_participant": {
-                    "user_id": other_user_id,
-                    "name": name,
-                    "profilePicture": profileUrl
-                },
-                "last_message": message
-            })
+            overview.append(
+                {
+                    "listing_id": message.listing_id,
+                    "other_participant": {
+                        "user_id": other_user_id,
+                        "name": name,
+                        "profilePicture": profileUrl,
+                    },
+                    "last_message": message,
+                }
+            )
         return overview
 
     @classmethod
-    def get_thread(cls, listing_id: str, receiver_id: str, user_id: str, session: Session):
-        statement = select(cls).where(
-            and_(
-                cls.listing_id == listing_id,
-                or_(
-                    and_(cls.sender_id == user_id, cls.receiver_id == receiver_id),
-                    and_(cls.sender_id == receiver_id, cls.receiver_id == user_id)
+    def get_thread(
+        cls, listing_id: str, receiver_id: str, user_id: str, session: Session
+    ):
+        statement = (
+            select(cls)
+            .where(
+                and_(
+                    cls.listing_id == listing_id,
+                    or_(
+                        and_(cls.sender_id == user_id, cls.receiver_id == receiver_id),
+                        and_(cls.sender_id == receiver_id, cls.receiver_id == user_id),
+                    ),
                 )
             )
-        ).order_by(cls.sent_at)
+            .order_by(cls.sent_at)
+        )
 
         return session.exec(statement)
-
