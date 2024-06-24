@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from schemas import LoginRequest, NewUser, EmailModel, UpdateUser
+from services.data_layer_connect import send_request_to_data_layer
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -11,26 +12,30 @@ userRouter = APIRouter(
 ## Auth Not Required
 @userRouter.post("/")
 def create_user(user: NewUser):
-    # TODO: Implement user creation
-    return {"TODO": "User Creation"}
+
+    path = "users/"
+    return send_request_to_data_layer(path, "POST", user.model_dump())
 
 
 @userRouter.get("/{id}")
 def get_user(id: str, authUserID: str):
-    # TODO: Implement user retrieval
-    return {"TODO": id, "Reqested by": authUserID}
+
+    path = "users/" + id
+    return send_request_to_data_layer(path, "GET")
 
 
 @userRouter.patch("/")
 def edit_user(user: UpdateUser, authUserID: str):
-    # TODO: Implement user update
-    return {"TODO": "User updated", "Reqested by": authUserID}
+
+    path = "users/" + authUserID
+    return send_request_to_data_layer(path, "PATCH", user.model_dump())
 
 
 @userRouter.delete("/")
 def delete_user(authUserID: str):
-    # TODO: Implement user deletion
-    return {"TODO": "User deleted", "Reqested by": authUserID}
+
+    path = "users/" + authUserID
+    return send_request_to_data_layer(path, "DELETE")
 
 
 ## Auth Not Required
@@ -43,12 +48,9 @@ def reset_password(emailModel: EmailModel):
 ## Auth Not Required
 @userRouter.post("/login")
 def login(loginRequest: LoginRequest):
-    # TODO: Implement user login
-    return {
-        "TODO": "Received login request from {}, with password {}".format(
-            loginRequest.email, loginRequest.password
-        )
-    }
+
+    path = "users/login"
+    return send_request_to_data_layer(path, "POST", loginRequest.model_dump())
 
 
 @userRouter.post("/logout")

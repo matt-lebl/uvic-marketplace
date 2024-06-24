@@ -15,50 +15,55 @@ listingsRouter = APIRouter(
 
 
 @listingsRouter.get("/{id}")
-async def get_listing(id: str):
-    dsKafkaProducer.push_viewed_listing(id)
-    # TODO
-    data = await send_request_to_data_layer("listing/{id}", "GET")
-    return data
+async def get_listing(id: str, authUserID: str):
+    dsKafkaProducer.push_viewed_listing(id, authUserID)
+    path = "listing/" + id
+    return await send_request_to_data_layer(path, "GET")
 
 
 @listingsRouter.post("/")
-async def create_listing(listing: NewListing):
+async def create_listing(listing: NewListing, authUserID: str):
     dsKafkaProducer.push_new_listing(listing)
-    # TODO
-    return {"listingID": listing.listingID}
+
+    path = "listing/" + authUserID
+    return await send_request_to_data_layer(path, "POST", listing.model_dump())
 
 
 @listingsRouter.patch("/{id}")
-async def update_listing(id: str, listing: NewListing):
+async def update_listing(id: str, listing: NewListing, authUserID: str):
     dsKafkaProducer.push_updated_listing(id, listing)
-    # TODO
-    return {"id": id, "listingID": listing.listingID}
+
+    path = "listing/" + id + "/" + authUserID
+    return await send_request_to_data_layer(path, "PATCH", listing.model_dump())
 
 
 @listingsRouter.delete("/{id}")
-async def delete_listing(id: str):
+async def delete_listing(id: str, authUserID: str):
     dsKafkaProducer.push_deleted_listing(id)
-    # TODO
-    return {"id": id}
+
+    path = "listing/" + id + "/" + authUserID
+    return await send_request_to_data_layer(path, "DELETE")
 
 
 @listingsRouter.post("/review/")
-async def create_review(review: NewReview):
+async def create_review(review: NewReview, authUserID: str):
     dsKafkaProducer.push_new_review(review)
-    # TODO
-    return {"reviewID": review.reviewID}
+
+    path = "review/" + authUserID
+    return await send_request_to_data_layer(path, "POST", review.model_dump())
 
 
 @listingsRouter.patch("/review/{id}")
-async def update_review(id: str, review: NewReview):
+async def update_review(id: str, review: NewReview, authUserID: str):
     dsKafkaProducer.push_updated_review(review)
-    # TODO
-    return {"id": id, "reviewID": review.reviewID}
+
+    path = "review/" + id + "/" + authUserID
+    return await send_request_to_data_layer(path, "PATCH", review.model_dump())
 
 
 @listingsRouter.delete("/review/{id}")
-async def delete_review(id: str):
+async def delete_review(id: str, authUserID: str):
     dsKafkaProducer.push_deleted_review(id)
-    # TODO
-    return {"id": id}
+
+    path = "review/" + id + "/" + authUserID
+    return await send_request_to_data_layer(path, "DELETE")
