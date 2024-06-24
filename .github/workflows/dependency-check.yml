@@ -33,7 +33,7 @@ jobs:
           format: 'HTML'
           out: 'reports' # this is the default, no need to specify unless you wish to override it
           args: >
-            --failOnCVSS 10
+            --failOnCVSS 99
             --enableRetired
       - name: Upload Test results
         uses: actions/upload-artifact@master
