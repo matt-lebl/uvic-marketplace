@@ -16,7 +16,7 @@ export default function Header() {
   const navigate = useNavigate()
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, height:'8vh' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography
