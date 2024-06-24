@@ -53,6 +53,11 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
     return user
 
 
-@router.get("/totp_secret/{userID}")
+@router.get("/totp-secret/{userID}")
 def get_totp_secret(userID: str, session: Session = Depends(get_session)):
     return User.get_totp_secret(userID, session)
+
+
+@router.post("/add-totp-secret/{totp_secret}/{userID}")
+def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(get_session)):
+    User.add_totp_secret(totp_secret, userID, session)

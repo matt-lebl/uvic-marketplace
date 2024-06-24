@@ -1,13 +1,14 @@
-import json
 import random
 import uuid
-from datetime import timedelta
 from faker import Faker
+import pyotp
+from cryptography.fernet import Fernet
 
 
 class DataFactory:
     def __init__(self):
         self.fake = Faker()
+        self.fernet = Fernet(Fernet.generate_key())
 
     def generate_user(self):
         user_data = {
@@ -74,6 +75,11 @@ class DataFactory:
             "stars": stars
         }
         return review
+
+    def generate_totp_secret_encrypted(self):
+        key = pyotp.random_base32()
+        encrypted_key = self.fernet.encrypt(key.encode()).decode()
+        return encrypted_key
 
     @classmethod
     def generate_login_request(cls, email, password):
