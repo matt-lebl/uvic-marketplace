@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("/{seller_id}")
 def create_listing(seller_id: str, listing: NewListing, session: Session = Depends(get_session)):
-    listing_data = listing.dict()
+    listing_data = listing.model_dump()
     listing_data = Listing.convert_to_db_object(listing_data, seller_id)
     listing_data["listingID"] = str(uuid.uuid4())
     listing_data["dateCreated"] = datetime.now()
@@ -24,7 +24,7 @@ def create_listing(seller_id: str, listing: NewListing, session: Session = Depen
 
 @router.patch("/{listingID}/{seller_id}")
 def update_listing(listingID: str, seller_id: str, listing: NewListing, session: Session = Depends(get_session)):
-    listing_data = Listing.convert_to_db_object(listing.dict(), seller_id)
+    listing_data = Listing.convert_to_db_object(listing.model_dump(), seller_id)
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
     updated_listing = Listing.update(seller_id=seller_id, session=session, **listing_data)

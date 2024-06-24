@@ -12,7 +12,7 @@ router = APIRouter(
 
 @router.post("/", response_model=NewUser)
 def create_user(user: NewUserReq, session: Session = Depends(get_session)):
-    user_data = user.dict()
+    user_data = user.model_dump()
     user_data["userID"] = str(uuid.uuid4())
     new_user = User.create(session=session, **user_data)
     return new_user
@@ -20,7 +20,7 @@ def create_user(user: NewUserReq, session: Session = Depends(get_session)):
 
 @router.patch("/{userID}", response_model=UserSchema)
 def update_user(userID: str, user: UpdateUser, session: Session = Depends(get_session)):
-    user_data = user.dict()
+    user_data = user.model_dump()
     user_data["profileUrl"] = user_data["profilePictureUrl"]
     del user_data["profilePictureUrl"]
     new_user = User.update(userID=userID, session=session, **user_data)
@@ -47,7 +47,7 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
 
 @router.post("/login", response_model=UserSchema)
 def login(request: LoginRequest, session: Session = Depends(get_session)):
-    user = User.login(session, **request.dict())
+    user = User.login(session, **request.model_dump())
     if not user:
         raise HTTPException(status_code=401)
     return user

@@ -13,7 +13,7 @@ router = APIRouter(
 
 @router.post("/{userID}", response_model=ListingReview)
 def create_review(userID: str, review: NewReview, session: Session = Depends(get_session)):
-    review_data = review.dict()
+    review_data = review.model_dump()
     review_data["listing_review_id"] = str(uuid.uuid4())
     review_data["dateCreated"] = datetime.now()
     review_data["dateModified"] = review_data["dateCreated"]
@@ -32,7 +32,7 @@ def get_review(listing_review_id: str, session: Session = Depends(get_session)):
 
 @router.patch("/{listing_review_id}/{userID}", response_model=ListingReview)
 def update_review(listing_review_id: str, userID: str, review: NewReview, session: Session = Depends(get_session)):
-    review_data = review.dict()
+    review_data = review.model_dump()
     review_data["listing_review_id"] = listing_review_id
     review_data["dateModified"] = datetime.now()
     review_data["userID"] = userID

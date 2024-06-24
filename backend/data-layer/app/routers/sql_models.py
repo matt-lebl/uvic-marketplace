@@ -171,7 +171,7 @@ class Listing(ListingBase, table=True):
         return listing_data
 
     def convert_to_schema(self, session: Session, user_profile: dict = None):
-        data = self.dict()
+        data = self.model_dump()
         data["location"] = {"longitude": self.longitude, "latitude": self.latitude}
         data["images"] = json.loads(data["images"])
         if not user_profile:
@@ -184,14 +184,14 @@ class Listing(ListingBase, table=True):
     def get_user_profile(self, session: Session):
         user_statement = select(User).where(User.userID == self.sellerId)
         user = session.exec(user_statement).first()
-        user_profile = UserProfile(**user.dict())
+        user_profile = UserProfile(**user.model_dump())
         user_profile.userID = self.sellerId
-        return user_profile.dict()
+        return user_profile.model_dump()
 
     def get_reviews(self, session: Session):
         review_statement = select(ListingReview).where(ListingReview.listingID == self.listingID)
         reviews = session.exec(review_statement).all()
-        return [r.dict() for r in reviews]
+        return [r.model_dump() for r in reviews]
 
 
 class ListingReviewBase(SQLModel):
