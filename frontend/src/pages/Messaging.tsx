@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Grid,
@@ -12,6 +12,7 @@ import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
 import { MessageThread, Message } from '../interfaces'
 
+// TODO: remove mock data and implement API calls
 const generateMessageThreads = (count: number): MessageThread[] => {
   const threads: MessageThread[] = []
 
@@ -67,13 +68,33 @@ const Messaging: React.FC = () => {
     messageThreads[0].listing_id
   )
   const [messageInput, setMessageInput] = useState<string>('')
+  const [threads, setThreads] = useState<MessageThread[]>(messageThreads)
 
   const handleNewConversation = () => {
     console.log('Creating new conversation')
   }
 
   const handleSendMessage = () => {
-    console.log('Sending message:', messageInput)
+    if (!messageInput) {
+      return
+    }
+    const newMessage: Message = {
+      sender_id: 'user-1',
+      receiver_id: selectedListingId.split('-')[1],
+      listing_id: selectedListingId,
+      content: messageInput,
+      sent_at: Date.now(),
+    }
+    messages[selectedListingId].push(newMessage)
+
+    const thread = threads.find(
+      (thread) => thread.listing_id === selectedListingId
+    )
+    if (thread) {
+      thread.last_message = newMessage
+    }
+
+    setThreads([...threads])
     setMessageInput('')
   }
 
@@ -88,9 +109,17 @@ const Messaging: React.FC = () => {
     }
   }
 
-  const selectedConversation = messageThreads.find(
+  const selectedConversation = threads.find(
     (thread) => thread.listing_id === selectedListingId
   )
+
+  useEffect(() => {
+    setThreads((prevThreads) =>
+      [...prevThreads].sort(
+        (a, b) => b.last_message.sent_at - a.last_message.sent_at
+      )
+    )
+  }, [threads])
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -99,7 +128,7 @@ const Messaging: React.FC = () => {
           <MessageSidebar
             selectedListingId={selectedListingId}
             onCreateMessage={handleNewConversation}
-            messages={messageThreads}
+            messages={threads}
             onSelectMessage={handleSelectMessage}
           />
         </Grid>
