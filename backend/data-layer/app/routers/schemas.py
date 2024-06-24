@@ -246,7 +246,6 @@ class NewUser(BaseModel):
     email: str
     bio: str | None
     profileUrl: str | None
-    totp_secret: str | None
 
 
 class NewUserReq(BaseModel):
@@ -290,7 +289,7 @@ class UserSchema(BaseModel):
         description="TODO",
         example="TODO"
     )
-    # TODO: validate email
+
     email: str = Field(
         None,
         description="Email address of the user",

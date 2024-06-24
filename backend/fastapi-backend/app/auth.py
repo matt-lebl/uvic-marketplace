@@ -7,7 +7,7 @@ fernet = Fernet(enc_key)
 
 
 def encrypt_totp_secret(totp_secret: str):
-    return fernet.encrypt(totp_secret.encode())
+    return fernet.encrypt(totp_secret.encode()).decode()
 
 
 def check_totp(external_totp: str, internal_totp_secret: str):
