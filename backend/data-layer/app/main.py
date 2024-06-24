@@ -4,7 +4,7 @@ data-layer\main.py
 >> Recieves traffic from FASTAPI-BACKEND, handles all data interactions. 
 """
 from fastapi import FastAPI, HTTPException, Body, Depends
-from app.routers import listings, messages, users, reviews
+from routers import listings, messages, users, reviews
 
 app = FastAPI()
 
