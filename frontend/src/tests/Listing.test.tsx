@@ -1,12 +1,22 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import Listing from '../pages/Listing'
 
-// Jest test suite for frontend
-// Invoke with `yarn test` or `npm test`
 
 test('renders listing page', () => {
-  render(<Listing />)
-  const linkElement = screen.getByText(/Listing Page/i)
-  expect(linkElement).toBeInTheDocument()
+  const { container }= render(<Listing />)
+  
+  expect(container.firstChild).toHaveClass('Listing')
+})
+
+test('renders photogallery', () => {
+  const { container }= render(<Listing />)
+  
+  expect(container.getElementsByClassName('Photo-Gallery').length).toBe(1)
+})
+
+test('renders seller card', () => {
+  const { container }= render(<Listing />)
+  
+  expect(container.getElementsByClassName('Seller-Card').length).toBe(1)
 })
