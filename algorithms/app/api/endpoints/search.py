@@ -68,7 +68,7 @@ async def search(authorization: str = Header(...),
         # Extract documents from the response
         listings = [] 
         for doc in response['hits']['hits']:
-            listings.append(Listing(id=doc["_id"], title=doc["_source"]["title"], 
+            listings.append(ListingSummary(listingID=doc["_id"], title=doc["_source"]["title"], 
                                     description=doc["_source"].get("description"), 
                                     price=doc["_source"]["price"], 
                                     location=doc["_source"]["location"]))

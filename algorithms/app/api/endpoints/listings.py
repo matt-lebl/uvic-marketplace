@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body, Header, HTTPException, status, Depends
 from typing import Dict, Optional
 from ...schemas import ListingResponse, ErrorMessage, ItemStatusEnum
 from sqlalchemy.orm import Session
-from app.db.models import DB_Listing
+from app.db.models import DB_Listing, DB_Interaction
 from app.api.deps import get_db
 from .embedding import generate_embedding
 from ...elasticsearch_wrapper import ElasticsearchWrapper
@@ -45,7 +45,7 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     
     # Add the listing to postgres
     try:
-        db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
+        db_listing = DB_Listing(listing_id=listing_data['listingID'], listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
         db.add(db_listing)
         db.commit()
         db.refresh(db_listing)
@@ -78,7 +78,17 @@ async def delete_listing(listing_id: str, db: Session = Depends(get_db)):
         print(f"Error deleting from Elasticsearch: {e}")
         raise HTTPException(status_code=500, detail="Failed to delete listing from Elasticsearch")
 
-    # Delete from PostgreSQL
+    # Delete from PostgreSQL (interactions table and listings table)
+    try:
+        interactions = db.query(DB_Interaction).filter(DB_Interaction.listing_id == listing_id).all()
+        for interaction in interactions:
+            db.delete(interaction)
+        db.commit()
+    except SQLAlchemyError as e:
+        db.rollback()
+        print(f"Error deleting interactions for listing {listing_id}: {e}")
+        raise HTTPException(status_code=500, detail="Failed to delete interactions for listing")
+
     try:
         db_listing = db.query(DB_Listing).filter(DB_Listing.elasticsearch_id == listing_id).first()
         if db_listing:

@@ -43,8 +43,12 @@ async def recommendations(page: int = Query(1),
     #     raise HTTPException(status_code=401, detail="Invalid token")
 
     # temp userID - without real token auth
-    user_id = 1
+    user_id = "1"
 
+    # Check if the user_id exists in the database
+    user_exists = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+    if not user_exists:
+        return []
 
     # TODO: get recommendations based on userID
     # Get the size of the item embeddings from the elastic search db
@@ -87,7 +91,7 @@ async def recommendations(page: int = Query(1),
     for listing in recommendations: 
 
         recommendation = {}
-        recommendation["listingID"] = str(listing.listing_id) # TODO: refactor listing_id type to string (ES DB!)
+        recommendation["listingID"] = listing.listing_id # TODO: refactor listing_id type to string (ES DB!)
 
         es_listing = es.get(index="listings_index", id=listing.listing_id)
         recommendation["title"] = es_listing['_source']['title']
