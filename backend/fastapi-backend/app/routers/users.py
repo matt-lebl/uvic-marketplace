@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from schemas import LoginRequest, NewUser, EmailModel, UpdateUser
+from services.data_layer_connect import send_request_to_data_layer
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -11,26 +12,30 @@ userRouter = APIRouter(
 ## Auth Not Required
 @userRouter.post("/")
 def create_user(user: NewUser):
-    # TODO: Implement user creation
-    return {"TODO": "User Creation"}
+
+    path = "users/"
+    return send_request_to_data_layer(path, "POST", user.model_dump())
 
 
 @userRouter.get("/{id}")
-def get_user(id: int, authUserID: int):
-    # TODO: Implement user retrieval
-    return {"TODO": id, "Reqested by": authUserID}
+def get_user(id: str, authUserID: str):
+
+    path = "users/" + id
+    return send_request_to_data_layer(path, "GET")
 
 
 @userRouter.patch("/")
-def edit_user(user: UpdateUser, authUserID: int):
-    # TODO: Implement user update
-    return {"TODO": "User updated", "Reqested by": authUserID}
+def edit_user(user: UpdateUser, authUserID: str):
+
+    path = "users/" + authUserID
+    return send_request_to_data_layer(path, "PATCH", user.model_dump())
 
 
 @userRouter.delete("/")
-def delete_user(authUserID: int):
-    # TODO: Implement user deletion
-    return {"TODO": "User deleted", "Reqested by": authUserID}
+def delete_user(authUserID: str):
+
+    path = "users/" + authUserID
+    return send_request_to_data_layer(path, "DELETE")
 
 
 ## Auth Not Required
@@ -43,22 +48,19 @@ def reset_password(emailModel: EmailModel):
 ## Auth Not Required
 @userRouter.post("/login")
 def login(loginRequest: LoginRequest):
-    # TODO: Implement user login
-    return {
-        "TODO": "Received login request from {}, with password {}".format(
-            loginRequest.email, loginRequest.password
-        )
-    }
+
+    path = "users/login"
+    return send_request_to_data_layer(path, "POST", loginRequest.model_dump())
 
 
 @userRouter.post("/logout")
-def logout(authUserID: int):
+def logout(authUserID: str):
     # TODO: Implement user logout
     return {"TODO": "User logged out", "Reqested by": authUserID}
 
 
 @userRouter.post("/send-confirmation-email")
-def send_confirmation_email(emailModel: EmailModel, authUserID: int):
+def send_confirmation_email(emailModel: EmailModel, authUserID: str):
     # TODO: Implement sending confirmation email
     return {
         "TODO": "Confirmation email sent to {}".format(emailModel.email),
@@ -67,6 +69,6 @@ def send_confirmation_email(emailModel: EmailModel, authUserID: int):
 
 
 @userRouter.post("/confirm-email")
-def confirm_email(token: str, authUserID: int):
+def confirm_email(token: str, authUserID: str):
     # TODO: Implement email confirmation
     return {"TODO": "Email confirmed", "Reqested by": authUserID}
