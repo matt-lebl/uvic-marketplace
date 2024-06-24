@@ -73,6 +73,11 @@ class User(UserBase, table=True):
         statement = select(cls).where(and_(cls.email == email,cls.password == password))
         return session.exec(statement).first()
 
+    @classmethod
+    def get_totp_secret(cls, userID: str, session: Session):
+        statement = select(cls.totp_secret).where(cls.userID == userID)
+        return session.exec(statement).first()
+
 
 class ListingBase(SQLModel):
     listingID: str = Field(default=None, primary_key=True)
