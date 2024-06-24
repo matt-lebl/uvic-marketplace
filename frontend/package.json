@@ -15,6 +15,7 @@
     "@types/react": "^18.3.3",
     "formik": "^2.4.6",
     "history": "^5.3.0",
+    "jest-openapi": "^0.14.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
