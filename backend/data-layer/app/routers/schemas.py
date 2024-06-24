@@ -237,17 +237,30 @@ class ListingSummary(BaseModel):
 class LoginRequest(BaseModel):
     email: str
     password: str
-    totp_code: str
 
 
 class NewUser(BaseModel):
     username: str
+    userID: str
+    name: str
+    email: str
+    bio: str | None
+    profileUrl: str | None
+    totp_secret: str | None
+
+
+class NewUserReq(BaseModel):
+    username: str
+    name: str
+    email: str
+    password: str
+
+
+class UpdateUser(BaseModel):
+    username: str
     name: str
     bio: str
-    profileUrl: str
-    email: str
-    totp_secret: str
-    password: str
+    profilePictureUrl: str
 
 
 class UserSchema(BaseModel):
@@ -266,13 +279,13 @@ class UserSchema(BaseModel):
         description="TODO",
         example="TODO"
     )
-    bio: str = Field(
+    bio: str | None = Field(
         None,
         description="TODO",
         example="TODO"
     )
     # TODO: validate url
-    profileUrl: str = Field(
+    profileUrl: str | None = Field(
         None,
         description="TODO",
         example="TODO"
@@ -283,7 +296,7 @@ class UserSchema(BaseModel):
         description="Email address of the user",
         example="john.doe@example.com"
     )
-    totp_secret: str = Field(
+    totp_secret: str | None = Field(
         None,
         description="TODO",
         example="TODO"
@@ -349,7 +362,7 @@ class MessageSchema(BaseModel):
 class MessageParticipant(BaseModel):
     user_id: str
     name: str
-    profilePicture: str
+    profilePicture: str | None
 
 
 class MessageThread(BaseModel):

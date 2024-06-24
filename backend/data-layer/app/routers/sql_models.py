@@ -9,11 +9,11 @@ class UserBase(SQLModel):
     userID: str = Field(default=None, primary_key=True)
     username: str = Field(index=True)
     name: str
+    password: str
     bio: str | None = None
     profileUrl: str | None = None
     email: str = Field(unique=True, index=True)
-    totp_secret: str
-    password: str
+    totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
 
@@ -70,10 +70,7 @@ class User(UserBase, table=True):
     def login(cls, session: Session, **kwargs):
         email = kwargs["email"]
         password = kwargs["password"]
-        totp_code = kwargs["totp_code"]
-        statement = select(cls).where(and_(cls.email == email,
-                                           cls.password == password,
-                                           cls.totp_secret == totp_code))
+        statement = select(cls).where(and_(cls.email == email,cls.password == password))
         return session.exec(statement).first()
 
 
