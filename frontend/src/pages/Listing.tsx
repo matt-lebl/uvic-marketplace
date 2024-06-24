@@ -12,7 +12,7 @@ function Listing() {
         <Box sx={{ display: 'flex', flexDirection: 'row', }}>
           <Paper sx={{
             padding: '20px 20px 20px 20px',
-            maxHeight: '85vh',
+            height: '85vh',
             backgroundColor: '#ffffff'
           }}>
             <Typography sx={{fontWeight:'700', }}>Photo Gallery</Typography>
@@ -23,7 +23,7 @@ function Listing() {
             hieght: 200,
             ml: 5,
             backgroundColor: '#656565',
-            maxHeight: '85vh',
+            height: '85vh',
             overflow: 'auto'
           }}>
             <SellerCard />

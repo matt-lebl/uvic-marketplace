@@ -44,7 +44,7 @@ export default function Header() {
           </Box>
           <Button variant='text'  onClick={() => navigate('/profile')} color='inherit' sx={{ mr:'40px'}}>Browse</Button>
           <Button variant='text' onClick={() => navigate('/listing')} color='inherit' sx={{ mr:'40px'}}>My Listings</Button>
-          <Button variant='contained'  onClick={() => navigate('/login')} sx={{
+          <Button variant='contained'  onClick={() => navigate('/new-listing')} sx={{
             width:'10px',
             height:'40px',
             backgroundColor:'#25496A',
