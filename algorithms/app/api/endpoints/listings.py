@@ -31,8 +31,11 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     }
 
     # Add the listing to Elasticsearch
-    response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
-    print(f'Added/updated ES database: {response}')
+    try:
+        response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
+        print(f'Added/updated ES database: {response}')
+    except Exception as e:
+        print(f'Error adding/updating ES database: {e}')
 
     # undo elasiticsearch Location formatting
     listing_data['location'] = {
