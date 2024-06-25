@@ -18,7 +18,8 @@ listingsRouter = APIRouter(
 async def get_listing(id: str, authUserID: str):
     dsKafkaProducer.push_viewed_listing(id, authUserID)
     path = "listing/" + id
-    return await send_request_to_data_layer(path, "GET")
+    response = await send_request_to_data_layer(path, "GET")
+    return response.json()
 
 
 @listingsRouter.post("/")
@@ -26,7 +27,8 @@ async def create_listing(listing: NewListing, authUserID: str):
     dsKafkaProducer.push_new_listing(listing)
 
     path = "listing/" + authUserID
-    return await send_request_to_data_layer(path, "POST", listing.model_dump())
+    response = await send_request_to_data_layer(path, "POST", listing.model_dump())
+    return response.json()
 
 
 @listingsRouter.patch("/{id}")
@@ -34,7 +36,8 @@ async def update_listing(id: str, listing: NewListing, authUserID: str):
     dsKafkaProducer.push_updated_listing(id, listing)
 
     path = "listing/" + id + "/" + authUserID
-    return await send_request_to_data_layer(path, "PATCH", listing.model_dump())
+    response = await send_request_to_data_layer(path, "PATCH", listing.model_dump())
+    return response.json()
 
 
 @listingsRouter.delete("/{id}")
@@ -42,7 +45,8 @@ async def delete_listing(id: str, authUserID: str):
     dsKafkaProducer.push_deleted_listing(id)
 
     path = "listing/" + id + "/" + authUserID
-    return await send_request_to_data_layer(path, "DELETE")
+    response = await send_request_to_data_layer(path, "DELETE")
+    return response.json()
 
 
 @listingsRouter.post("/review/")
@@ -50,7 +54,8 @@ async def create_review(review: NewReview, authUserID: str):
     dsKafkaProducer.push_new_review(review)
 
     path = "review/" + authUserID
-    return await send_request_to_data_layer(path, "POST", review.model_dump())
+    response = await send_request_to_data_layer(path, "POST", review.model_dump())
+    return response.json()
 
 
 @listingsRouter.patch("/review/{id}")
@@ -58,7 +63,8 @@ async def update_review(id: str, review: NewReview, authUserID: str):
     dsKafkaProducer.push_updated_review(review)
 
     path = "review/" + id + "/" + authUserID
-    return await send_request_to_data_layer(path, "PATCH", review.model_dump())
+    response = await send_request_to_data_layer(path, "PATCH", review.model_dump())
+    return response.json()
 
 
 @listingsRouter.delete("/review/{id}")
@@ -66,4 +72,5 @@ async def delete_review(id: str, authUserID: str):
     dsKafkaProducer.push_deleted_review(id)
 
     path = "review/" + id + "/" + authUserID
-    return await send_request_to_data_layer(path, "DELETE")
+    response = await send_request_to_data_layer(path, "DELETE")
+    return response.json()

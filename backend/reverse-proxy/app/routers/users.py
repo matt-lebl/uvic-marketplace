@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, HTTPException, Response
 from schemas import NewUser, LoginRequest, ResetPassword, User
 from auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
 
 usersRouter = APIRouter(
-    prefix="/api/user", tags=["users"], responses={404: {"description": "Not found"}}
+    prefix="/api/user",
+    tags=["users"],
+    responses={404: {"description": "Not found"}, 401: {"description": "Unauthorized"}},
 )
 
 
@@ -30,6 +32,7 @@ async def reset_password(resetPassword: ResetPassword):
 
 @usersRouter.post("/login")
 async def login(loginRequest: LoginRequest, response: Response):
+
     response_backend = await send_request_to_backend(
         "user/login", "POST", loginRequest.model_dump()
     )
@@ -43,5 +46,4 @@ async def login(loginRequest: LoginRequest, response: Response):
             httponly=True,
             samesite="strict",
         )
-
     return user
