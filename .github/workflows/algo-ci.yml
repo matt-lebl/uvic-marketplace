@@ -4,11 +4,11 @@ on:
   push:
     paths:
       # - 'algs/**'
-      - resops/workflow/unit-tests
+      - resops/workflow-test
   pull_request:
     paths:
       # - 'algs/**'
-      - resops/workflow/unit-tests
+      - resops/workflow-test
 
 # permissions:
 #   contents: read
