@@ -1,36 +1,68 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 import MessageItem from '../../pages/Components/MessageItem'
 
 const message = {
-  listing_id: 'L23434B090934',
+  listing_id: 'listing-1',
   other_participant: {
-    user_id: 'A23434B090934',
-    name: 'John Doe',
-    profilePicture: 'https://example.com/image1.png',
+    user_id: 'user-1',
+    name: 'User 1',
+    profilePicture: 'https://example.com/profile-1.jpg',
   },
   last_message: {
-    sender_id: 'A23434B090934',
-    receiver_id: 'A23434B090936',
-    listing_id: 'L23434B090934',
-    content: 'Hello, is this still available?',
-    sent_at: 1625247600,
+    sender_id: 'user-1',
+    receiver_id: 'user-2',
+    listing_id: 'listing-1',
+    content:
+      'This is a test message content that is quite long to see if the text gets truncated properly in the UI.',
+    sent_at: Date.now(),
   },
 }
 
-test('renders message item content', () => {
-  const { getByText } = render(
-    <MessageItem message={message} onClick={() => {}} selected={false} />
-  )
-  expect(getByText('John Doe')).toBeInTheDocument()
-  expect(getByText('Hello, is this still available?')).toBeInTheDocument()
-})
+describe('MessageItem', () => {
+  it('renders message details correctly', () => {
+    const { getByText, getByAltText } = render(
+      <MessageItem message={message} onClick={() => {}} selected={false} />
+    )
 
-test('triggers onClick handler when clicked', () => {
-  const handleClick = jest.fn()
-  const { getByText } = render(
-    <MessageItem message={message} onClick={handleClick} selected={false} />
-  )
-  fireEvent.click(getByText('John Doe'))
-  expect(handleClick).toHaveBeenCalledTimes(1)
+    expect(getByText('User 1')).toBeInTheDocument()
+    expect(
+      getByText(
+        'This is a test message content that is quite long to see if the text gets truncated properly in the UI.'
+      )
+    ).toBeInTheDocument()
+    expect(getByAltText('profile picture')).toHaveAttribute(
+      'src',
+      'https://example.com/profile-1.jpg'
+    )
+  })
+
+  it('applies the selected style when selected', () => {
+    const { getByRole } = render(
+      <MessageItem message={message} onClick={() => {}} selected={true} />
+    )
+
+    const listItemButton = getByRole('button')
+    expect(listItemButton).toHaveStyle('background-color: #f0f0f0')
+  })
+
+  it('does not apply the selected style when not selected', () => {
+    const { getByRole } = render(
+      <MessageItem message={message} onClick={() => {}} selected={false} />
+    )
+
+    const listItemButton = getByRole('button')
+    expect(listItemButton).toHaveStyle('background-color: white')
+  })
+
+  it('calls onClick when clicked', () => {
+    const handleClick = jest.fn()
+    const { getByRole } = render(
+      <MessageItem message={message} onClick={handleClick} selected={false} />
+    )
+
+    fireEvent.click(getByRole('button'))
+    expect(handleClick).toHaveBeenCalledTimes(1)
+  })
 })

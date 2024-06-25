@@ -43,7 +43,10 @@ const MessageItem: React.FC<MessageItemProps> = ({
       }}
     >
       <ListItemAvatar>
-        <Avatar src={message.other_participant.profilePicture} />
+        <Avatar
+          src={message.other_participant.profilePicture}
+          alt="profile picture"
+        />
       </ListItemAvatar>
       <ListItemText
         primary={message.other_participant.name}
