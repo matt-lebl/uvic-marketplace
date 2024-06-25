@@ -20,7 +20,7 @@ export default function Header() {
       <AppBar position="static">
         <Toolbar>
           <Typography
-            variant="h6"
+            variant="h1"
             component="div"
             sx={{ flexGrow: 0, mr: '40px' }}
           >
