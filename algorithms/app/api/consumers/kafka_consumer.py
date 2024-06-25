@@ -8,7 +8,7 @@ from algorithms.app.api.deps import get_db
 
 # Kafka Consumer configuration
 conf = {
-    'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS', 'localhost:9092'),
+    'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS', '"70.66.242.15:29092"'),
     'group.id': 'my-consumer-group',
     'auto.offset.reset': 'earliest'
 }
