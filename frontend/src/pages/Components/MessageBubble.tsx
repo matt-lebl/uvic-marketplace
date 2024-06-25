@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material'
 
-interface MessageBubbleProps {
+export interface MessageBubbleProps {
   content: string
   isSender: boolean
 }

@@ -3,7 +3,7 @@ import { List, Typography, Box, ButtonBase } from '@mui/material'
 import MessageItem from './MessageItem'
 import ModeRoundedIcon from '@mui/icons-material/ModeRounded'
 
-interface MessageSidebarProps {
+export interface MessageSidebarProps {
   messages: Array<{
     listing_id: string
     other_participant: {
