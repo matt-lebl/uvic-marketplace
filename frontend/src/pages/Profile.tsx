@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Box,
   Typography,
@@ -11,6 +11,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Grid,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
 
@@ -101,7 +102,7 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
   const [editMode, setEditMode] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
-  const listingsPerPage = 2
+  const [listingsPerPage, setListingsPerPage] = useState(2)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -122,6 +123,25 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     (currentPage - 1) * listingsPerPage,
     currentPage * listingsPerPage
   )
+
+  const updateListingsPerPage = () => {
+    const width = window.innerWidth
+    console.log(width)
+
+    if (width > 1740) {
+      setListingsPerPage(3)
+    } else if (width > 1200) {
+      setListingsPerPage(2)
+    } else {
+      setListingsPerPage(1)
+    }
+  }
+
+  useEffect(() => {
+    updateListingsPerPage()
+    window.addEventListener('resize', updateListingsPerPage)
+    return () => window.removeEventListener('resize', updateListingsPerPage)
+  }, [])
 
   return (
     <Box sx={{ margin: 6 }}>
@@ -198,62 +218,75 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
           marginTop: 2,
         }}
       >
-        {currentListings.map((listing) => (
-          <Card
-            key={listing.listingID}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              marginBottom: 2,
-              width: '40vh',
-              height: '40vh',
-              padding: '16px',
-              boxSizing: 'border-box',
-              background: '#B5DBFF',
-            }}
-          >
-            <Box
-              sx={{
-                width: '100%',
-                height: '60%',
-                overflow: 'hidden',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CardMedia
-                component="img"
+        <Grid container spacing={2} justifyContent="center">
+          {currentListings.map((listing) => (
+            <Grid item key={listing.listingID}>
+              <Card
+                key={listing.listingID}
                 sx={{
-                  height: '100%',
-                  width: 'auto',
-                  objectFit: 'fill',
-                  borderRadius: '10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  marginBottom: 2,
+                  width: '40vh',
+                  height: '30vh',
+                  padding: '16px',
+                  borderRadius: '16px',
+                  boxSizing: 'border-box',
+                  background: '#B5DBFF',
                 }}
-                image={listing.imageUrl}
-                alt={listing.title}
-              />
-            </Box>
-            <CardContent sx={{ width: '100%' }}>
-              <Typography component="h5" variant="h5">
-                {listing.title}
-              </Typography>
-              <Typography variant="subtitle1" color="textSecondary">
-                ${listing.price}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {listing.description}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
+              >
+                <Box
+                  sx={{
+                    width: '100%',
+                    height: '60%',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      height: '100%',
+                      width: 'auto',
+                      objectFit: 'fill',
+                      borderRadius: '10px',
+                    }}
+                    image={listing.imageUrl}
+                    alt={listing.title}
+                  />
+                </Box>
+                <CardContent sx={{ width: '100%' }}>
+                  <Typography component="h5" variant="h5">
+                    {listing.title}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary">
+                    ${listing.price}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {listing.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </Box>
-      <Pagination
-        count={Math.ceil(listings.length / listingsPerPage)}
-        page={currentPage}
-        onChange={handlePageChange}
-      />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          marginTop: 2,
+        }}
+      >
+        <Pagination
+          count={Math.ceil(listings.length / listingsPerPage)}
+          page={currentPage}
+          onChange={handlePageChange}
+        />
+      </Box>
     </Box>
   )
 }
