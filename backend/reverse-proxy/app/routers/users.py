@@ -45,3 +45,9 @@ async def login(loginRequest: LoginRequest, response: Response):
             samesite="strict",
         )
     return user
+
+
+@usersRouter.post("/logout")
+async def logout(response: Response):
+    response.delete_cookie(key="jwt")
+    return {"message": "Successfully signed out"}
