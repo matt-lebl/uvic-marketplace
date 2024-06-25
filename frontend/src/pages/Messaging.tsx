@@ -6,6 +6,12 @@ import {
   List,
   TextField,
   IconButton,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
@@ -69,10 +75,37 @@ const Messaging: React.FC = () => {
   )
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>(messageThreads)
+  const [open, setOpen] = useState<boolean>(false)
+  const [newParticipant, setNewParticipant] = useState<string>('')
   const messageEndRef = useRef<HTMLDivElement>(null)
 
   const handleNewConversation = () => {
-    console.log('Creating new conversation')
+    setOpen(true)
+  }
+
+  const handleCreateNewConversation = () => {
+    if (!newParticipant) return
+
+    const newThread: MessageThread = {
+      listing_id: `listing-${threads.length + 1}`,
+      other_participant: {
+        user_id: `user-${threads.length + 1}`,
+        name: newParticipant,
+        profilePicture: `https://example.com/profile-${threads.length + 1}.jpg`,
+      },
+      last_message: {
+        sender_id: `user-${threads.length + 1}`,
+        receiver_id: 'user-1',
+        listing_id: `listing-${threads.length + 1}`,
+        content: `Start of conversation with ${newParticipant}`,
+        sent_at: Date.now(),
+      },
+    }
+
+    setThreads([newThread, ...threads])
+    setSelectedListingId(newThread.listing_id)
+    setOpen(false)
+    setNewParticipant('')
   }
 
   const handleSendMessage = () => {
@@ -135,7 +168,7 @@ const Messaging: React.FC = () => {
 
   return (
     <Box sx={{ flexGrow: 1, maxHeight: '90vh' }}>
-      <Grid container spacing={2} sx={{ height: '100%' }}>
+      <Grid container sx={{ height: '100%' }}>
         <Grid item xs={3} sx={{ height: '100%' }}>
           <MessageSidebar
             selectedListingId={selectedListingId}
@@ -150,10 +183,24 @@ const Messaging: React.FC = () => {
           >
             <Box
               sx={{
+                height: '64px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                borderBottom: '1px solid #f0f0f0',
+                padding: '0 16px',
+              }}
+            >
+              <Typography variant="h6">
+                {selectedConversation?.other_participant.name}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
                 flexGrow: 1,
                 overflowY: 'auto',
                 padding: 2,
-                maxHeight: 'calc(100vh - 64px)',
+                maxHeight: 'calc(100vh - 128px)', // Adjust based on header and input heights
               }}
             >
               {selectedConversation ? (
@@ -197,6 +244,26 @@ const Messaging: React.FC = () => {
           </Box>
         </Grid>
       </Grid>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>New Conversation</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter the name of the participant to start a new conversation.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Participant Name"
+            fullWidth
+            value={newParticipant}
+            onChange={(e) => setNewParticipant(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleCreateNewConversation}>Create</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   )
 }
