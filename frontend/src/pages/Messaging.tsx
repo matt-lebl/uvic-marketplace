@@ -135,6 +135,7 @@ const Messaging: React.FC = () => {
 
     setThreads([...threads])
     setMessageInput('')
+    sortThreads()
     scrollToBottom()
   }
 
@@ -166,13 +167,13 @@ const Messaging: React.FC = () => {
     scrollToBottom()
   }, [selectedListingId, messages[selectedListingId]])
 
-  useEffect(() => {
+  const sortThreads = () => {
     setThreads((prevThreads) =>
       [...prevThreads].sort(
         (a, b) => b.last_message.sent_at - a.last_message.sent_at
       )
     )
-  }, [threads])
+  }
 
   return (
     <Box sx={{ flexGrow: 1, maxHeight: '90vh' }}>
@@ -243,7 +244,11 @@ const Messaging: React.FC = () => {
                   onKeyDown={handleKeyDown}
                   onChange={(e) => setMessageInput(e.target.value)}
                 />
-                <IconButton color="primary" onClick={handleSendMessage}>
+                <IconButton
+                  aria-label="send message"
+                  color="primary"
+                  onClick={handleSendMessage}
+                >
                   <SendIcon />
                 </IconButton>
               </Box>
