@@ -108,6 +108,14 @@ async def recommendations(page: int = Query(1),
     # limit the number of recommendations to the limit
     final_recommendations = formatted_recommendations[:limit]
 
+    # Testing
+    if not formatted_recommendations:
+        print("No recommendations were made.")
+    else:
+        print("These are the listing IDs of the formatted recommendations:")
+        for recommendation in formatted_recommendations:
+            print(recommendation["listingID"])
+
     return final_recommendations
 
 
@@ -186,8 +194,8 @@ async def record_click(click_data: ClickData = Body(...), db: Session = Depends(
 
 
 # Create a temp add user endpoint for testing
-@router.post("/temp_add_user")
-async def add_user(user_id: int, db: Session = Depends(get_db)):
+@router.post("/add_user")
+async def add_user(user_id: str, db: Session = Depends(get_db)):
     """
     Temporary API endpoint to add a user ID to the SQL user database.
     """
@@ -200,4 +208,4 @@ async def add_user(user_id: int, db: Session = Depends(get_db)):
     new_user = DB_User(user_id=user_id)
     db.add(new_user)
     db.commit()
-    return {"message": "User added successfully", "userID": str(user_id)}
+    return {"message": "User added successfully", "userID": user_id}
