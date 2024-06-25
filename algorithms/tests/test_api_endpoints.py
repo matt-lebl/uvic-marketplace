@@ -1,5 +1,6 @@
 import httpx
 import pytest
+import asyncio
 from app.schemas import Listing
 from app.elasticsearch_wrapper import ElasticsearchWrapper
 
@@ -8,6 +9,27 @@ BASE_URL = "http://fastapi:80"
 ELASTICSEARCH_BASE_URL = "http://elasticsearch:9200"
 
 ElasticsearchWrapper.use_test_instance()
+
+async def add_user_and_click_interactions(client, user_id, interactions):
+    # Add new user
+    new_user_response = await client.post(
+        f"/api/add_user?user_id={user_id}",
+        headers={"authorization": "Bearer testtoken"}  # TODO: add userID to authorization token header
+    )
+    assert new_user_response.status_code in [200, 400] # 400 is for user already exists
+
+    # Add click interactions
+    for interaction in interactions:
+        click_response = await client.post(
+            "/api/record_click",
+            json=interaction,
+            headers={"authorization": "Bearer testtoken"}
+        )
+        assert click_response.status_code == 200
+
+    # wait for the user and interactions to be added to the database
+    await asyncio.sleep(1)
+
 
 @pytest.mark.asyncio
 async def test_create_listing_endpoint():
@@ -72,13 +94,19 @@ async def test_search_endpoint():
 @pytest.mark.asyncio
 async def test_recommendations_endpoint():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
+        # add userID and click interactions
+        temp_user_id = "1"
+        click_interactions = [
+            {"userID": "1", "listingID": "randomID1234"},
+        ]
+        await add_user_and_click_interactions(client, temp_user_id, click_interactions)
+
         response = await client.get(
             "/api/recommendations",
-            headers={"authorization": "Bearer testtoken"}
+            headers={"authorization": "Bearer testtoken"} # TODO: add userID to header
         )
         assert response.status_code == 200
         #assert isinstance(response.json(), list)
-
 
 
 
@@ -214,7 +242,7 @@ async def test_search_invalid_request():
 @pytest.mark.asyncio
 async def test_recommendations_response():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
-        # Arrange - List new item & recommendation query
+        # Arrange - List new item & userID & recommendation query
         listing_data = {
             "listing": {
                 "listingID": "abc123",
@@ -236,7 +264,7 @@ async def test_recommendations_response():
         # Delete the listing if it already exists
         delete_response = await client.delete(
             "/api/listing/abc123",
-            headers={"authorization": "Bearer testtoken"}
+            headers={"authorization": "Bearer testtoken"} 
         )
 
         post_response = await client.post(
@@ -246,12 +274,19 @@ async def test_recommendations_response():
         )
         assert post_response.status_code == 201  # Ensure the listing was created successfully
 
+        # add userID and click interactions
+        temp_user_id = "1"
+        click_interactions = [
+            {"userID": "1", "listingID": "abc123"},
+        ]
+        await add_user_and_click_interactions(client, temp_user_id, click_interactions)
+
+        # Act - Get recommendations
         query_params = {
             "page": 1,
             "limit": 5
         }
         
-        # Act - Get recommendations
         response = await client.get(
             "/api/recommendations", 
             params=query_params,

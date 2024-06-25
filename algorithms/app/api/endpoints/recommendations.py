@@ -48,9 +48,8 @@ async def recommendations(page: int = Query(1),
     # Check if the user_id exists in the database
     user_exists = db.query(DB_User).filter(DB_User.user_id == user_id).first()
     if not user_exists:
-        return []
+        raise HTTPException(status_code=404, detail="User ID not found")
 
-    # TODO: get recommendations based on userID
     # Get the size of the item embeddings from the elastic search db
     try:
         first_entry = es.search(index="listings_index", size=1)['hits']['hits'][0]
@@ -91,7 +90,7 @@ async def recommendations(page: int = Query(1),
     for listing in recommendations: 
 
         recommendation = {}
-        recommendation["listingID"] = listing.listing_id # TODO: refactor listing_id type to string (ES DB!)
+        recommendation["listingID"] = listing.listing_id 
 
         es_listing = es.get(index="listings_index", id=listing.listing_id)
         recommendation["title"] = es_listing['_source']['title']
@@ -105,23 +104,11 @@ async def recommendations(page: int = Query(1),
         
         formatted_recommendations.append(recommendation)
 
+
     # limit the number of recommendations to the limit
     final_recommendations = formatted_recommendations[:limit]
 
-    # Testing
-    if not formatted_recommendations:
-        print("No recommendations were made.")
-    else:
-        print("These are the listing IDs of the formatted recommendations:")
-        for recommendation in formatted_recommendations:
-            print(recommendation["listingID"])
-
     return final_recommendations
-
-
-    # TODO: return recommendations
-
-    #TEST
 
     # Hardcoded response data
     return [
@@ -136,7 +123,6 @@ async def recommendations(page: int = Query(1),
             "imageUrl": "https://example.com/image", # optional 
         }
     ]
-
 
 # API FIELDS THAT UPDATE THE RECOMMENDATION
 class ClickData(BaseModel):
