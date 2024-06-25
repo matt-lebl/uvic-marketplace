@@ -66,7 +66,7 @@ const messageThreads: MessageThread[] = generateMessageThreads(25)
 const messages: Record<string, Message[]> = {}
 
 messageThreads.forEach((thread) => {
-  messages[thread.listing_id] = generateMessagesForThread(thread.listing_id, 10)
+  messages[thread.listing_id] = generateMessagesForThread(thread.listing_id, 20)
 })
 
 const Messaging: React.FC = () => {
@@ -77,7 +77,7 @@ const Messaging: React.FC = () => {
   const [threads, setThreads] = useState<MessageThread[]>(messageThreads)
   const [open, setOpen] = useState<boolean>(false)
   const [newParticipant, setNewParticipant] = useState<string>('')
-  const messageEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const handleNewConversation = () => {
     setOpen(true)
@@ -106,6 +106,9 @@ const Messaging: React.FC = () => {
     setSelectedListingId(newThread.listing_id)
     setOpen(false)
     setNewParticipant('')
+
+    messages[newThread.listing_id] = []
+    scrollToBottom()
   }
 
   const handleSendMessage = () => {
@@ -135,8 +138,11 @@ const Messaging: React.FC = () => {
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      messageEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, 100)
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop =
+          messagesContainerRef.current.scrollHeight
+      }
+    }, 0)
   }
 
   const handleSelectMessage = (listing_id: string) => {
@@ -155,16 +161,16 @@ const Messaging: React.FC = () => {
   )
 
   useEffect(() => {
+    scrollToBottom()
+  }, [selectedListingId, messages[selectedListingId]])
+
+  useEffect(() => {
     setThreads((prevThreads) =>
       [...prevThreads].sort(
         (a, b) => b.last_message.sent_at - a.last_message.sent_at
       )
     )
   }, [threads])
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages[selectedListingId]])
 
   return (
     <Box sx={{ flexGrow: 1, maxHeight: '90vh' }}>
@@ -200,23 +206,19 @@ const Messaging: React.FC = () => {
                 flexGrow: 1,
                 overflowY: 'auto',
                 padding: 2,
-                maxHeight: 'calc(100vh - 128px)', // Adjust based on header and input heights
+                maxHeight: 'calc(100vh - 128px)',
               }}
+              ref={messagesContainerRef}
             >
-              {selectedConversation ? (
-                <List>
-                  {messages[selectedListingId].map((message, index) => (
-                    <MessageBubble
-                      key={index}
-                      content={message.content}
-                      isSender={message.sender_id === 'user-1'}
-                    />
-                  ))}
-                  <div ref={messageEndRef} />
-                </List>
-              ) : (
-                <Typography variant="h6">Select a conversation</Typography>
-              )}
+              <List>
+                {messages[selectedListingId].map((message, index) => (
+                  <MessageBubble
+                    key={index}
+                    content={message.content}
+                    isSender={message.sender_id === 'user-1'}
+                  />
+                ))}
+              </List>
             </Box>
             {selectedConversation && (
               <Box
