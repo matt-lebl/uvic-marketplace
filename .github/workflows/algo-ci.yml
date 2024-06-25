@@ -48,7 +48,7 @@ jobs:
     - name: Set env 2
       run: echo "ELASTICSEARCH_URL=http://elasticsearch:9200" >> $GITHUB_ENV 
     - name: Set env 3
-      run: echo "POSTGRES_DB=mydatabase >> $GITHUB_ENV 
+      run: echo "POSTGRES_DB=mydatabase" >> $GITHUB_ENV 
     - name: Set env 4
       run: echo "POSTGRES_USER=user" >> $GITHUB_ENV 
     - name: Set env 5
