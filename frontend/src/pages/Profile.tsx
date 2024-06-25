@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import './App.css'
 import {
   Box,
   Typography,
@@ -126,8 +127,6 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
 
   const updateListingsPerPage = () => {
     const width = window.innerWidth
-    console.log(width)
-
     if (width > 1740) {
       setListingsPerPage(3)
     } else if (width > 1200) {
@@ -158,7 +157,7 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             src={user.profileUrl}
-            sx={{ width: 100, height: 100, marginRight: 8 }}
+            sx={{ width: 150, height: 150, marginRight: 8 }}
           />
           {editMode ? (
             <Box>
@@ -188,18 +187,25 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
-                justifyContent: 'space-evenly',
               }}
             >
-              <Typography variant="h6" fontSize="4rem">
-                {user.name}
-              </Typography>
-              <Typography variant="h4" fontSize="1.5rem">
-                {user.email}
-              </Typography>
-              <Typography variant="h4" fontSize="1rem">
-                {user.bio}
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h6" fontSize="4rem">
+                  {user.name}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4" fontSize="1.5rem">
+                  {user.email}
+                </Typography>
+              </Box>
+              <Box
+                sx={{ display: 'flex', alignItems: 'center', paddingTop: 2 }}
+              >
+                <Typography variant="h4" fontSize="1rem">
+                  {user.bio}
+                </Typography>
+              </Box>
             </Box>
           )}
         </Box>
