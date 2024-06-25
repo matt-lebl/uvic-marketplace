@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import TabMenu from './TabMenu'
+import TabMenu from '../../pages/Components/TabMenu'
 
 describe('TabMenu', () => {
   const id = 'tabs-id'

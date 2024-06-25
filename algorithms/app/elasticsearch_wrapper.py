@@ -63,7 +63,8 @@ class ElasticsearchWrapper:
                             "properties": {
                                 "url": { "type": "keyword" }
                             }
-                        }
+                        },
+                        "embedding": { "type": "dense_vector", "dims": 768 }
                     }
                 }
             })

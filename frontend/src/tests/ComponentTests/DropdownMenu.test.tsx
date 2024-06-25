@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, within } from '@testing-library/react'
-import DropdownMenu from './DropdownMenu'
+import DropdownMenu from '../../pages/Components/DropdownMenu'
 
 describe('Dropdown', () => {
   const id = 'dropdown-id'

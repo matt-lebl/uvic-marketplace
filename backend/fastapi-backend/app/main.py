@@ -1,16 +1,18 @@
-"""
+r"""
 fastapi-backend\main.py
 
 >> Recieves traffic from REVERSE-PROXY, does everything other than DATA-LAYER or websocket connections, sends traffic to DATA-LAYER. >>
 """
+
 from urllib.parse import urljoin
 from fastapi import FastAPI, HTTPException
 import httpx
 
-from routers import listings
+from routers import listings, users
 
 app = FastAPI()
 app.include_router(listings.listingsRouter)
+app.include_router(users.userRouter)
 
 # TODO: Update for prod
 data_layer_url = "http://localhost:8002"
@@ -21,7 +23,9 @@ TODO:
 - Reject all paths not used for:
     - data-layer
     - TODO: other services
-""" 
+"""
+
+
 # Routes for data-layer
 @app.get("/api/{path:path}")
 async def data_layer_request(path: str | None):

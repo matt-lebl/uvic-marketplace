@@ -1,4 +1,5 @@
 from schemas import NewListing, NewReview, NewUser
+from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
 
@@ -15,12 +16,13 @@ class DataSyncKafkaProducer:
     def __init__(self, logError=False, disable=False):
         DataSyncKafkaProducer.logError = logError
 
+        self.disabled = disable
+
         if disable:
-            self.disabled = True
             return
 
         self.conf = {
-            "bootstrap.servers": "localhost:29092, localhost:39092, localhost:49092",
+            "bootstrap.servers": config("KAFKA_BOOTSTRAP_SERVERS"),
             "client.id": random_uuid(),
         }
         self.producer = Producer(self.conf)
@@ -30,7 +32,7 @@ class DataSyncKafkaProducer:
             return
         self.producer.produce(
             topic,
-            value=message,
+            value=str(message),
             callback=(
                 DataSyncKafkaProducer.delivery_report
                 if DataSyncKafkaProducer.logError
@@ -42,7 +44,7 @@ class DataSyncKafkaProducer:
     # Listings
     # POST /api/listing/
     def push_new_listing(self, listing: NewListing):
-        self.push_message("test1", listing)
+        self.push_message("create-listing", listing)
 
     # PATCH /api/listing/{id}
     def push_updated_listing(self, listingID: int, listing: NewListing):
@@ -55,8 +57,8 @@ class DataSyncKafkaProducer:
         pass
 
     # GET /api/listing/
-    def push_viewed_listing(self, listingID: int, userID: int):
-        self.push_message("test2", {"listingID": listingID, "userID": userID})
+    def push_viewed_listing(self, listingID: int, userID: int = 0):
+        self.push_message("view-listing", {"listingID": listingID, "userID": userID})
 
     # Reviews
     # POST /api/listing/review/

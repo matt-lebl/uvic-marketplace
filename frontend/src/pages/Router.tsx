@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { Routes, Route, Outlet } from 'react-router-dom'
-import Index from './Index'
 import Login from './Login'
 import Registration from './Registration'
 import Home from './Home'
@@ -21,10 +20,9 @@ const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-        <Route index element={<Index />} />
+        <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Registration />} />
-        <Route path="home" element={<Home />} />
         <Route path="profile" element={<Profile />} />
         <Route path="listing" element={<Listing />} />
       </Route>

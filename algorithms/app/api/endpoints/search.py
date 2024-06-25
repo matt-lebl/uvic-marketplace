@@ -24,11 +24,13 @@ async def search(authorization: str = Header(...),
                  page: Optional[int] = Query(1),
                  limit: Optional[int] = Query(20)):
     if query:
-        # Generate the query embedding
         query_embedding = generate_embedding(query)
 
-        # Create an elastic search for searching listings
+        # Adjust the weight given to the lexical search and set a minimum score for result relevance
+        min_score_threshold = 0.76
+
         search_body = {
+            "min_score": min_score_threshold,
             "query": {
                 "bool": {
                     "should": [
@@ -36,7 +38,7 @@ async def search(authorization: str = Header(...),
                             "script_score": {
                                 "query": {"match_all": {}},
                                 "script": {
-                                    "source": "cosineSimilarity(params.query_vector, 'embedding') + 1.0",
+                                    "source": "cosineSimilarity(params.query_vector, 'embedding')",
                                     "params": {"query_vector": query_embedding}
                                 }
                             }
@@ -44,7 +46,8 @@ async def search(authorization: str = Header(...),
                         {
                             "multi_match": {
                                 "query": query,
-                                "fields": ["title", "description"]
+                                "fields": ["title^3", "description^2"],  # Boost factors added
+                                "type": "best_fields"
                             }
                         }
                     ],
@@ -54,44 +57,24 @@ async def search(authorization: str = Header(...),
             "from": (page - 1) * limit,
             "size": limit
         }
-        
-        # Note: the order matters: running "lexical" first prioritizes exact textual matches, semantic prioritizes similar content then sorts lexically. 
-        
+
         # Perform the search query
-        #response = es.search(index="listings_index", body=search_body)
+        response = es.search(index="listings_index", body=search_body)
 
-        # PLACE HOLDER ELASTICSEARCH RESPONSE
-        response = {"hits": {"hits": []}}
-
-
+        scores = [hit['_score'] for hit in response['hits']['hits']]
+        print(scores)
 
         # Extract documents from the response
         listings = [] 
         for doc in response['hits']['hits']:
-            listings.append(Listing(id=doc["_id"], title=doc["_source"]["title"], 
+            listings.append(ListingSummary(listingID=doc["_id"], title=doc["_source"]["title"], 
                                     description=doc["_source"].get("description"), 
                                     price=doc["_source"]["price"], 
-                                    location=doc["_source"]["location"]))
+                                    location=doc["_source"]["location"],
+                                    dateCreated="2024-05-23T15:30:00Z"))
             
         print("Listings; {}".format(listings))
-        #return listings
-
-
-        # PLACE HOLDER SEARCH RESPONSE
-        items = []
-        items.append(ListingSummary(
-            listingID="A23F29039B23",
-            sellerID="A23F29039B23",  # optional
-            sellerName="A23F29039B23",  # optional
-            title="Used Calculus Textbook",
-            description="No wear and tear, drop-off available.",  # optional
-            price=50,
-            dateCreated="2024-05-23T15:30:00Z",
-            imageUrl="https://example.com/image"  # optional
-        ))
-        totalItems = 1
-
-        return SearchResponse(items=items, totalItems=totalItems)
+        return SearchResponse(items=listings, totalItems=len(listings))
 
 
     else:

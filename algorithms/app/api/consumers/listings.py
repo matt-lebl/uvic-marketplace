@@ -15,7 +15,7 @@ async def create_listing(data: dict, db: Session):
     listing_data = data['listing']
 
     # Generate embedding for the listing
-    embedding = generate_embedding(listing_data['description']) 
+    embedding = generate_embedding(listing_data['title'] + ' ' + listing_data['description']) 
     listing_data['embedding'] = embedding
 
     # Format location for Elasticsearch
@@ -54,7 +54,6 @@ async def create_listing(data: dict, db: Session):
     print("this is the response: ")
     print(response)
 
-    # Construct the response object by converting the dict back to a Pydantic model
     return response
 
 
