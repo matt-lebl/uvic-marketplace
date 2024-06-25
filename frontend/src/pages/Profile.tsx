@@ -149,58 +149,62 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
         sx={{
           display: 'flex',
           alignItems: 'center',
-          marginBottom: 2,
+          marginBottom: 12,
           flexDirection: 'row',
           width: '100%',
+          justifyContent: 'space-between',
         }}
       >
-        <Avatar
-          src={user.profileUrl}
-          sx={{ width: 100, height: 100, marginRight: 2 }}
-        />
-        {editMode ? (
-          <Box>
-            <TextField
-              label="Name"
-              defaultValue={user.name}
-              fullWidth
-              sx={{ marginBottom: 1 }}
-            />
-            <TextField
-              label="Email"
-              defaultValue={user.email}
-              fullWidth
-              sx={{ marginBottom: 1 }}
-            />
-            <TextField
-              label="Bio"
-              defaultValue={user.bio}
-              fullWidth
-              multiline
-              rows={4}
-            />
-          </Box>
-        ) : (
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              justifyContent: 'space-evenly',
-            }}
-          >
-            <Typography variant="h6" fontSize="4rem">
-              {user.name}
-            </Typography>
-            <Typography variant="h4" fontSize="1.5rem">
-              {user.email}
-            </Typography>
-            <Typography variant="h4" fontSize="1rem">
-              {user.bio}
-            </Typography>
-          </Box>
-        )}
-        <Button onClick={toggleEditMode} sx={{ marginLeft: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar
+            src={user.profileUrl}
+            sx={{ width: 100, height: 100, marginRight: 8 }}
+          />
+          {editMode ? (
+            <Box>
+              <TextField
+                label="Name"
+                defaultValue={user.name}
+                fullWidth
+                sx={{ marginBottom: 1 }}
+              />
+              <TextField
+                label="Email"
+                defaultValue={user.email}
+                fullWidth
+                sx={{ marginBottom: 1 }}
+              />
+              <TextField
+                label="Bio"
+                defaultValue={user.bio}
+                fullWidth
+                multiline
+                rows={4}
+              />
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                justifyContent: 'space-evenly',
+              }}
+            >
+              <Typography variant="h6" fontSize="4rem">
+                {user.name}
+              </Typography>
+              <Typography variant="h4" fontSize="1.5rem">
+                {user.email}
+              </Typography>
+              <Typography variant="h4" fontSize="1rem">
+                {user.bio}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        <Button onClick={toggleEditMode} sx={{ alignSelf: 'flex-start' }}>
           {editMode ? 'Save' : 'Edit'}
         </Button>
       </Box>
