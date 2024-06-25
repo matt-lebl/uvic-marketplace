@@ -12,6 +12,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  ListItemAvatar,
+  Avatar,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
@@ -175,7 +177,7 @@ const Messaging: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1, maxHeight: '90vh' }}>
       <Grid container sx={{ height: '100%' }}>
-        <Grid item xs={3} sx={{ height: '100%' }}>
+        <Grid item xs={3} sx={{ height: '100%', maxHeight: '100vh' }}>
           <MessageSidebar
             selectedListingId={selectedListingId}
             onCreateMessage={handleNewConversation}
@@ -184,19 +186,22 @@ const Messaging: React.FC = () => {
           />
         </Grid>
         <Grid item xs={9}>
-          <Box
-            sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}
-          >
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '90%' }}>
             <Box
               sx={{
-                height: '64px',
+                maxHeight: '100vh',
                 display: 'flex',
+                flexGrow: 0,
                 alignItems: 'center',
-                justifyContent: 'space-between',
                 borderBottom: '1px solid #f0f0f0',
-                padding: '0 16px',
+                padding: '24px',
               }}
             >
+              <ListItemAvatar>
+                <Avatar
+                  src={selectedConversation?.other_participant.profilePicture}
+                />
+              </ListItemAvatar>
               <Typography variant="h6">
                 {selectedConversation?.other_participant.name}
               </Typography>
@@ -206,7 +211,7 @@ const Messaging: React.FC = () => {
                 flexGrow: 1,
                 overflowY: 'auto',
                 padding: 2,
-                maxHeight: 'calc(100vh - 128px)',
+                maxHeight: '70vh',
               }}
               ref={messagesContainerRef}
             >
