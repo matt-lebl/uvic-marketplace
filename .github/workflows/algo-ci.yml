@@ -4,13 +4,13 @@ on:
   push:
     branches:
       - resops/workflow-test
-    # paths:
-      # - 'algs/**'
+    paths:
+      - 'algorithms/**'
   pull_request:
     branches:
       - resops/workflow-test
-    # paths:
-      # - 'algs/**'
+    paths:
+      - 'algorithms/**'
       
 
 # permissions:
