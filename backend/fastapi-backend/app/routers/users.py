@@ -75,10 +75,7 @@ async def login(loginRequest: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
-@userRouter.post("/logout")
-async def logout(authUserID: str):
-    # TODO: Implement user logout
-    return {"TODO": "User logged out", "Reqested by": authUserID}
+# Logout need not be implemented, it is implemented in RP
 
 
 @userRouter.post("/send-confirmation-email")
