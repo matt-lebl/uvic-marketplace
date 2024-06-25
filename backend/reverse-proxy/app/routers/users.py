@@ -16,18 +16,16 @@ usersRouter = APIRouter(
 async def create_user(
     user: NewUser,
 ):
-    response_backend = await send_request_to_backend(
-        "user", "POST", user.model_dump()
-    ).json()
-    return response_backend
+    response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
+    return response_backend.json()
 
 
 @usersRouter.post("/reset-password")
 async def reset_password(resetPassword: ResetPassword):
     response_backend = await send_request_to_backend(
         "user/reset-password", "POST", resetPassword.model_dump()
-    ).json()
-    return response_backend
+    )
+    return response_backend.json()
 
 
 @usersRouter.post("/login")
