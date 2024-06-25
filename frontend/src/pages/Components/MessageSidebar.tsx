@@ -62,6 +62,7 @@ const MessageSidebar: React.FC<MessageSidebarProps> = ({
               alignItems: 'center',
             }}
             onClick={onCreateMessage}
+            data-testid="create-message-button"
           >
             <ModeRoundedIcon />
           </ButtonBase>

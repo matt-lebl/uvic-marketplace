@@ -1,61 +1,99 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 import MessageSidebar from '../../pages/Components/MessageSidebar'
 
 const messages = [
   {
-    listing_id: 'L23434B090934',
+    listing_id: 'listing-1',
     other_participant: {
-      user_id: 'A23434B090934',
-      name: 'John Doe',
-      profilePicture: 'https://example.com/image1.png',
+      user_id: 'user-1',
+      name: 'User 1',
+      profilePicture: 'https://example.com/profile-1.jpg',
     },
     last_message: {
-      sender_id: 'A23434B090934',
-      receiver_id: 'A23434B090936',
-      listing_id: 'L23434B090934',
-      content: 'Hello, is this still available?',
-      sent_at: 1625247600,
+      sender_id: 'user-1',
+      receiver_id: 'user-2',
+      listing_id: 'listing-1',
+      content: 'This is the last message for listing 1',
+      sent_at: Date.now(),
+    },
+  },
+  {
+    listing_id: 'listing-2',
+    other_participant: {
+      user_id: 'user-2',
+      name: 'User 2',
+      profilePicture: 'https://example.com/profile-2.jpg',
+    },
+    last_message: {
+      sender_id: 'user-2',
+      receiver_id: 'user-1',
+      listing_id: 'listing-2',
+      content: 'This is the last message for listing 2',
+      sent_at: Date.now(),
     },
   },
 ]
 
-test('renders messages in the sidebar', () => {
-  const { getByText } = render(
-    <MessageSidebar
-      messages={messages}
-      onSelectMessage={() => {}}
-      onCreateMessage={() => {}}
-      selectedListingId="L23434B090934"
-    />
-  )
-  expect(getByText('John Doe')).toBeInTheDocument()
-})
+describe('MessageSidebar', () => {
+  it('renders conversations list', () => {
+    const { getByText } = render(
+      <MessageSidebar
+        messages={messages}
+        onCreateMessage={() => {}}
+        onSelectMessage={() => {}}
+        selectedListingId="listing-1"
+      />
+    )
 
-test('triggers onSelectMessage handler when a message is clicked', () => {
-  const handleSelectMessage = jest.fn()
-  const { getByText } = render(
-    <MessageSidebar
-      messages={messages}
-      onSelectMessage={handleSelectMessage}
-      onCreateMessage={() => {}}
-      selectedListingId="L23434B090934"
-    />
-  )
-  fireEvent.click(getByText('John Doe'))
-  expect(handleSelectMessage).toHaveBeenCalledTimes(1)
-})
+    expect(getByText('Conversations')).toBeInTheDocument()
+    expect(getByText('User 1')).toBeInTheDocument()
+    expect(getByText('User 2')).toBeInTheDocument()
+  })
 
-test('triggers onCreateMessage handler when the create button is clicked', () => {
-  const handleCreateMessage = jest.fn()
-  const { getByRole } = render(
-    <MessageSidebar
-      messages={messages}
-      onSelectMessage={() => {}}
-      onCreateMessage={handleCreateMessage}
-      selectedListingId="L23434B090934"
-    />
-  )
-  fireEvent.click(getByRole('button'))
-  expect(handleCreateMessage).toHaveBeenCalledTimes(1)
+  it('calls onCreateMessage when new message button is clicked', () => {
+    const onCreateMessage = jest.fn()
+    const { getByTestId } = render(
+      <MessageSidebar
+        messages={messages}
+        onCreateMessage={onCreateMessage}
+        onSelectMessage={() => {}}
+        selectedListingId="listing-1"
+      />
+    )
+
+    fireEvent.click(getByTestId('create-message-button'))
+    expect(onCreateMessage).toHaveBeenCalled()
+  })
+
+  it('calls onSelectMessage when a conversation is clicked', () => {
+    const onSelectMessage = jest.fn()
+    const { getByText } = render(
+      <MessageSidebar
+        messages={messages}
+        onCreateMessage={() => {}}
+        onSelectMessage={onSelectMessage}
+        selectedListingId="listing-1"
+      />
+    )
+
+    fireEvent.click(getByText('User 2'))
+    expect(onSelectMessage).toHaveBeenCalledWith('listing-2')
+  })
+
+  it('highlights the selected conversation', () => {
+    const { getByText } = render(
+      <MessageSidebar
+        messages={messages}
+        onCreateMessage={() => {}}
+        onSelectMessage={() => {}}
+        selectedListingId="listing-1"
+      />
+    )
+
+    const selectedConversation =
+      getByText('User 1').parentElement?.parentElement
+    expect(selectedConversation).toHaveStyle('background-color: #f0f0f0')
+  })
 })
