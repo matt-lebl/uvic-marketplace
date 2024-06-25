@@ -1,3 +1,4 @@
+import uuid
 from fastapi import APIRouter, HTTPException
 from schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
 from services.data_layer_connect import send_request_to_data_layer
@@ -13,15 +14,26 @@ userRouter = APIRouter(
 @userRouter.post("/")
 async def create_user(user: NewUser):
 
-    path = "users/"
-    response = await send_request_to_data_layer(path, "POST", user.model_dump())
-    return response.json()
+    # return user.model_dump()
+
+    path = "user/"
+
+    user = user.model_dump()
+
+    # TODO: Implement TOTP secret generation and storage
+    totp_secret = str(uuid.uuid4())
+    user["totp_secret"] = totp_secret
+
+    response = await send_request_to_data_layer(path, "POST", user)
+    response = response.json()
+    response["totp_secret"] = totp_secret
+    return response
 
 
 @userRouter.get("/{id}")
 async def get_user(id: str, authUserID: str):
 
-    path = "users/" + id
+    path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
     return response.json()
 
@@ -29,7 +41,7 @@ async def get_user(id: str, authUserID: str):
 @userRouter.patch("/")
 async def edit_user(user: UpdateUser, authUserID: str):
 
-    path = "users/" + authUserID
+    path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
     return response.json()
 
@@ -37,7 +49,7 @@ async def edit_user(user: UpdateUser, authUserID: str):
 @userRouter.delete("/")
 async def delete_user(authUserID: str):
 
-    path = "users/" + authUserID
+    path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "DELETE")
     return response.json()
 
@@ -57,6 +69,7 @@ async def login(loginRequest: LoginRequest):
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
         if loginResponse.status_code == 200:
+            # TODO: Remove totp_secret from response
             return loginResponse.json()
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid credentials")
