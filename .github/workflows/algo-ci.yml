@@ -2,13 +2,16 @@ name: Algorithms CI
 
 on:
   push:
-    paths:
-      # - 'algs/**'
+    branches:
       - resops/workflow-test
+    # paths:
+      # - 'algs/**'
   pull_request:
-    paths:
-      # - 'algs/**'
+    branches:
       - resops/workflow-test
+    # paths:
+      # - 'algs/**'
+      
 
 # permissions:
 #   contents: read
