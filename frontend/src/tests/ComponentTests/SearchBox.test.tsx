@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, fireEvent } from '@testing-library/react'
-import Searchbox from './SearchBox'
+import Searchbox from '../../pages/Components/SearchBox'
 
 describe('<Searchbox />', () => {
   it('renders without crashing', () => {

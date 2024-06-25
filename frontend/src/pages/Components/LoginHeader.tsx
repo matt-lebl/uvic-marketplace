@@ -22,7 +22,7 @@ export default function LoginHeader() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Login Header
+            UVic Marketplace
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>

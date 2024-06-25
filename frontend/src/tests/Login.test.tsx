@@ -6,7 +6,12 @@ import Login from '../pages/Login'
 // Invoke with `yarn test` or `npm test`
 
 test('renders login page', () => {
+  // Test if the login page renders
   render(<Login />)
-  const linkElement = screen.getByText(/Login Page/i)
+  const linkElement = screen.getByText(/Login/i)
   expect(linkElement).toBeInTheDocument()
+
+  // Test if the login form renders
+  const loginForm = screen.getByTestId('login-form')
+  expect(loginForm).toBeInTheDocument()
 })

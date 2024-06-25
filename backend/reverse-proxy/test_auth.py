@@ -15,6 +15,7 @@ EXPIRY_TIME=600
 
 """
 
+
 @app.get("/protected-route", dependencies=[Depends(JWTBearer())])
 async def protected_route():
     return {"message": "You are authenticated"}

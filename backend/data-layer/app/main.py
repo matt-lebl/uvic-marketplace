@@ -1,16 +1,17 @@
-"""
+r"""
 data-layer\main.py
 
 >> Recieves traffic from FASTAPI-BACKEND, handles all data interactions. 
 """
 from fastapi import FastAPI, HTTPException, Body, Depends
-from routers import listings, messages, users
+from routers import listings, messages, users, reviews
 
 app = FastAPI()
 
 app.include_router(listings.router)
 app.include_router(messages.router)
 app.include_router(users.router)
+app.include_router(reviews.router)
 
 
 @app.get("/api/{path:path}")

@@ -16,6 +16,44 @@ class UserProfile(BaseModel):
     pass
 
 
+class UpdateUser(BaseModel):
+    """
+    TODO: add description
+    """
+
+    username: str = Field(None, description="Username of the user", example="john_doe")
+    name: str = Field(None, description="Name of the user", example="John Doe")
+    bio: str = Field(None, description="TODO", example="TODO")
+    password: str = Field(
+        None, description="Hashed? password of the user", example="securepassword123"
+    )
+    profilepictureURL: str = Field(
+        None,
+        description="URL of the user's profile picture",
+        example="https://image.com/2202",
+    )
+
+
+class ResetPassword(BaseModel):
+    """
+    The ResetPassword schema is used when resetting a user's password.
+    """
+
+    email: str = Field(
+        None, description="Email address of the user", example="dd@uvic.ca"
+    )
+
+
+class EmailModel(BaseModel):
+    """
+    The Email schema is used when sending an email.
+    """
+
+    email: str = Field(
+        None, description="Email address of the user", example="dd@uvic.ca"
+    )
+
+
 class Location(BaseModel):
     """
     TODO: add description
@@ -179,19 +217,35 @@ class ListingSummary(BaseModel):
 
 class LoginRequest(BaseModel):
     """
-    TODO: add description
+    The LoginRequest schema is used when logging in a user.
     """
 
-    # TODO
-    pass
+    email: str = Field(
+        None, description="Email address of the user", example="hubert@gmail.com"
+    )
+    password: str = Field(
+        None, description="Hashed? password of the user", example="securepassword123"
+    )
+    totp: str = Field(
+        None,
+        description="Temporary One Time Password(TOTP) from an MFA application",
+        example="123456",
+    )
 
 
 class NewUser(BaseModel):
     """
-    TODO: add description
+    The NewUser schema is used when signing up a new user.
     """
 
-    # TODO
+    username: str = Field(None, description="Username of the user", example="john_doe")
+    name: str = Field(None, description="Name of the user", example="John Doe")
+    email: EmailStr = Field(
+        None, description="Email address of the user", example="Jdoe@uvic.ca"
+    )
+    password: str = Field(
+        None, description="Hashed? password of the user", example="securepassword123"
+    )
     pass
 
 
