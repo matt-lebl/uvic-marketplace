@@ -49,6 +49,6 @@ describe('Header', () => {
     expect(history.location.pathname).toBe('/listing');
 
     fireEvent.click(getByText('+'));
-    expect(history.location.pathname).toBe('/login');
+    expect(history.location.pathname).toBe('/new-listing');
   })
 })
