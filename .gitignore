@@ -20,4 +20,12 @@ backend/services/.env
 
 # __pycache__
 __pycache__/
-.pytest_cache/
+*/.pytest_cache/*
+
+# docker volumes
+elastic_cache/*
+elastic_data/*
+postgres_data/*
+*/elastic_cache/*
+*/elastic_data/*
+*/postgres_data/*
