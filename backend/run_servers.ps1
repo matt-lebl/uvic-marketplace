@@ -1,5 +1,12 @@
-# Works for me using powershell *not windows powershell, you can download
-# powershell in the microsoft store or replace pwsh with powershell
+# Function to check if Docker is running and start it if not
+function Start-Docker {
+    $dockerProcess = Get-Process -Name "Docker Desktop" -ErrorAction SilentlyContinue
+    if ($null -eq $dockerProcess) {
+        Write-Output "Starting Docker Desktop..."
+        Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        Start-Sleep -Seconds 10 # Adjust the sleep duration as needed
+    }
+}
 
 # Define the directories and their respective virtual environments
 $servers = @{
@@ -22,6 +29,15 @@ function Start-Server {
         python ./app/main.py
     "
 }
+
+# Start Docker Desktop if it's not already running
+Start-Docker
+
+# Start a new PowerShell window for Docker
+Start-Process pwsh -ArgumentList "-NoExit", "-Command", "
+    cd db;
+    docker-compose up
+"
 
 # Loop through each server and start it in a new PowerShell window
 foreach ($server in $servers.Keys) {
