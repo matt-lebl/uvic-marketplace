@@ -4,14 +4,17 @@ import { BrowserRouter } from 'react-router-dom'
 import Router from './pages/Router'
 import MarketplaceTheme from './Theme'
 import { CssBaseline } from '@mui/material'
+import {APIContextProvider} from './APIlink';
 
 function App() {
   return (
     <ThemeProvider theme={MarketplaceTheme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
+      <APIContextProvider>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </APIContextProvider>
     </ThemeProvider>
   )
 }

@@ -1,12 +1,15 @@
-export default interface ErrorResponse {
+export default interface APIInterface {
+}
+
+export interface ErrorResponse extends APIInterface {
     error: string;
 }
 
-export interface ListingRequest {
+export interface ListingRequest extends APIInterface {
     listing: NewListing;
 }
 
-export interface NewListing {
+export interface NewListing extends APIInterface {
         title: string;
         description: string;
         price: number;
@@ -19,11 +22,11 @@ export interface NewListing {
         }[];
 }
 
-export interface ListingResponse {
+export interface ListingResponse extends APIInterface {
     listing: ListingEntity;
 }
 
-export interface ListingEntity{
+export interface ListingEntity extends APIInterface{
     listingID: string;
         seller_profile: {
             userID: string;
@@ -58,14 +61,14 @@ export interface ListingEntity{
         distance: number;
 }
 
-export interface NewReview {
+export interface NewReview extends APIInterface {
     listing_rating_id: string;
     stars: number;
     comment: string;
     listingID: string;
 }
 
-export interface Review {
+export interface Review extends APIInterface{
     listing_review_id: string;
     reviewerName: string;
     stars: number;
@@ -76,14 +79,14 @@ export interface Review {
     dateModified: string;
 }
 
-export interface NewUserReq {
+export interface NewUserReq extends APIInterface {
     username: string;
     name: string;
     email: string;
     password: string;
 }
 
-export interface NewUser {
+export interface NewUser extends APIInterface {
     userID: string;
     username: string;
     name: string;
@@ -93,7 +96,7 @@ export interface NewUser {
     totp_secret: string;
 }
 
-export interface User {
+export interface User extends APIInterface {
     userID: string;
     username: string;
     name: string;
@@ -102,21 +105,21 @@ export interface User {
     email: string;
 }
 
-export interface EmailRequest{
+export interface EmailRequest extends APIInterface{
     email: string;
 }
 
-export interface LoginRequest{
+export interface LoginRequest extends APIInterface{
     email: string;
     password: string;
     totp_code: string;
 }
 
-export interface EmailConfirmationRequest{
+export interface EmailConfirmationRequest extends APIInterface{
     code: string;
 }
 
-export interface ListingSummary{
+export interface ListingSummary extends APIInterface{
     listingID: string;
     sellerID: string;
     sellerName: string;
@@ -127,12 +130,12 @@ export interface ListingSummary{
     imageUrl: string;
 }
 
-export interface SearchResultsResponse {
+export interface SearchResultsResponse extends APIInterface{
     items: ListingSummary[];
     totalItems: number;
 }
 
-export interface SearchHistoryResponse{
+export interface SearchHistoryResponse extends APIInterface{
     searches: [
     {
       searchTerm: string,
@@ -141,7 +144,7 @@ export interface SearchHistoryResponse{
   ]
 }
 
-export interface UserProfile {
+export interface UserProfile extends APIInterface{
     userID: string;
     username: string;
     name: string;
@@ -149,7 +152,7 @@ export interface UserProfile {
     profilePictureUrl: string;
 }
 
-export interface MessageThread {
+export interface MessageThread extends APIInterface{
     listing_id: string;
     other_participant: {
         user_id: string;
@@ -165,7 +168,7 @@ export interface MessageThread {
     };
 }
 
-export interface Message {
+export interface Message extends APIInterface {
     sender_id: string;
     receiver_id: string;
     listing_id: string;
@@ -173,7 +176,7 @@ export interface Message {
     sent_at: number;
 }
 
-export interface ListingPatchRequest{
+export interface ListingPatchRequest extends APIInterface{
     listing: NewListing;
     status: ItemStatus;
 }
@@ -183,7 +186,7 @@ export enum ItemStatus {
     SOLD = "SOLD",
 }
       
-export interface UpdateUser {
+export interface UpdateUser extends APIInterface{
     username: string;
     name: string;
     password: string;

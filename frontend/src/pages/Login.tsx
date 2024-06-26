@@ -1,8 +1,11 @@
 import './App.css'
 import { Typography, Box } from '@mui/material'
 import LoginForm from './Components/LoginForm'
+import { useContext } from 'react'
+import { APIContext } from '../APIlink'
 
 function Login() {
+  useContext(APIContext)
   return (
     <div className="Login">
       <header className="App-header">
