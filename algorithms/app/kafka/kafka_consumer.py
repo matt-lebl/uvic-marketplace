@@ -88,6 +88,7 @@ def handle_delete_user(data):
 
 if __name__ == "__main__":
     try:
+        print("Kafka start")
         topic_list = os.environ['KAFKA_TOPICS'].split()
         consume_topics(topic_list)
     except KeyError:

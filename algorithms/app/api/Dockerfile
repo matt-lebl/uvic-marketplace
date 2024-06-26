@@ -12,6 +12,7 @@ COPY app /code/app
 COPY alembic.ini /code/
 COPY alembic /code/alembic
 COPY entrypoint.sh /code/
+RUN chmod 755 /code/entrypoint.sh
 
 ENV PYTHONPATH=/code
 
