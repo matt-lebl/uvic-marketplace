@@ -8,6 +8,7 @@ import Listing from './Listing'
 import Messaging from './Messaging'
 import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
+import CreateListing from './CreateListing'
 /*
 Add paths for new pages here
 path={} is what gets appended to the URL
@@ -27,6 +28,7 @@ const Router = () => {
         <Route path="profile" element={<Profile />} />
         <Route path="listing" element={<Listing />} />
         <Route path="messaging" element={<Messaging />} />
+        <Route path='new-listing' element={<CreateListing/>}/>
       </Route>
     </Routes>
   )
