@@ -4,7 +4,8 @@ data-layer\main.py
 >> Recieves traffic from FASTAPI-BACKEND, handles all data interactions. 
 """
 from fastapi import FastAPI, HTTPException, Body, Depends
-from routers import listings, messages, users, reviews
+from routers import listings, messages, users, reviews, dependencies
+from sqlmodel import SQLModel, create_engine
 
 app = FastAPI()
 
@@ -28,4 +29,5 @@ if __name__ == "__main__":
     import uvicorn
 
     # Run the server using UVicorn with specified host and port
+    SQLModel.metadata.create_all(dependencies.engine)
     uvicorn.run("main:app", host="0.0.0.0", port=8002)
