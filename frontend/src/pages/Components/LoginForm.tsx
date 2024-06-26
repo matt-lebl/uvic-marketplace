@@ -1,8 +1,12 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
+import React from 'react'
+import { useAuth } from './AuthContext'
 
 export default function LoginForm() {
+  const { login } = useAuth()
+
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
@@ -24,6 +28,7 @@ export default function LoginForm() {
         setTimeout(() => {
           // TODO: Implement login hook and redirect to home page on success
           alert(JSON.stringify(values, null, 2))
+          login()
           setSubmitting(false)
         }, 400)
       }}
