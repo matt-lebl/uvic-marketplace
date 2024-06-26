@@ -1,64 +1,89 @@
-from fastapi import APIRouter
-from schemas import LoginRequest, NewUser, EmailModel, UpdateUser
+import uuid
+from fastapi import APIRouter, HTTPException
+from schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
+from services.data_layer_connect import send_request_to_data_layer
+from services.auth import AuthHandler
 
 userRouter = APIRouter(
     prefix="/api/user",
     tags=["users"],
-    responses={404: {"description": "Not found"}},
+    responses={404: {"description": "Not found"}, 401: {"description": "Unauthorized"}},
 )
 
+authHandler = AuthHandler()
 
 ## Auth Not Required
 @userRouter.post("/")
-def create_user(user: NewUser):
-    # TODO: Implement user creation
-    return {"TODO": "User Creation"}
+async def create_user(user: NewUser):
+
+    # return user.model_dump()
+
+    path = "user/"
+
+    user = user.model_dump()
+    totp_secret, uri = AuthHandler.generate_otp(user["email"])
+    user["password"] = AuthHandler.hash_password(user["password"])
+    user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
+
+    response = await send_request_to_data_layer(path, "POST", user)
+    response = response.json()
+    response["totp_secret"] = totp_secret
+    response["totp_uri"] = uri
+    return response
 
 
 @userRouter.get("/{id}")
-def get_user(id: int, authUserID: int):
-    # TODO: Implement user retrieval
-    return {"TODO": id, "Reqested by": authUserID}
+async def get_user(id: str, authUserID: str):
+
+    path = "user/" + id
+    response = await send_request_to_data_layer(path, "GET")
+    return response.json()
 
 
 @userRouter.patch("/")
-def edit_user(user: UpdateUser, authUserID: int):
-    # TODO: Implement user update
-    return {"TODO": "User updated", "Reqested by": authUserID}
+async def edit_user(user: UpdateUser, authUserID: str):
+
+    path = "user/" + authUserID
+    response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
+    return response.json()
 
 
 @userRouter.delete("/")
-def delete_user(authUserID: int):
-    # TODO: Implement user deletion
-    return {"TODO": "User deleted", "Reqested by": authUserID}
+async def delete_user(authUserID: str):
+
+    path = "user/" + authUserID
+    response = await send_request_to_data_layer(path, "DELETE")
+    return response.json()
 
 
 ## Auth Not Required
 @userRouter.post("/reset-password")
-def reset_password(emailModel: EmailModel):
+async def reset_password(emailModel: EmailModel):
     # TODO: Implement password reset
     return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
 
 
 ## Auth Not Required
 @userRouter.post("/login")
-def login(loginRequest: LoginRequest):
-    # TODO: Implement user login
-    return {
-        "TODO": "Received login request from {}, with password {}".format(
-            loginRequest.email, loginRequest.password
-        )
-    }
+async def login(loginRequest: LoginRequest):
+    path = "user/login"
+    email_password = {"email": loginRequest.email, "password": AuthHandler.hash_password(loginRequest.password)}
+    try:
+        loginResponse = await send_request_to_data_layer(path, "POST", email_password)
+        if loginResponse.status_code == 200:
+            if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
+                return loginResponse.json()
+            else:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
-@userRouter.post("/logout")
-def logout(authUserID: int):
-    # TODO: Implement user logout
-    return {"TODO": "User logged out", "Reqested by": authUserID}
+# Logout need not be implemented, it is implemented in RP
 
 
 @userRouter.post("/send-confirmation-email")
-def send_confirmation_email(emailModel: EmailModel, authUserID: int):
+async def send_confirmation_email(emailModel: EmailModel, authUserID: str):
     # TODO: Implement sending confirmation email
     return {
         "TODO": "Confirmation email sent to {}".format(emailModel.email),
@@ -67,6 +92,6 @@ def send_confirmation_email(emailModel: EmailModel, authUserID: int):
 
 
 @userRouter.post("/confirm-email")
-def confirm_email(token: str, authUserID: int):
+async def confirm_email(token: str, authUserID: str):
     # TODO: Implement email confirmation
     return {"TODO": "Email confirmed", "Reqested by": authUserID}

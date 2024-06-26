@@ -14,7 +14,7 @@ async def perform_http_request(method: str, url: str, data: dict | None = None):
         try:
             response = await client.request(method, url, json=data)
             response.raise_for_status()
-            return response.json()
+            return response
         except httpx.HTTPError as exc:
             raise HTTPException(
                 status_code=exc.response.status_code,

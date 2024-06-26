@@ -2,6 +2,7 @@ import pyotp
 from decouple import config
 from cryptography.fernet import Fernet
 import argon2
+
 from env_vars import FB_ENV_VARS
 
 class Auth_Handler():

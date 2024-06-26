@@ -47,17 +47,17 @@ class DataSyncKafkaProducer:
         self.push_message("create-listing", listing)
 
     # PATCH /api/listing/{id}
-    def push_updated_listing(self, listingID: int, listing: NewListing):
+    def push_updated_listing(self, listingID: str, listing: NewListing):
         # TODO
         pass
 
     # DELETE /api/listing/{id}
-    def push_deleted_listing(self, listingID: int):
+    def push_deleted_listing(self, listingID: str):
         # TODO
         pass
 
     # GET /api/listing/
-    def push_viewed_listing(self, listingID: int, userID: int = 0):
+    def push_viewed_listing(self, listingID: str, userID: str = 0):
         self.push_message("view-listing", {"listingID": listingID, "userID": userID})
 
     # Reviews
@@ -72,7 +72,7 @@ class DataSyncKafkaProducer:
         pass
 
     # DELETE /api/listing/review/{id}
-    def push_deleted_review(self, reviewID: int):
+    def push_deleted_review(self, reviewID: str):
         # TODO
         pass
 
@@ -88,6 +88,6 @@ class DataSyncKafkaProducer:
         pass
 
     # DELETE /api/user/{id}
-    def push_deleted_user(self, userID: int):
+    def push_deleted_user(self, userID: str):
         # TODO
         pass
