@@ -18,7 +18,7 @@ export default function Header() {
   const navigate = useNavigate()
 
   return (
-    <Box sx={{ flexGrow: 1, height:'7vh' }}>
+    <Box sx={{ flexGrow: 1, height: '7vh' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography
@@ -77,7 +77,7 @@ export default function Header() {
           </Button>
           <Button
             variant="text"
-            onClick={() => navigate('/messages')}
+            onClick={() => navigate('/messaging')}
             color="inherit"
             sx={{ mr: '40px' }}
           >
