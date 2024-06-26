@@ -3,8 +3,25 @@ function Start-Docker {
     $dockerProcess = Get-Process -Name "Docker Desktop" -ErrorAction SilentlyContinue
     if ($null -eq $dockerProcess) {
         Write-Output "Starting Docker Desktop..."
-        Start-Process "C:\Program Files\Docker\Docker\Docker Desktop.exe"
+        Start-Process "C:\Program Files\Docker\Docker Desktop.exe"
         Start-Sleep -Seconds 10 # Adjust the sleep duration as needed
+    }
+}
+
+# Function to create a virtual environment if it doesn't exist
+function Ensure-Venv {
+    param (
+        [string]$serverDir,
+        [string]$venvDir
+    )
+    
+    if (-Not (Test-Path "$serverDir/$venvDir")) {
+        Write-Output "Creating virtual environment for $serverDir..."
+        cd $serverDir
+        python -m venv $venvDir
+        cd ..
+    } else {
+        Write-Output "Virtual environment for $serverDir already exists."
     }
 }
 
@@ -14,6 +31,13 @@ $servers = @{
     "fastapi-backend" = ".venv-fastapi-backend"
     "data-layer" = ".venv-data-layer"
 }
+
+# Create virtual environments if they don't exist
+foreach ($server in $servers.Keys) {
+    Ensure-Venv -serverDir $server -venvDir $servers[$server]
+}
+
+Write-Output "Virtual environment setup complete."
 
 # Function to open a new PowerShell window and run the server
 function Start-Server {
