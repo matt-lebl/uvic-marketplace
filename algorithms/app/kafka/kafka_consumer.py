@@ -17,7 +17,9 @@ consumer = Consumer(conf)
 db_session = get_db()
 
 def consume_topics(topics):
+    print("Kafka consumer created")
     consumer.subscribe(topics)
+    print(f"Kafka consumer subscribed to {topics}. Awaiting messages...")
 
     try:
         while True:
@@ -25,67 +27,63 @@ def consume_topics(topics):
             if msg is None:
                 continue
             if msg.error():
-                if msg.error().code() == KafkaException._PARTITION_EOF:
-                    continue
-                else:
-                    print(f"Consumer error: {msg.error()}")
-                    continue
+                print(f"Consumer error: {msg.error()}")
+                continue
+
+            message_contents = msg.value().decode('utf-8')
+            print(f"Received Kafka message: {message_contents}")
             
-            print(f"Received message: {msg.value().decode('utf-8')}")
+            try:
+                message_json = json.loads(message_contents)
+            except ValueError as e:
+                print(f"Error decoding json: {e}")
+                continue
 
             # Dispatch to appropriate handlers based on the topic
             if msg.topic() == "create-listing":
-                handle_create_listing(msg.value().decode('utf-8'))
+                handle_create_listing(message_json)
             elif msg.topic() == "delete-listing":
-                handle_delete_listing(msg.value().decode('utf-8'))
+                handle_delete_listing(message_json)
             elif msg.topic() == "update-listing":
-                handle_update_listing(msg.value().decode('utf-8'))
+                handle_update_listing(message_json)
             elif msg.topic() == "view-listing":
-                handle_view_listing(msg.value().decode('utf-8'))
+                handle_view_listing(message_json)
             elif msg.topic() == "create-user":
-                handle_create_user(msg.value().decode('utf-8'))
+                handle_create_user(message_json)
             elif msg.topic() == "edit-user":
-                handle_edit_user(msg.value().decode('utf-8'))
+                handle_edit_user(message_json)
             elif msg.topic() == "delete-user":
-                handle_delete_user(msg.value().decode('utf-8'))
-
+                handle_delete_user(message_json)
 
     finally:
         consumer.close()
 
-def handle_create_listing(value):
-    print(f"Handle create listing with value: {value}")
-    data = json.loads(value)
+def handle_create_listing(data):
+    print(f"Handle create listing with data: {data}")
     create_listing(data, db_session)
 
-def handle_delete_listing(value):
-    print(f"Handle delete listing with value: {value}")
-    data = json.loads(value)
+def handle_delete_listing(data):
+    print(f"Handle delete listing with data: {data}")
     delete_listing(data, db_session)
 
-def handle_update_listing(value):
-    print(f"Handle update listing with value: {value}")
-    data = json.loads(value)
+def handle_update_listing(data):
+    print(f"Handle update listing with data: {data}")
     create_listing(data, db_session)
 
-def handle_view_listing(value):
-    print(f"Handle view listing with value: {value}")
-    data = json.loads(value)
+def handle_view_listing(data):
+    print(f"Handle view listing with data: {data}")
     record_click(data, db_session)
 
-def handle_create_user(value):
-    print(f"Handle create user with value: {value}")
-    data = json.loads(value)
+def handle_create_user(data):
+    print(f"Handle create user with data: {data}")
     add_user(data, db_session)
 
-def handle_edit_user(value):
-    print(f"Handle edit user with value: {data}")
-    data = json.loads(value)
+def handle_edit_user(data):
+    print(f"Handle edit user with data: {data}")
     edit_user(data, db_session)
 
-def handle_delete_user(value):
-    print(f"Handle delete user with value: {data}")
-    data = json.loads(value)
+def handle_delete_user(data):
+    print(f"Handle delete user with data: {data}")
     delete_user(data, db_session)
 
 if __name__ == "__main__":
