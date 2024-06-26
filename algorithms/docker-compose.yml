@@ -11,8 +11,6 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_started
-      kafka-consumer:
-        condition: service_started
     environment:
       DATABASE_URL: postgresql://user:password@db:5432/mydatabase
       ELASTICSEARCH_URL: http://elasticsearch:9200
