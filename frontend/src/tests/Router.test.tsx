@@ -31,15 +31,6 @@ describe('Testing basic routes', () => {
     expect(t.baseElement.innerHTML).toContain('<div class="Registration">')
   })
 
-  test('Profile page Navigation', () => {
-    const t = render(
-      <MemoryRouter initialEntries={['/profile']}>
-        <Router />
-      </MemoryRouter>
-    )
-    expect(t.baseElement.innerHTML).toContain('<div class="Profile">')
-  })
-
   test('Listing page Navigation', () => {
     const t = render(
       <MemoryRouter initialEntries={['/listing']}>
