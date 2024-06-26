@@ -45,4 +45,4 @@ pycparser==2.22
 pyotp==2.9.0
 argon2-cffi-bindings==21.2.0
 argon2-cffi==23.1.0
-decouple==3.7
+python-decouple==3.7
