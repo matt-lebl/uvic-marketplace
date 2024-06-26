@@ -2,7 +2,7 @@ from schemas import NewListing, NewReview, NewUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
-from env_vars import FB_ENV_VARS
+from .env_vars import FB_ENV_VARS
 
 class DataSyncKafkaProducer:
 
