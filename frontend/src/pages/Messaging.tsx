@@ -233,13 +233,14 @@ const Messaging: React.FC = () => {
               ref={messagesContainerRef}
             >
               <List>
-                {messages[selectedListingId].map((message, index) => (
-                  <MessageBubble
-                    key={index}
-                    content={message.content}
-                    isSender={message.sender_id === 'user-1'}
-                  />
-                ))}
+                {messages[selectedListingId] &&
+                  messages[selectedListingId].map((message, index) => (
+                    <MessageBubble
+                      key={index}
+                      content={message.content}
+                      isSender={message.sender_id === 'user-1'}
+                    />
+                  ))}
               </List>
             </Box>
             {selectedConversation && (
@@ -288,7 +289,7 @@ const Messaging: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={() => setOpen(false)} >Cancel</Button>
           <Button onClick={handleCreateNewConversation}>Create</Button>
         </DialogActions>
       </Dialog>
