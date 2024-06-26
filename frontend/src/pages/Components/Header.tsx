@@ -16,11 +16,11 @@ export default function Header() {
   const navigate = useNavigate()
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, height:'7vh' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography
-            variant="h6"
+            variant="h1"
             component="div"
             sx={{ flexGrow: 0, mr: '40px' }}
           >
@@ -44,7 +44,7 @@ export default function Header() {
           </Box>
           <Button variant='text'  onClick={() => navigate('/profile')} color='inherit' sx={{ mr:'40px'}}>Browse</Button>
           <Button variant='text' onClick={() => navigate('/listing')} color='inherit' sx={{ mr:'40px'}}>My Listings</Button>
-          <Button variant='contained'  onClick={() => navigate('/login')} sx={{
+          <Button variant='contained'  onClick={() => navigate('/new-listing')} sx={{
             width:'10px',
             height:'40px',
             backgroundColor:'#25496A',
