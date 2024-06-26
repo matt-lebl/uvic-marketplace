@@ -3,6 +3,8 @@ import { Button } from '@mui/material'
 import { Formik } from 'formik'
 import React from 'react'
 import { useAuth } from './AuthContext'
+import { LoginRequest, User } from '../../interfaces'
+import { APIPost } from '../../APIlink'
 
 export default function LoginForm() {
   const { login } = useAuth()
@@ -24,13 +26,27 @@ export default function LoginForm() {
         }
         return errors
       }}
-      onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          // TODO: Implement login hook and redirect to home page on success
-          alert(JSON.stringify(values, null, 2))
-          login()
+      onSubmit={async (values, { setSubmitting, setErrors }) => {
+        const request: LoginRequest = {
+          email: values.email,
+          password: values.password,
+          totp_code: values.totp_code, // TODO: Implement TOTP
+        }
+        try {
+          const returnedUser = await APIPost<User, LoginRequest>(
+            '/login',
+            request
+          )
+          if (returnedUser) {
+            login(returnedUser)
+          } else {
+            setErrors({ email: 'Login failed. Please try again.' })
+          }
+        } catch (error) {
+          setErrors({ email: 'Login failed. Please try again.' })
+        } finally {
           setSubmitting(false)
-        }, 400)
+        }
       }}
     >
       {({
