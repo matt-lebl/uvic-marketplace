@@ -30,6 +30,7 @@ TODO:
 - Websockets for live chat (if we continue to implement it)
 """
 
+
 # Helper funtion to get a JWT token to test the endpoints
 # @app.get("/get-token/")
 # async def get_token():
@@ -38,7 +39,8 @@ TODO:
 
 @app.get("/api/{path:path}", dependencies=[Depends(JWTBearer())])
 async def proxy_api_get_request(path: str | None, token=Depends(JWTBearer())):
-    return await send_request_to_backend_with_user_id(path, "GET", token)
+    response = await send_request_to_backend_with_user_id(path, "GET", token)
+    return response.json()
 
 
 @app.post("/api/{path:path}", dependencies=[Depends(JWTBearer())])
@@ -46,7 +48,8 @@ async def proxy_api_post_request(
     path: str | None, request: Request, token=Depends(JWTBearer())
 ):
     data = await request.json()
-    return await send_request_to_backend_with_user_id(path, "POST", token, data)
+    response = await send_request_to_backend_with_user_id(path, "POST", token, data)
+    return response.json()
 
 
 @app.patch("/api/{path:path}", dependencies=[Depends(JWTBearer())])
@@ -54,12 +57,14 @@ async def proxy_api_patch_request(
     path: str | None, request: Request, token=Depends(JWTBearer())
 ):
     data = await request.json()
-    return await send_request_to_backend_with_user_id(path, "PATCH", token, data)
+    response = await send_request_to_backend_with_user_id(path, "PATCH", token, data)
+    return response.json()
 
 
 @app.delete("/api/{path:path}", dependencies=[Depends(JWTBearer())])
 async def proxy_api_patch_request(path: str | None, token=Depends(JWTBearer())):
-    return await send_request_to_backend_with_user_id(path, "DELETE", token)
+    response = await send_request_to_backend_with_user_id(path, "DELETE", token)
+    return response.json()
 
 
 if __name__ == "__main__":

@@ -67,10 +67,13 @@ class User(UserBase, table=True):
         return session.exec(statement).all()
 
     @classmethod
-    def login(cls, session: Session, **kwargs):
-        email = kwargs["email"]
-        password = kwargs["password"]
-        statement = select(cls).where(and_(cls.email == email,cls.password == password))
+    def get_password(cls, session: Session, email: str):
+        statement = select(cls.password).where(cls.email == email)
+        return session.exec(statement).first()
+
+    @classmethod
+    def login(cls, session: Session, email: str):
+        statement = select(cls).where(cls.email == email)
         return session.exec(statement).first()
 
     @classmethod
@@ -89,7 +92,6 @@ class User(UserBase, table=True):
         session.commit()
 
         return {"message": "totp added successfully"}
-
 
 
 class ListingBase(SQLModel):
@@ -354,4 +356,3 @@ class Message(MessageBase, table=True):
         ).order_by(cls.sent_at)
 
         return session.exec(statement)
-

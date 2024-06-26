@@ -3,6 +3,7 @@ from .sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 from .schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
+import argon2
 
 router = APIRouter(
     prefix="/user",
@@ -47,7 +48,16 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
 
 @router.post("/login", response_model=UserSchema)
 def login(request: LoginRequest, session: Session = Depends(get_session)):
-    user = User.login(session, **request.model_dump())
+    hashed_password = User.get_password(session, request.email)
+    password = request.password
+    if not password:
+        raise HTTPException(status_code=401)
+    try:
+        argon2.verify_password(hashed_password.encode(), password.encode())
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=401)
+    user = User.login(session, request.email)
     if not user:
         raise HTTPException(status_code=401)
     return user

@@ -18,8 +18,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 orjson==3.10.3
-psycopg2==2.9.9
-psycopg-binary==3.1.19
+psycopg2-binary==2.9.9
 pydantic==2.7.3
 pydantic_core==2.18.4
 pytest==8.2.2
@@ -44,3 +43,5 @@ cffi==1.16.0
 cryptography==42.0.8
 pycparser==2.22
 pyotp==2.9.0
+argon2-cffi-bindings==21.2.0
+argon2-cffi==23.1.0

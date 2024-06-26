@@ -1,6 +1,7 @@
 import jestOpenAPI from 'jest-openapi';
-import axios, { AxiosStatic } from 'axios';
-import APIError, { APIPost, APIGet, baseUrl, APIPatch, APIDelete } from '../APIlink';
+import axios, { AxiosStatic, AxiosRequestConfig } from 'axios';
+
+import APIError, { APIPost, APIGet, baseUrl, APIPatch, APIDelete, SetAxios } from '../APIlink';
 import ErrorResponse, {
   ListingRequest, ListingResponse, 
   NewReview, Review, 
@@ -23,7 +24,7 @@ import YAML from 'yaml';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-const unmockedAxios: AxiosStatic = jest.requireActual('axios') ;
+const unmockedAxios: AxiosStatic = jest.requireActual('axios');
 
 
 // Write your test
@@ -33,10 +34,12 @@ describe('POST', () => {
         const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
         const openApiSpec = response.data;
         jestOpenAPI(YAML.parse(openApiSpec));
+
+        await SetAxios(mockedAxios);
     });
 
     it('/api/listing should satisfy OpenAPI spec', async () => {
-        const testURL:string ='/api/listing';
+        const testURL:string ='api/listing';
         const testRequest:ListingRequest = {
             listing: {
                 title: "Used Calculus Textbook",
@@ -103,7 +106,7 @@ describe('POST', () => {
     });
 
     it('/api/review should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/review';
+      const testURL:string ='api/review';
       const testRequest:NewReview = {
         listing_rating_id: "A23F29039B23",
         stars: 5,
@@ -128,7 +131,7 @@ describe('POST', () => {
     });
 
     it('/api/recommendations/stop should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/recommendations/stop';
+      const testURL:string ='api/recommendations/stop';
       const testID:string = '/A23F29039B23';
       mockedAxios.post.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIPost(testURL +  testID);
@@ -161,7 +164,7 @@ describe('POST', () => {
     });
 
     it('/api/user/reset-password should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/user/reset-password';
+      const testURL:string ='api/user/reset-password';
       const testRequest:EmailRequest = {
         email: "hubert@gmail.com"
       };
@@ -194,15 +197,15 @@ describe('POST', () => {
     });
 
     it('/api/user/logout should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/user/logout';
+      const testURL:string ='api/user/logout';
       mockedAxios.post.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIPost(testURL);
-      expect(mockedAxios.post).toHaveBeenCalledWith(testURL, undefined);
+      expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined);
       expect(res).toEqual(null);
     });
     
     it('/api/user/send-confirmation-email should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/user/send-confirmation-email';
+      const testURL:string ='api/user/send-confirmation-email';
       mockedAxios.post.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIPost(testURL);
       expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined);
@@ -210,7 +213,7 @@ describe('POST', () => {
     });
 
     it('/api/user/confirm-email should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/user/confirm-email';
+      const testURL:string ='api/user/confirm-email';
       const testRequest:EmailConfirmationRequest = {
         code: "ABKJAHSD87837e987adsSAD"
       };
@@ -227,10 +230,12 @@ describe('GET', () => {
       const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
       const openApiSpec = response.data;
       jestOpenAPI(YAML.parse(openApiSpec));
+
+      await SetAxios(mockedAxios);
   });
 
   it('/api/listing should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/listing';
+      const testURL:string ='api/listing';
       const testID:string = '/A23F29039B23';
       const testResponse:ListingEntity = {
             listingID: "A23F29039B23",
@@ -278,7 +283,7 @@ describe('GET', () => {
   });
 
   it('/api/search should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/search';
+    const testURL:string ='api/search';
     const queryParams: [string, string|number][] = [['query', 'textbook'],["minPricez",0]];
     const testResponse:SearchResultsResponse = {
       items: [
@@ -303,7 +308,7 @@ describe('GET', () => {
   });
 
   it('/api/recommendations should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/recommendations';
+    const testURL:string ='api/recommendations';
     const queryParams: [string, string|number][] = [['page', 1],["limit",1]];
     const testResponse:ListingSummary[] = [{
       listingID: "A23F29039B23",
@@ -323,7 +328,7 @@ describe('GET', () => {
   });
 
   it('/api/user/search-history should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/user/search-history';
+    const testURL:string ='api/user/search-history';
     const testResponse:SearchHistoryResponse = {
       searches: [
         {
@@ -339,7 +344,7 @@ describe('GET', () => {
   });
 
   it('/api/user/reset-password should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/user';
+    const testURL:string ='api/user';
     const testID:string = '/A23F29039B23';
     const testResponse:UserProfile = {
       userID: "A12334B345",
@@ -355,7 +360,7 @@ describe('GET', () => {
   });
 
   it('/api/messages/overview should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/messages/overview';
+    const testURL:string ='api/messages/overview';
     const queryParams: [string, string|number][] = [['num_items', 1],["offset",1]];
     const testResponse:MessageThread[] = [
       {
@@ -382,7 +387,7 @@ describe('GET', () => {
   });
 
   it('/api/messages/overview should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/messages/overview';
+    const testURL:string ='api/messages/overview';
     const testListingID:string = '/A23F29039B23';
     const testReciverID:string = '/A23F29039B23';
     const queryParams: [string, string|number][] = [['num_items', 1],["offset",1]];
@@ -411,10 +416,13 @@ describe('PATCH', () => {
       const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
       const openApiSpec = response.data;
       jestOpenAPI(YAML.parse(openApiSpec));
+
+      await SetAxios(mockedAxios);
+
   });
 
   it('/api/listing should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/listing';
+      const testURL:string ='api/listing';
       const testID:string = '/A23F29039B23';
       const testRequest:ListingPatchRequest = {
         listing: {
@@ -444,7 +452,7 @@ describe('PATCH', () => {
   });
 
   it('/api/review should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/review';
+    const testURL:string ='api/review';
     const testID:string = '/A23F29039B23';
     const testRequest:NewReview = {
       listing_rating_id: "A23F29039B23",
@@ -470,7 +478,7 @@ describe('PATCH', () => {
   });
 
   it('/api/user should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/user';
+    const testURL:string ='api/user';
     const testID:string = '/A23F29039B23';
     const testRequest:UpdateUser = {
       username: "hubert123",
@@ -501,10 +509,12 @@ describe('DELETE', () => {
       const response = await unmockedAxios.get('http://market.lebl.ca/openapi.yaml');
       const openApiSpec = response.data;
       jestOpenAPI(YAML.parse(openApiSpec));
+
+      await SetAxios(mockedAxios);
   });
 
   it('/api/listing should satisfy OpenAPI spec', async () => {
-      const testURL:string ='/api/listing';
+      const testURL:string ='api/listing';
       const testID:string = '/A23F29039B23';
       mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
       const res = await APIDelete(testURL + testID);
@@ -513,7 +523,7 @@ describe('DELETE', () => {
   });
 
   it('/api/review should satisfy OpenAPI spec', async () => {
-    const testURL:string ='/api/review';
+    const testURL:string ='api/review';
     const testID:string = '/A23F29039B23';
     mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
     const res = await APIDelete(testURL + testID);
@@ -522,7 +532,7 @@ describe('DELETE', () => {
 });
 
 it('/api/user/search-history should satisfy OpenAPI spec', async () => {
-  const testURL:string ='/api/user/search-history';
+  const testURL:string ='api/user/search-history';
   const queryParams: [string, string|number][] = [['searchID', "A23F29039B23"]];
 
   mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
@@ -532,7 +542,7 @@ it('/api/user/search-history should satisfy OpenAPI spec', async () => {
 });
 
 it('/api/user should satisfy OpenAPI spec', async () => {
-  const testURL:string ='/api/user/search-history';
+  const testURL:string ='api/user/search-history';
   mockedAxios.delete.mockResolvedValueOnce({ status:200, data: null });
   const res = await APIDelete(testURL);
   expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL);
