@@ -1,6 +1,9 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
+import { APIPost } from '../../APIlink'
+import { User } from '../../interfaces'
+import { LoginRequest } from '../../interfaces'
 
 export default function LoginForm() {
   return (
@@ -21,10 +24,18 @@ export default function LoginForm() {
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          // TODO: Implement login hook and redirect to home page on success
-          alert(JSON.stringify(values, null, 2))
+        // async timeout
+        setTimeout(async () => {
+          // const loginURL:string ='/api/user/login'
+          // const request:LoginRequest = {
+          //   email: values.email,
+          //   password: values.password,
+          //   totp_code: ''
+          // }
+          // const res = await APIPost<User, LoginRequest>(loginURL, request)
+          // console.log(res)
           setSubmitting(false)
+          alert(JSON.stringify(values, null, 2))
         }, 400)
       }}
     >
