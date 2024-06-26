@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /code
 COPY app /code/app
+COPY entrypoint.sh /code/
 
 ENV PYTHONPATH=/code
 

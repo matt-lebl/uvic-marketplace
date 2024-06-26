@@ -61,7 +61,9 @@ services:
 
  # For testing locally 
   tests:
-    build: .
+    build: 
+      context: . # The algorithms directory
+      dockerfile: ./app/api/Dockerfile
     environment:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
       - DATABASE_URL=postgresql://user:password@db:5432/mydatabase

@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app /code/app
 COPY alembic.ini /code/
 COPY alembic /code/alembic
+COPY entrypoint.sh /code/
 
 ENV PYTHONPATH=/code
 
