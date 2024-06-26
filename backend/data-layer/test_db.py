@@ -4,6 +4,7 @@ from sqlmodel import Session, SQLModel, create_engine
 from app.routers.dependencies import Settings
 from tests.data_factory import DataFactory
 from app.main import app
+import argon2
 
 test_settings = Settings()
 TEST_DATABASE_URL = test_settings.database_url
@@ -66,6 +67,7 @@ async def test_delete_user():
 async def test_get_user():
     user = data_factory.generate_user()
     create_response = client.post("/user/", json=user)
+    assert create_response.status_code == 200
     userID = create_response.json()["userID"]
 
     response = client.get(f"/user/{userID}")
@@ -76,15 +78,18 @@ async def test_get_user():
 @pytest.mark.asyncio
 async def test_login():
     user = data_factory.generate_user()
-    create_response = client.post("/user/", json=user)
-    userID = create_response.json()["userID"]
+    p1 = user["password"]
+    user["password"] = argon2.hash_password(user["password"].encode()).decode()
 
-    login_req = DataFactory.generate_login_request(user["email"], user["password"])
+    create_response = client.post("/user/", json=user)
+    assert create_response.status_code == 200
+
+    login_req = DataFactory.generate_login_request(user["email"], p1)
     response = client.post(f"/user/login", json=login_req)
     assert response.status_code == 200
 
     login_req2 = dict(login_req)
-    login_req2["password"] = "asdlf[kj"
+    login_req2["password"] = argon2.hash_password("asdlf[kj".encode()).decode()
     response = client.post(f"/user/login", json=login_req2)
     assert response.status_code == 401
 
