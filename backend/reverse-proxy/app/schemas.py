@@ -246,7 +246,6 @@ class NewUser(BaseModel):
     password: str = Field(
         None, description="Hashed? password of the user", example="securepassword123"
     )
-    pass
 
 
 class User(BaseModel):
