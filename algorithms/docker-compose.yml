@@ -21,6 +21,9 @@ services:
     build:
       context: . # The algorithms directory
       dockerfile: ./app/kafka/Dockerfile
+    depends_on:
+      elasticsearch:
+        condition: service_started
     ports:
       - 29092:9092
     environment:
