@@ -1,17 +1,25 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../../pages/Components/AuthContext'
 
-// Test component to display auth status and buttons to trigger login/logout
 const AuthStatus = () => {
-  const { isAuthenticated, login, logout } = useAuth()
+  const { isAuthenticated, user, login, logout } = useAuth()
 
   return (
     <div>
       <div data-testid="auth-status">
-        {isAuthenticated ? 'Logged in' : 'Logged out'}
+        {isAuthenticated ? `Logged in as ${user?.email}` : 'Logged out'}
       </div>
-      <button onClick={login} data-testid="login-button">
+      <button
+        onClick={() =>
+          login({
+            email: 'john@example.com',
+            password: 'password',
+            totp_code: '123456',
+          })
+        }
+        data-testid="login-button"
+      >
         Login
       </button>
       <button onClick={logout} data-testid="logout-button">
@@ -32,7 +40,7 @@ describe('AuthContext', () => {
     expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged out')
   })
 
-  it('should show "Logged in" after login', () => {
+  it('should show user info after login', async () => {
     render(
       <AuthProvider>
         <AuthStatus />
@@ -41,10 +49,14 @@ describe('AuthContext', () => {
 
     fireEvent.click(screen.getByTestId('login-button'))
 
-    expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged in')
+    await waitFor(() =>
+      expect(screen.getByTestId('auth-status')).toHaveTextContent(
+        'Logged in as johndoe'
+      )
+    )
   })
 
-  it('should show "Logged out" after logout', () => {
+  it('should show "Logged out" after logout', async () => {
     render(
       <AuthProvider>
         <AuthStatus />
@@ -52,7 +64,12 @@ describe('AuthContext', () => {
     )
 
     fireEvent.click(screen.getByTestId('login-button'))
-    expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged in')
+
+    await waitFor(() =>
+      expect(screen.getByTestId('auth-status')).toHaveTextContent(
+        'Logged in as johndoe'
+      )
+    )
 
     fireEvent.click(screen.getByTestId('logout-button'))
     expect(screen.getByTestId('auth-status')).toHaveTextContent('Logged out')
