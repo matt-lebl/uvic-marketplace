@@ -8,6 +8,8 @@ import Listing from './Listing'
 import Messaging from './Messaging'
 import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
+import Search from './Search'
+
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
 
@@ -29,6 +31,7 @@ const Router = () => {
         <Route path="register" element={<Registration />} />
         <Route path="profile" element={<Profile />} />
         <Route path="listing/:listingID" element={<Listing />} />
+        <Route path="search/" element={<Search />} />
         <Route path="messaging" element={<Messaging />} />
         <Route path="new-listing" element={<CreateListing />} />
         <Route path="edit-listing" element={<EditListing />} />

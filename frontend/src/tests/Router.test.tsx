@@ -39,4 +39,13 @@ describe('Testing basic routes', () => {
     )
     expect(t.baseElement.innerHTML).toContain('<div class="Listing">')
   })
+
+  test('Search page Navigation', () => {
+    const t = render(
+      <MemoryRouter initialEntries={['/Search']}>
+        <Router />
+      </MemoryRouter>
+    )
+    expect(t.baseElement.innerHTML).toContain('<div class="Search">')
+  })
 })

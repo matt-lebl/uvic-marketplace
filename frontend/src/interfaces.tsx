@@ -183,10 +183,40 @@ export enum ItemStatus {
   SOLD = 'SOLD',
 }
 
-export interface UpdateUser {
-  username: string
-  name: string
-  password: string
-  bio: string
-  profilePictureUrl: string
+export enum SearchType {
+    USERS = "USERS",
+    LISTINGS = "LISTINGS"
 }
+
+export enum Sort {
+    RELEVANCE = "RELEVANCE",
+    PRICE_ASC = "PRICE_ASC",
+    PRICE_DESC = "PRICE_DESC",
+    LISTED_TIME_ASC = "LISTED_TIME_ASC",
+    LISTED_TIME_DESC = "LISTED_TIME_DESC",
+    DISTANCE_ASC = "DISTANCE_ASC",
+    DISTANCE_DESC = "DISTANCE_DESC"
+}
+      
+export interface UpdateUser {
+    username: string;
+    name: string;
+    password: string;
+    bio: string;
+    profilePictureUrl: string;
+}
+
+export interface SearchRequest{
+    query: string
+    filters?: {
+      minPrice?: number
+      maxPrice?:number
+      status?: ItemStatus
+      searchType?: SearchType
+    }
+    latitude: number
+    longitude: number
+    sort?: Sort
+    page?: number
+    limit?: number
+  }

@@ -10,8 +10,9 @@ import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
 
 export default function Header() {
-  const handleSearch = (query: string) => {
+  const handleSearch = ({query: string) => {
     console.log(query)
+    //navigate to the search page
   }
 
   const navigate = useNavigate()
