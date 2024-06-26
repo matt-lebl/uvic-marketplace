@@ -38,6 +38,14 @@ export default function ListingCard(listing: any) {
           <Typography variant="h6" alignSelf={'flex-start'}>
             {listing.price}
           </Typography>
+           <Button
+            variant="text"
+            onClick={() => navigate('/listing')}
+            color="inherit"
+            sx={{ mr: '40px' }}
+          >
+            View Listing
+          </Button>
         </Box>
         <Box>
           <img src="https://via.placeholder.com/150" alt="placeholder" />
