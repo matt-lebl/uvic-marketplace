@@ -2,7 +2,7 @@ from schemas import NewListing, NewReview, NewUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
-
+from env_vars import FB_ENV_VARS
 
 class DataSyncKafkaProducer:
 
@@ -22,7 +22,7 @@ class DataSyncKafkaProducer:
             return
 
         self.conf = {
-            "bootstrap.servers": config("KAFKA_BOOTSTRAP_SERVERS"),
+            "bootstrap.servers": config(FB_ENV_VARS.KAFKA_BOOSTRAP_SERVERS),
             "client.id": random_uuid(),
         }
         self.producer = Producer(self.conf)

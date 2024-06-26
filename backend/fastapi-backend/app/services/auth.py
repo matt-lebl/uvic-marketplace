@@ -3,9 +3,11 @@ from decouple import config
 from cryptography.fernet import Fernet
 import argon2
 
+from env_vars import FB_ENV_VARS
+
 class Auth_Handler():
     def __init__(self):
-        enc_key = config("TOTP_KEY")
+        enc_key = config(FB_ENV_VARS.TOTP_KEY)
         self.fernet = Fernet(enc_key)
 
     def encrypt_totp_secret(self, totp_secret: str):
