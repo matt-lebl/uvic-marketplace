@@ -46,7 +46,7 @@ export default function Header() {
           </Box>
           <Button
             variant="text"
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('')}
             color="inherit"
             sx={{ mr: '40px' }}
           >
@@ -54,7 +54,7 @@ export default function Header() {
           </Button>
           <Button
             variant="text"
-            onClick={() => navigate('/listing')}
+            onClick={() => navigate('/profile')}
             color="inherit"
             sx={{ mr: '40px' }}
           >
