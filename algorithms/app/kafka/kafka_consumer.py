@@ -1,15 +1,15 @@
 from confluent_kafka import Consumer, KafkaException
 import os
 import json
-import algorithms.app.api.consumers.interactions
-import algorithms.app.api.consumers.listings
-import algorithms.app.api.consumers.users
-from algorithms.app.api.deps import get_db
+from consumers.interactions import record_click 
+from consumers.listings import create_listing, delete_listing
+from consumers.users import add_user, edit_user, delete_user
+from app.db.deps import get_db
 
 # Kafka Consumer configuration
 conf = {
     'bootstrap.servers': os.getenv('KAFKA_BOOTSTRAP_SERVERS', '"70.66.242.15:29092"'),
-    'group.id': 'my-consumer-group',
+    'group.id': 'algorithms-consumer',
     'auto.offset.reset': 'earliest'
 }
 
@@ -56,34 +56,43 @@ def consume_topics(topics):
 def handle_create_listing(value):
     print(f"Handle create listing with value: {value}")
     data = json.loads(value)
-    algorithms.app.api.consumers.listings.create_listing(data, db_session)
+    create_listing(data, db_session)
 
 def handle_delete_listing(value):
     print(f"Handle delete listing with value: {value}")
     data = json.loads(value)
-    algorithms.app.api.consumers.listings.delete_listing(data, db_session)
+    delete_listing(data, db_session)
 
 def handle_update_listing(value):
     print(f"Handle update listing with value: {value}")
     data = json.loads(value)
-    algorithms.app.api.consumers.listings.create_listing(data, db_session)
+    create_listing(data, db_session)
 
 def handle_view_listing(value):
     print(f"Handle view listing with value: {value}")
     data = json.loads(value)
-    algorithms.app.api.consumers.interactions.record_click(data, db_session)
+    record_click(data, db_session)
 
 def handle_create_user(value):
     print(f"Handle create user with value: {value}")
     data = json.loads(value)
-    algorithms.app.api.consumers.users.add_user(data, db_session)
+    add_user(data, db_session)
 
 def handle_edit_user(value):
     print(f"Handle edit user with value: {data}")
     data = json.loads(value)
-    algorithms.app.api.consumers.users.edit_user(data, db_session)
+    edit_user(data, db_session)
 
 def handle_delete_user(value):
     print(f"Handle delete user with value: {data}")
     data = json.loads(value)
-    algorithms.app.api.consumers.users.delete_user(data, db_session)
+    delete_user(data, db_session)
+
+if __name__ == "__main__":
+    try:
+        topic_list = os.environ['KAFKA_TOPICS'].split()
+        consume_topics(topic_list)
+    except KeyError:
+        print("Could not find environment variable 'KAFKA_TOPICS'")
+    except ValueError:
+        print("Could not fetch Kafka topic list")

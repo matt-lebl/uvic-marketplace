@@ -1,9 +1,9 @@
 from fastapi import HTTPException
-from ...schemas import ItemStatusEnum
+from app.api.schemas import ItemStatusEnum
 from sqlalchemy.orm import Session
 from app.db.models import DB_Listing
-from ..endpoints.embedding import generate_embedding
-from ...elasticsearch_wrapper import ElasticsearchWrapper
+from app.util.embedding import generate_embedding
+from app.util.elasticsearch_wrapper import ElasticsearchWrapper
 from sqlalchemy.exc import SQLAlchemyError
 
 es_wrapper = ElasticsearchWrapper()
@@ -55,8 +55,6 @@ async def create_listing(data: dict, db: Session):
     print(response)
 
     return response
-
-
 
 async def delete_listing(data: dict, db: Session):
     listing_id = data["listingID"]
