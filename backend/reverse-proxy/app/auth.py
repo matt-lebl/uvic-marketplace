@@ -4,10 +4,11 @@ import jwt
 from decouple import config
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from services.env_vars import RP_ENV_VARS
 
-JWT_SECRET = config("JWT_SECRET")
-JWT_ALGORITHM = config("JWT_ALGORITHM")
-EXPIRY_TIME = config("EXPIRY_TIME")
+JWT_SECRET = config(RP_ENV_VARS.JWT_SECRET)
+JWT_ALGORITHM = config(RP_ENV_VARS.JWT_ALGORITHM)
+EXPIRY_TIME = config(RP_ENV_VARS.EXPIRY_TIME)
 
 
 def token_response(token: str):
