@@ -27,7 +27,7 @@ close-all: ## Closes all containers
 	@echo "=================================================="
 	@echo "Make: close - closing containers"
 	@echo "=================================================="
-	@docker-compose -f docker-compose.yml down
+	@docker-compose -f compose.yaml down
 
 install-all: ## Installs dependencies for all containers
 	@echo "=================================================="
@@ -39,16 +39,16 @@ build-all: ## Builds all containers
 	@echo "=================================================="
 	@echo "Make: build-all - building containers"
 	@echo "=================================================="
-	@docker-compose -f docker-compose.yml build
+	@docker-compose -f compose.yaml build
 
 run-all: ## Runs all containers
 	@echo "=================================================="
 	@echo "Make: run-all - running containers"
 	@echo "=================================================="
-	@docker-compose -f docker-compose.yml up -d
+	@docker-compose -f compose.yaml up -d
 
 cleanall: ## Closes and cleans (removes) all containers
 	@echo "=================================================="
 	@echo "Make: cleanall - closing and cleaning containers"
 	@echo "=================================================="
-	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+	@docker-compose -f compose.yaml down -v --rmi all --remove-orphans
