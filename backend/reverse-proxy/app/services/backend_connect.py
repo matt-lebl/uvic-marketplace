@@ -2,8 +2,10 @@ from urllib.parse import urljoin
 import httpx
 from fastapi import HTTPException
 from auth import get_user_id_from_token
+from decouple import config
+from env_vars import RP_ENV_VARS
 
-FASTAPI_BACKEND_URL = "http://localhost:8001"
+FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL)
 USER_ID_FIELD = "authUserID"
 
 
@@ -12,7 +14,7 @@ async def perform_http_request(method: str, url: str, data: dict | None = None):
         try:
             response = await client.request(method, url, json=data)
             response.raise_for_status()
-            return response.json()
+            return response
         except httpx.HTTPError as exc:
             raise HTTPException(
                 status_code=exc.response.status_code,

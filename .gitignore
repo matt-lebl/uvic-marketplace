@@ -21,7 +21,12 @@
 
 # __pycache__
 __pycache__/
-.pytest_cache/
-elastic_cache/
-elastic_data/
-postgres_data/
+*/.pytest_cache/*
+
+# docker volumes
+elastic_cache/*
+elastic_data/*
+postgres_data/*
+*/elastic_cache/*
+*/elastic_data/*
+*/postgres_data/*

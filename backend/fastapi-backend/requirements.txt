@@ -39,3 +39,5 @@ python-decouple==3.8
 cffi==1.16.0
 cryptography==42.0.8
 pycparser==2.22
+argon2-cffi-bindings==21.2.0
+argon2-cffi==23.1.0

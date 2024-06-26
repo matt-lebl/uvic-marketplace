@@ -5,15 +5,15 @@ from sqlmodel import Session, create_engine
 
 
 class Settings(BaseSettings):
+    """
+    The below fields are the names of the necessary env variables (except database_url ignore that)
+    """
     db_host: str
     db_port: int
     postgres_db: str
     postgres_user: str
     postgres_password: str
     database_url: str = None
-
-    class Config:
-        env_file = Path(__file__).parent.parent.parent.parent / ".env"
 
     def __init__(self, **values):
         super().__init__(**values)
