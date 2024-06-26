@@ -43,3 +43,8 @@ Start-Process pwsh -ArgumentList "-NoExit", "-Command", "
 foreach ($server in $servers.Keys) {
     Start-Server -serverDir $server -venvDir $servers[$server]
 }
+
+# Open Google Chrome tabs for the API docs
+Start-Process "chrome.exe" "http://localhost:8000/docs"
+Start-Process "chrome.exe" "http://localhost:8001/docs"
+Start-Process "chrome.exe" "http://localhost:8002/docs"
