@@ -2,6 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException
 from schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
 from services.data_layer_connect import send_request_to_data_layer
+from services.auth import AuthHandler
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -9,6 +10,7 @@ userRouter = APIRouter(
     responses={404: {"description": "Not found"}, 401: {"description": "Unauthorized"}},
 )
 
+authHandler = AuthHandler()
 
 ## Auth Not Required
 @userRouter.post("/")
@@ -19,10 +21,9 @@ async def create_user(user: NewUser):
     path = "user/"
 
     user = user.model_dump()
-
-    # TODO: Implement TOTP secret generation and storage
-    totp_secret = str(uuid.uuid4())
-    user["totp_secret"] = totp_secret
+    totp_secret = AuthHandler.generate_otp(user["email"])
+    user["password"] = AuthHandler.hash_password(user["password"])
+    user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
 
     response = await send_request_to_data_layer(path, "POST", user)
     response = response.json()
@@ -65,12 +66,14 @@ async def reset_password(emailModel: EmailModel):
 @userRouter.post("/login")
 async def login(loginRequest: LoginRequest):
     path = "user/login"
-    email_password = {"email": loginRequest.email, "password": loginRequest.password}
+    email_password = {"email": loginRequest.email, "password": AuthHandler.hash_password(loginRequest.password)}
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
         if loginResponse.status_code == 200:
-            # TODO: Remove totp_secret from response
-            return loginResponse.json()
+            if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
+                return loginResponse.json()
+            else:
+                raise HTTPException(status_code=401, detail="Invalid credentials")
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
