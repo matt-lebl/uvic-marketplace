@@ -1,5 +1,14 @@
 # Set up for fastapi servers:
 
+#### QUICK SET UP
+
+- EVERYTHING IS AUTOMATED WITH run_server.ps1
+  `./run_servers.ps1`
+
+  > This checks if venv exists, if not create them, spin up docker-desktop, spin up db, activate all venvs, update all venvs based on specific requirements.txt, run all servers, open all 3 servers interactive docs in chrome
+
+  _* bash script is added but not tested as I am using powershell on Windows *_
+
 #### setup env
 
 - Setup virtual environment for each server

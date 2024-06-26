@@ -253,6 +253,7 @@ class NewUserReq(BaseModel):
     name: str
     email: str
     password: str
+    totp_secret: str
 
 
 class UpdateUser(BaseModel):

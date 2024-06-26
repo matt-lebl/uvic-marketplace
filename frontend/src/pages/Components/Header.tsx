@@ -18,11 +18,11 @@ export default function Header() {
   const navigate = useNavigate()
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, height:'7vh' }}>
       <AppBar position="static">
         <Toolbar>
           <Typography
-            variant="h6"
+            variant="h1"
             component="div"
             sx={{ flexGrow: 0, mr: '40px' }}
           >
@@ -62,7 +62,7 @@ export default function Header() {
           </Button>
           <Button
             variant="contained"
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/new-listing')}
             sx={{
               width: '10px',
               height: '40px',

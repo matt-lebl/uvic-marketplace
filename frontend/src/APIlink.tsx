@@ -1,8 +1,10 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, AxiosInstance } from 'axios';
 import ErrorResponse from './interfaces';
+import dotenv from 'dotenv'; 
 
-export const baseUrl = ''; //http://market.lebl.ca/openapi/
-
+export const baseUrl = process.env.BASEURL;
+dotenv.config();
+var instance = axios.create({baseURL:baseUrl, withCredentials:true});
 export default class APIError extends Error {
     status: number;
     constructor(message: string, status:number) {
@@ -10,10 +12,13 @@ export default class APIError extends Error {
         this.status = status;
     }
 }
+export async function SetAxios(newInstance:AxiosInstance){
+    instance = newInstance;
+}
 
 export async function APIPost<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
     //try {
-        const response: AxiosResponse<TResponse> = await axios.post(baseUrl+path, requestBody);
+        const response: AxiosResponse<TResponse> = await instance.post(baseUrl+path, requestBody);
         switch(response.status){
             case 200:
             case 201:
@@ -34,7 +39,7 @@ export async function APIGet<TResponse>(path: string, queryParams?: [string, str
 
         const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`;
 
-        const response: AxiosResponse<TResponse> = await axios.get(url);
+        const response: AxiosResponse<TResponse> = await instance.get(url);
         switch(response.status){
             case 200:
             case 101:
@@ -49,7 +54,7 @@ export async function APIGet<TResponse>(path: string, queryParams?: [string, str
 
 export async function APIPatch<TResponse, TBody>(path: string, requestBody?: TBody ): Promise<TResponse | undefined> {
     //try {
-        const response: AxiosResponse<TResponse> = await axios.patch(baseUrl+path, requestBody);
+        const response: AxiosResponse<TResponse> = await instance.patch(baseUrl+path, requestBody);
         switch(response.status){
             case 200:
                 return response.data;
@@ -69,7 +74,7 @@ export async function APIDelete(path: string, queryParams?: [string, string|numb
 
         const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`;
 
-        const response: AxiosResponse = await axios.delete(url);
+        const response: AxiosResponse = await instance.delete(url);
         switch(response.status){
             case 200:
                 break;

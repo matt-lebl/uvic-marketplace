@@ -15,7 +15,8 @@ class DataFactory:
             "username": self.fake.user_name(),
             "name": self.fake.name(),
             "email": self.fake.email(),
-            "password": self.fake.password()
+            "password": self.fake.password(),
+            "totp_secret": self.fake.password()
         }
         return user_data
 
