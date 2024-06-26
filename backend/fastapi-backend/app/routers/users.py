@@ -21,13 +21,14 @@ async def create_user(user: NewUser):
     path = "user/"
 
     user = user.model_dump()
-    totp_secret = AuthHandler.generate_otp(user["email"])
+    totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
     user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
 
     response = await send_request_to_data_layer(path, "POST", user)
     response = response.json()
     response["totp_secret"] = totp_secret
+    response["totp_uri"] = uri
     return response
 
 
