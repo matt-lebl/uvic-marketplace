@@ -16,7 +16,7 @@ app.include_router(listings.listingsRouter)
 app.include_router(users.userRouter)
 
 # TODO: Update for prod
-data_layer_url = config(FB_ENV_VARS.DATA_LAYER_URL)
+data_layer_url = config(FB_ENV_VARS.DATA_LAYER_URL, default="localhost:8002")
 
 """
 TODO:
