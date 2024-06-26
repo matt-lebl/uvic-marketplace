@@ -14,7 +14,6 @@
 # limitations under the License.
 
 ---
-version: "2"
 name: kafka-cluster-develop
 services:
   kafka-node-1:
@@ -30,7 +29,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka-node-1:9093"
       KAFKA_LISTENERS: "PLAINTEXT://:19092,CONTROLLER://:9093,PLAINTEXT_HOST://:9092"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-node-1:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-node-1:19092, PLAINTEXT_HOST://localhost:29092
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       CLUSTER_ID: "4L6g3nShT-eMCtK--X86pa"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -48,6 +47,9 @@ services:
       - ./create-topics.sh:/usr/bin/create-topics.sh
 
     entrypoint: ["sh", "/usr/bin/create-topics.sh"]
+    environment:
+      KAFKA_NODE_HOSTNAME: kafka-node-1
+      KAFKA_NODE_PORT: 19092
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
