@@ -16,7 +16,8 @@
 .vscode/**
 
 #env files
-backend/services/.env
+*.env
+
 
 # __pycache__
 __pycache__/
