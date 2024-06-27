@@ -24,12 +24,22 @@ export default function LoginForm() {
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          // redirect to home page  
+        setTimeout(async () => {
+          // redirect to home page
           setSubmitting(false)
-          alert("Login Successful")
-          // Redirect to home page after clearing alert
-          window.location.href = "/"
+
+          const loginRequest: LoginRequest = {
+            email: values.email,
+            password: values.password,
+            totp_code: '',
+          }
+          const loginURL: string = '/api/user/login'
+          const response = await APIPost<User, LoginRequest>(
+            loginURL,
+            loginRequest
+          )
+
+          console.log(response)
         }, 400)
       }}
     >

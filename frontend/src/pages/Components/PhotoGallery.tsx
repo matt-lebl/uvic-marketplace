@@ -1,24 +1,27 @@
-import * as React from 'react';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
+import * as React from 'react'
+import ImageList from '@mui/material/ImageList'
+import ImageListItem from '@mui/material/ImageListItem'
 
 export default function PhotoGallery() {
   return (
-    <div className='Photo-Gallery'>
-    <ImageList sx={{ width: '50vw', height: '75vh' , border:'1px solid'}} cols={1}>
-      {itemData.map((item) => (
-        <ImageListItem key={item.img}>
-          <img
-            srcSet={`${item.img}`}
-            src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-            alt={item.title}
-            loading="lazy"
-          />
-        </ImageListItem>
-      ))}
-    </ImageList>
+    <div className="Photo-Gallery">
+      <ImageList
+        sx={{ width: '50vw', height: '75vh', border: '1px solid' }}
+        cols={1}
+      >
+        {itemData.map((item) => (
+          <ImageListItem key={item.img}>
+            <img
+              srcSet={`${item.img}`}
+              src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
+              alt={item.title}
+              loading="lazy"
+            />
+          </ImageListItem>
+        ))}
+      </ImageList>
     </div>
-  );
+  )
 }
 
 const itemData = [
@@ -70,4 +73,4 @@ const itemData = [
     img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
     title: 'Bike',
   },
-];
+]

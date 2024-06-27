@@ -3,18 +3,17 @@ import { render, screen } from '@testing-library/react'
 import Header from '../../pages/Components/Header'
 import { MemoryRouter, Router } from 'react-router-dom'
 import { fireEvent } from '@testing-library/react'
-import {createMemoryHistory} from 'history'
-
+import { createMemoryHistory } from 'history'
 
 // Jest test suite for frontend
 // Invoke with `yarn test` or `npm test`
 describe('Header', () => {
-
   test('renders listing page', () => {
     render(
       <MemoryRouter initialEntries={['/']}>
         <Header />
-      </MemoryRouter>)
+      </MemoryRouter>
+    )
     const linkElement = screen.getByText(/UVic Marketplace/i)
     expect(linkElement).toBeInTheDocument()
   })
@@ -23,7 +22,8 @@ describe('Header', () => {
     const { getByPlaceholderText } = render(
       <MemoryRouter initialEntries={['/']}>
         <Header />
-      </MemoryRouter>)
+      </MemoryRouter>
+    )
 
     console.log = jest.fn()
     const searchInput = getByPlaceholderText('Search UVic Marketplace')
@@ -36,19 +36,19 @@ describe('Header', () => {
   test('navigation buttons', () => {
     const history = createMemoryHistory()
 
-    const  {getByText}  = render(
+    const { getByText } = render(
       <Router location={history.location} navigator={history}>
         <Header />
       </Router>
-    );
+    )
 
-    fireEvent.click(getByText('Browse'));
-    expect(history.location.pathname).toBe('/profile');
+    fireEvent.click(getByText('Browse'))
+    expect(history.location.pathname).toBe('/profile')
 
-    fireEvent.click(getByText('My Listings'));
-    expect(history.location.pathname).toBe('/listing');
+    fireEvent.click(getByText('My Listings'))
+    expect(history.location.pathname).toBe('/listing')
 
-    fireEvent.click(getByText('+'));
-    expect(history.location.pathname).toBe('/new-listing');
+    fireEvent.click(getByText('+'))
+    expect(history.location.pathname).toBe('/new-listing')
   })
 })

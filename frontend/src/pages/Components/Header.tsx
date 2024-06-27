@@ -8,7 +8,6 @@ import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
-import MarkEmailUnreadIcon from '@mui/icons-material/MarkEmailUnread'
 
 export default function Header() {
   const handleSearch = (query: string) => {
