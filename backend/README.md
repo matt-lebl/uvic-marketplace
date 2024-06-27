@@ -49,6 +49,12 @@
 
 >
 
+## Testing
+
+### testing data_layer
+running `pytest test_db.py`will run all tests for the data layer
+
+
 ### Notes
 
 - Interactive OpenAPI docs are found at [url]/docs
