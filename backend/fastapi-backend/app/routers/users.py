@@ -1,8 +1,8 @@
 import uuid
 from fastapi import APIRouter, HTTPException
-from ..schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
-from ..services.data_layer_connect import send_request_to_data_layer
-from ..services.auth import Auth_Handler
+from schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
+from services.data_layer_connect import send_request_to_data_layer
+from services.auth import Auth_Handler
 
 userRouter = APIRouter(
     prefix="/api/user",

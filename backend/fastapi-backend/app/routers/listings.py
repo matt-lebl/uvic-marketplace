@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from ..schemas import NewListing, NewReview
-from ..services.data_sync_kafka_producer import DataSyncKafkaProducer
-from ..services.data_layer_connect import send_request_to_data_layer
+from schemas import NewListing, NewReview
+from services.data_sync_kafka_producer import DataSyncKafkaProducer
+from services.data_layer_connect import send_request_to_data_layer
 
 # Development note: The DataSyncKafkaProducer class is used to send messages to Kafka.
 # If you want to disable sending messages to Kafka, you can set disable=True when initializing the DataSyncKafkaProducer class.

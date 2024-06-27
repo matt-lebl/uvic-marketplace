@@ -4,7 +4,7 @@ import jwt
 from decouple import config
 from fastapi import Request, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from .services.env_vars import RP_ENV_VARS
+from services.env_vars import RP_ENV_VARS
 
 JWT_SECRET = config(RP_ENV_VARS.JWT_SECRET, default="developmentkey")
 JWT_ALGORITHM = config(RP_ENV_VARS.JWT_ALGORITHM, default="HS256")

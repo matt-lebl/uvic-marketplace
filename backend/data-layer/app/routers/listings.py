@@ -8,15 +8,14 @@ import logging
 logging.basicConfig(format="%(asctime)s $(message)s")
 logger = logging.getLogger(__name__)
 
-router = APIRouter(
-    prefix="/listing",
-    tags=["listings"]
-)
+router = APIRouter(prefix="/listing", tags=["listings"])
 
 
 @router.post("/{seller_id}")
-def create_listing(seller_id: str, listing: NewListing, session: Session = Depends(get_session)):
-    listing_data = listing.model_dump()
+def create_listing(
+    seller_id: str, listing: NewListing, session: Session = Depends(get_session)
+):
+    listing_data = listing.model_dump()["listing"]
     listing_data = Listing.convert_to_db_object(listing_data, seller_id)
     listing_data["listingID"] = str(uuid.uuid4())
     listing_data["dateCreated"] = datetime.now()
@@ -27,7 +26,12 @@ def create_listing(seller_id: str, listing: NewListing, session: Session = Depen
 
 
 @router.patch("/{listingID}/{seller_id}")
-def update_listing(listingID: str, seller_id: str, listing: NewListing, session: Session = Depends(get_session)):
+def update_listing(
+    listingID: str,
+    seller_id: str,
+    listing: NewListing,
+    session: Session = Depends(get_session),
+):
     listing_data = Listing.convert_to_db_object(listing.model_dump(), seller_id)
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
@@ -55,6 +59,7 @@ def delete_listing(listingID: str, seller_id: str, session: Session = Depends(ge
     except Exception as e:
         logger.error(str(e))
         raise e
+
 
 # Deprecated
 # @router.get("/", response_model=list[Listing])

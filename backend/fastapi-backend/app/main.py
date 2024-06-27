@@ -8,16 +8,15 @@ from urllib.parse import urljoin
 from fastapi import FastAPI, HTTPException
 import httpx
 from decouple import config
-from .routers import listings, users
-from .services.env_vars import FB_ENV_VARS
+from routers import listings, users
+from services.env_vars import FB_ENV_VARS
 
 app = FastAPI()
 app.include_router(listings.listingsRouter)
 app.include_router(users.userRouter)
 
-# TODO: Update for prod
-data_layer_url = config(FB_ENV_VARS.DATA_LAYER_URL, default="localhost:8002")
 
+data_layer_url = config(FB_ENV_VARS.DATA_LAYER_URL, default="http://localhost:8002")
 """
 TODO:
 
