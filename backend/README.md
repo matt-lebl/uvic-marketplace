@@ -26,6 +26,12 @@
 - Install dependencies: - Change current directory to the target server - Install dependencies based on target servers requirements
   `pip install -r "./requirements.txt`
 
+### run db
+
+- start docker-desktop
+- cd into backend/db
+- run `docker-compose up` this runs db locally in a docker container
+
 #### run reverse-proxy
 
 - Run main.py with **reverse-proxy** virtual environment
@@ -42,6 +48,12 @@
   `python ./main.py`
 
 >
+
+## Testing
+
+### testing data_layer
+running `pytest test_db.py`will run all tests for the data layer
+
 
 ### Notes
 

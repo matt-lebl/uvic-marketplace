@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from .dependencies import get_session
 from .schemas import NewListing, ListingSchema
 from datetime import datetime
+import logging
+logging.basicConfig(format="%(asctime)s $(message)s")
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/listing", tags=["listings"])
 
@@ -18,7 +21,8 @@ def create_listing(
     listing_data["dateCreated"] = datetime.now()
     listing_data["dateModified"] = listing_data["dateCreated"]
     new_listing = Listing.create(session=session, **listing_data)
-    return {"listing": new_listing}
+    logger.info(f"New Listing Created{new_listing}")
+    return new_listing
 
 
 @router.patch("/{listingID}/{seller_id}")
@@ -31,25 +35,30 @@ def update_listing(
     listing_data = Listing.convert_to_db_object(listing.model_dump(), seller_id)
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
-    updated_listing = Listing.update(
-        seller_id=seller_id, session=session, **listing_data
-    )
+    updated_listing = Listing.update(seller_id=seller_id, session=session, **listing_data)
+    logger.info(f"Updated listing{updated_listing}")
     return updated_listing
 
 
 @router.get("/{listingID}", response_model=ListingSchema)
 def get_listing(listingID: str, session: Session = Depends(get_session)):
     listing = Listing.get_by_id(session, listingID)
+    logger.info(f"Listing requested{listingID}")
     if not listing:
+        logger.error(f"Listing not found {listingID}")
         raise HTTPException(status_code=404, detail="Listing not found")
     return listing.convert_to_schema(session)
 
 
 @router.delete("/{listingID}/{seller_id}")
-def delete_listing(
-    listingID: str, seller_id: str, session: Session = Depends(get_session)
-):
-    Listing.delete(listingID, seller_id, session)
+def delete_listing(listingID: str, seller_id: str, session: Session = Depends(get_session)):
+    logger.info(f"Listing deleted{listingID}")
+    try:
+        result = Listing.delete(listingID, seller_id, session)
+        return result
+    except Exception as e:
+        logger.error(str(e))
+        raise e
 
 
 # Deprecated
