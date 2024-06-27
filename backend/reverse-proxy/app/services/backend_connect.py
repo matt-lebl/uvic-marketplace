@@ -5,7 +5,7 @@ from auth import get_user_id_from_token
 from decouple import config
 from .env_vars import RP_ENV_VARS
 
-FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="localhost:8001")
+FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="http://localhost:8001")
 USER_ID_FIELD = "authUserID"
 
 
@@ -18,7 +18,7 @@ async def perform_http_request(method: str, url: str, data: dict | None = None):
         except httpx.HTTPError as exc:
             raise HTTPException(
                 status_code=exc.response.status_code,
-                detail="Error in the backend request",
+                detail="Error in the backend request: " + exc.response.text,
             )
 
 
