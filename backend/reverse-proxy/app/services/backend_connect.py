@@ -8,7 +8,6 @@ from .env_vars import RP_ENV_VARS
 FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="http://localhost:8001")
 USER_ID_FIELD = "authUserID"
 
-
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
         try:
