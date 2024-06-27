@@ -59,8 +59,8 @@ class Location(BaseModel):
     TODO: add description
     """
 
-    # TODO
-    pass
+    latitude: float
+    longitude: float
 
 
 # TODO: validate url
@@ -175,7 +175,7 @@ class Listing(BaseModel):
     images: list[Image] = Field(None, description="TODO", example="TODO")
 
 
-class NewListing(BaseModel):
+class NewListingBaseModel(BaseModel):
     title: str = Field(..., description="Title of the listing", example="Vintage Chair")
     description: str = Field(
         ...,
@@ -185,6 +185,14 @@ class NewListing(BaseModel):
     price: float = Field(..., description="Price of the listing", example=150.00, gt=0)
     location: Location = Field(None, description="TODO", example="TODO")
     images: list[Image] = Field(None, description="TODO", example="TODO")
+
+
+class NewListing(BaseModel):
+    """
+    The NewListing schema is used when creating a new listing.
+    """
+
+    listing: NewListingBaseModel = Field(None, description="TODO", example="TODO")
 
 
 class ListingSummary(BaseModel):
