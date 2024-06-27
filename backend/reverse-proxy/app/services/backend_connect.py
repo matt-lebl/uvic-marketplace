@@ -1,7 +1,7 @@
 from urllib.parse import urljoin
 import httpx
 from fastapi import HTTPException
-from auth import get_user_id_from_token
+from ..auth import get_user_id_from_token
 from decouple import config
 from .env_vars import RP_ENV_VARS
 

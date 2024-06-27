@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response
-from schemas import NewUser, LoginRequest, ResetPassword, User
-from auth import sign_jwt
-from services.backend_connect import send_request_to_backend
+from ..schemas import NewUser, LoginRequest, ResetPassword, User
+from ..auth import sign_jwt
+from ..services.backend_connect import send_request_to_backend
 
 
 usersRouter = APIRouter(
