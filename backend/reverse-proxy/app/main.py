@@ -8,13 +8,20 @@ from fastapi import FastAPI, Depends, Request
 import httpx
 from auth import JWTBearer, sign_jwt
 from services.backend_connect import send_request_to_backend_with_user_id
-
 from routers import users
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 # Catch All routes that don't require authentication
 app.include_router(users.usersRouter)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 
 # TODO: Update for prod
