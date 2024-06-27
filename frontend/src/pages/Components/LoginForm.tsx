@@ -1,8 +1,7 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
-import { APIPost } from '../../APIlink'
-import { User } from '../../interfaces'
+import { APIGet, APIPost } from '../../APIlink'
 import { LoginRequest } from '../../interfaces'
 
 export default function LoginForm() {
@@ -33,13 +32,15 @@ export default function LoginForm() {
             password: values.password,
             totp_code: '',
           }
-          const loginURL: string = '/api/user/login'
-          const response = await APIPost<User, LoginRequest>(
-            loginURL,
-            loginRequest
-          )
-
-          console.log(response)
+          const loginURL: string = '/api/user/'
+          try {
+            const response = await APIPost(loginURL, loginRequest)
+            console.log(response)
+            alert('Login successful, now please implement storage of user ID.')
+          } catch (error) {
+            console.error(error)
+            alert('Login failed: ' + error)
+          }
         }, 400)
       }}
     >
