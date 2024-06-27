@@ -5,7 +5,8 @@ from auth import get_user_id_from_token
 from decouple import config
 from .env_vars import RP_ENV_VARS
 
-FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="localhost:8001")
+FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="http://localhost:8001")
+
 USER_ID_FIELD = "authUserID"
 
 
