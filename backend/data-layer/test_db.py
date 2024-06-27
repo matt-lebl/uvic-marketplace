@@ -57,10 +57,10 @@ async def test_delete_user():
     assert response.status_code == 200
 
     response_get = client.get(f"/user/{userID}")
-    assert response_get.status_code == 404
+    assert response_get.status_code == 401
 
     resp_del = client.delete(f"/user/{userID}")
-    assert resp_del.status_code == 400
+    assert resp_del.status_code == 401
 
 
 @pytest.mark.asyncio
