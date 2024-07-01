@@ -25,3 +25,5 @@ jobs:
 
       - name: Perform Linting
         uses: chartboost/ruff-action@v1
+        with:
+          src: ./algorithms
