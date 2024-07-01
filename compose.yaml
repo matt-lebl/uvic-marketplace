@@ -17,16 +17,26 @@ services:
       POSTGRES_USER: backend
       POSTGRES_PASSWORD: backend
       POSTGRES_DB: backend
-      DB_HOST: localhost
+      DB_HOST: postgres
       DB_PORT: 5432
     depends_on:
       postgres:
         condition: service_healthy
+  backend-fastapi-backend:
+    build:
+      context: backend/fastapi-backend
+    ports:
+      - "8001:8001"
+  backend-reverse-proxy:
+    build:
+      context: backend/reverse-proxy
+    ports:
+      - "8000:8000"
   algorithms:
     build:
       context: algorithms
     ports:
-      - "8000:80"
+      - "7999:80"
     depends_on:
       postgres:
         condition: service_healthy
