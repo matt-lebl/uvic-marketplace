@@ -33,7 +33,7 @@ describe('Testing basic routes', () => {
 
   test('Listing page Navigation', () => {
     const t = render(
-      <MemoryRouter initialEntries={['/listing']}>
+      <MemoryRouter initialEntries={['/listing/1234']}>
         <Router />
       </MemoryRouter>
     )
