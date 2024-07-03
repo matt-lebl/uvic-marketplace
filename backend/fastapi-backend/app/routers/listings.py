@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas import NewListing, NewReview
+from core.schemas import NewListing, NewReview
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 from services.data_layer_connect import send_request_to_data_layer
 

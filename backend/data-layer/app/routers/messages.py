@@ -1,8 +1,8 @@
 import uuid
-from .sql_models import *
+from core.sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
-from .dependencies import get_session
-from .schemas import MessageSchema, MessageThread
+from core.dependencies import get_session
+from core.schemas import MessageSchema, MessageThread
 import logging
 
 logging.basicConfig(format="%(asctime)s $(message)s")

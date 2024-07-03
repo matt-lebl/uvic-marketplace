@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
-from app.routers.dependencies import Settings
+from app.core.dependencies import Settings
 from tests.data_factory import DataFactory
 from app.main import app
 import argon2

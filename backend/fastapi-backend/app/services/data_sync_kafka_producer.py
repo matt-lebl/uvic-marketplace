@@ -1,4 +1,4 @@
-from schemas import NewListing, NewReview, NewUser
+from core.schemas import NewListing, NewReview, NewUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
