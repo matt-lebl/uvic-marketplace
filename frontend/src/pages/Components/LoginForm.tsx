@@ -2,7 +2,8 @@ import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
 import { APIGet, APIPost } from '../../APIlink'
-import { LoginRequest } from '../../interfaces'
+import { LoginRequest, UserProfile } from '../../interfaces'
+import Login from '../Login'
 
 export default function LoginForm() {
   return (
@@ -23,8 +24,9 @@ export default function LoginForm() {
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
+        const loginURL: string = '/api/user/login'
+        let response: UserProfile | undefined
         setTimeout(async () => {
-          // redirect to home page
           setSubmitting(false)
 
           const loginRequest: LoginRequest = {
@@ -32,16 +34,25 @@ export default function LoginForm() {
             password: values.password,
             totp_code: '',
           }
-          const loginURL: string = '/api/user/'
           try {
-            const response = await APIPost(loginURL, loginRequest)
-            console.log(response)
-            alert('Login successful, now please implement storage of user ID.')
+            response = await APIPost(loginURL, loginRequest)
+
+            if (response) {
+              console.log('Response: ', response) // Remove later
+              alert('Login successful.')
+              localStorage.setItem('userID', response.userID)
+              window.location.href = '/'
+              localStorage.setItem('userID', response.userID)
+              localStorage.setItem('username', response.username)
+              localStorage.setItem('name', response.name)
+              localStorage.setItem('bio', response.bio)
+              localStorage.setItem('profileUrl', response.profilePictureUrl)
+            }
           } catch (error) {
-            console.error(error)
+            console.log('Response: ', response) // Remove later
             alert('Login failed: ' + error)
           }
-        }, 400)
+        }, 1000)
       }}
     >
       {({
