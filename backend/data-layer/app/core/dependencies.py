@@ -1,30 +1,29 @@
 # TODO: add dependecies https://fastapi.tiangolo.com/tutorial/dependencies/
-from pathlib import Path
-from pydantic.v1 import BaseSettings
+from functools import lru_cache
 from sqlmodel import Session, create_engine
-from decouple import config
+from . import config
 
 
-class Settings:
-    """
-    The below fields are the names of the necessary env variables (except database_url ignore that)
-    """
+"""
+Settings dependency: Use this for all settings (environment vars in .env)
 
-    def __init__(self):
-        self.db_host: str = config("DB_HOST", default="localhost")
-        self.db_port: int = config("DB_PORT", default=9999)
-        self.postgres_db: str = config("POSTGRES_DB", default="my_database")
-        self.postgres_user: str = config("POSTGRES_USER", default="my_username")
-        self.postgres_password: str = config("POSTGRES_PASSWORD", default="my_password")
+example use for settings as a dependency:
 
-        self.database_url = \
-            f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.db_host}:{self.db_port}/{self.postgres_db}"
+@app.get("/info")
+async def info(settings: Annotated[config.Settings, Depends(get_settings)]):
+    return {
+        "app_name": settings.app_name,
+        "admin_email": settings.admin_email,
+        "items_per_user": settings.items_per_user,
+    }
 
 
-settings = Settings()
-engine = create_engine(settings.database_url)
-
+"""
+@lru_cache
+def get_settings():
+    return config.Settings()
 
 def get_session():
-    with Session(engine) as session:
-        yield session
+    settings = get_settings()
+    engine = create_engine(settings.database_url)
+    return engine
