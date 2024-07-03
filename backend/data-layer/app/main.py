@@ -5,8 +5,8 @@ data-layer\main.py
 """
 from fastapi import FastAPI, HTTPException, Body, Depends
 from routers import listings, messages, users, reviews
-from core.dependencies import engine
 from sqlmodel import SQLModel, create_engine
+from core.dependencies import get_session
 
 app = FastAPI()
 
@@ -29,6 +29,8 @@ async def data_layer_other_request(path: str | None):
 if __name__ == "__main__":
     import uvicorn
 
-    # Run the server using UVicorn with specified host and port
+    # Creates all tables, TODO: this will need to be removed for production
+    engine = get_session()
     SQLModel.metadata.create_all(engine)
+
     uvicorn.run("main:app", host="0.0.0.0", port=8002)

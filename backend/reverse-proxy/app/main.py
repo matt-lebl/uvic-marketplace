@@ -6,7 +6,7 @@ reverse-proxy\main.py
 
 from fastapi import FastAPI, Depends, Request
 import httpx
-from core.auth import JWTBearer, sign_jwt
+from core.dependencies import require_jwt
 from services.backend_connect import send_request_to_backend_with_user_id
 from routers import users
 from fastapi.middleware.cors import CORSMiddleware
@@ -44,32 +44,32 @@ TODO:
 #     return sign_jwt("1")
 
 
-@app.get("/api/{path:path}", dependencies=[Depends(JWTBearer())])
-async def proxy_api_get_request(path: str | None, token=Depends(JWTBearer())):
+@app.get("/api/{path:path}", dependencies=[Depends(require_jwt())])
+async def proxy_api_get_request(path: str | None, token=Depends(require_jwt())):
     response = await send_request_to_backend_with_user_id(path, "GET", token)
     return response.json()
 
 
-@app.post("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+@app.post("/api/{path:path}", dependencies=[Depends(require_jwt())])
 async def proxy_api_post_request(
-    path: str | None, request: Request, token=Depends(JWTBearer())
+    path: str | None, request: Request, token=Depends(require_jwt())
 ):
     data = await request.json()
     response = await send_request_to_backend_with_user_id(path, "POST", token, data)
     return response.json()
 
 
-@app.patch("/api/{path:path}", dependencies=[Depends(JWTBearer())])
+@app.patch("/api/{path:path}", dependencies=[Depends(require_jwt())])
 async def proxy_api_patch_request(
-    path: str | None, request: Request, token=Depends(JWTBearer())
+    path: str | None, request: Request, token=Depends(require_jwt())
 ):
     data = await request.json()
     response = await send_request_to_backend_with_user_id(path, "PATCH", token, data)
     return response.json()
 
 
-@app.delete("/api/{path:path}", dependencies=[Depends(JWTBearer())])
-async def proxy_api_patch_request(path: str | None, token=Depends(JWTBearer())):
+@app.delete("/api/{path:path}", dependencies=[Depends(require_jwt())])
+async def proxy_api_patch_request(path: str | None, token=Depends(require_jwt())):
     response = await send_request_to_backend_with_user_id(path, "DELETE", token)
     return response.json()
 
