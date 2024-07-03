@@ -24,7 +24,7 @@ export default function LoginForm() {
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
-        const loginURL: string = '/api/user/'
+        const loginURL: string = '/api/user/login'
         let response: UserProfile | undefined
         setTimeout(async () => {
           setSubmitting(false)
