@@ -30,8 +30,8 @@ const Router = () => {
         <Route path="profile" element={<Profile />} />
         <Route path="listing" element={<Listing />} />
         <Route path="messaging" element={<Messaging />} />
-        <Route path='new-listing' element={<CreateListing/>}/>
-        <Route path='edit-listing' element={<EditListing/>}/>
+        <Route path="new-listing" element={<CreateListing />} />
+        <Route path="edit-listing" element={<EditListing />} />
       </Route>
     </Routes>
   )

@@ -20,7 +20,7 @@ const MarketplaceTheme = createTheme({
     h2: {
       fontSize: 24,
       fontWeight: 600,
-      color: 'white'
+      color: 'white',
     },
   },
 })
