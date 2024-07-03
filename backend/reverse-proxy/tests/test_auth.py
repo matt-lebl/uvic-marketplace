@@ -3,7 +3,7 @@ import time
 import jwt
 from fastapi import Depends
 from fastapi.testclient import TestClient
-from app.auth import JWTBearer, sign_jwt, JWT_ALGORITHM, JWT_SECRET
+from app.core.auth import JWTBearer, sign_jwt, JWT_ALGORITHM, JWT_SECRET
 from app.main import app
 
 """TO RUN

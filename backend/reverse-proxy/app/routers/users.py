@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Response
-from schemas import NewUser, LoginRequest, ResetPassword, User
-from auth import sign_jwt
+from core.schemas import NewUser, LoginRequest, ResetPassword, User
+from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
 
