@@ -1,13 +1,13 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.services.auth import Auth_Handler
-from app.core.schemas import NewUser
+from app.services.auth import AuthHandler
+from app.schemas import NewUser
 import pyotp
 from urllib.parse import unquote
 
 client = TestClient(app)
-auth_handler = Auth_Handler()
+auth_handler = AuthHandler()
 
 @pytest.fixture
 def new_user():
@@ -48,11 +48,11 @@ def test_totp_validation(new_user):
 
 @pytest.fixture
 def auth_handler():
-    return Auth_Handler()
+    return AuthHandler()
 
 def test_generate_otp(auth_handler):
     email = "testuser@uvic.ca"
-    totp_secret, uri = Auth_Handler.generate_otp(email)
+    totp_secret, uri = AuthHandler.generate_otp(email)
     
     assert totp_secret is not None
     assert uri is not None
@@ -61,7 +61,7 @@ def test_generate_otp(auth_handler):
 
 def test_encrypt_decrypt_totp_secret(auth_handler):
     email = "testuser@uvic.ca"
-    totp_secret, _ = Auth_Handler.generate_otp(email)
+    totp_secret, _ = AuthHandler.generate_otp(email)
     
     encrypted_secret = auth_handler.encrypt_totp_secret(totp_secret)
     assert encrypted_secret is not None
@@ -72,7 +72,7 @@ def test_encrypt_decrypt_totp_secret(auth_handler):
 
 def test_totp_validation(auth_handler):
     email = "testuser@uvic.ca"
-    totp_secret, _ = Auth_Handler.generate_otp(email)
+    totp_secret, _ = AuthHandler.generate_otp(email)
     encrypted_secret = auth_handler.encrypt_totp_secret(totp_secret)
     
     totp_code = pyotp.TOTP(totp_secret).now()
