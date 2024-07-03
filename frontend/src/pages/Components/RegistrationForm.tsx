@@ -73,8 +73,7 @@ const handleSubmit = async (
 
   try {
     const response = await APIPost(loginURL, newUserRequest)
-    console.log(response)
-    alert('Registration successful, now please implement storage of user ID.')
+    localStorage.setItem('user', JSON.stringify(response))
   } catch (error) {
     console.error(error)
     setStatus({ error: 'Registration failed' })
