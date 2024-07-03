@@ -1,8 +1,13 @@
 import React from 'react'
 import { Typography, Box, Paper } from '@mui/material'
 import ProfileIcon from './ProfileIcon'
+import { ListingEntity, UserProfile } from '../../interfaces'
 
-export default function SellerCard() {
+interface Props{
+  listing: ListingEntity
+}
+ 
+const SellerCard : React.FC<Props> = ({listing}) => {
   return (
     <div className="Seller-Card">
       <Box>
@@ -21,7 +26,6 @@ export default function SellerCard() {
           />
           <Paper sx={{ flexGrow: 1, ml: '30px' }}>
             <Typography sx={{ m: '30px' }}>Contact Information</Typography>
-            <Typography sx={{ m: '30px' }}>Payment Preference</Typography>
           </Paper>
         </Box>
         <Box sx={{ display: 'flex', flexDirection: 'cloumn' }}></Box>
@@ -74,3 +78,5 @@ export default function SellerCard() {
     </div>
   )
 }
+
+export default SellerCard

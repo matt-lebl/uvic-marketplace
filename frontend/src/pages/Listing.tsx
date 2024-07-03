@@ -3,8 +3,14 @@ import './App.css'
 import { Typography, Box, Paper } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
+import { ListingEntity } from '../interfaces'
+import { APIGet } from '../APIlink'
 
 function Listing() {
+  const listingID 
+
+  const listing : ListingEntity = APIGet;
+
   return (
     <div className="Listing">
       <header className="App-header">
@@ -29,7 +35,7 @@ function Listing() {
               overflow: 'auto',
             }}
           >
-            <SellerCard />
+            <SellerCard listing={listing}/>
           </Paper>
         </Box>
       </header>
