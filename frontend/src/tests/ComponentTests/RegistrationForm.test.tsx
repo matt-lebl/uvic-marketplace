@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import RegisterForm from '../../pages/Components/RegistrationForm'
 import { APIPost } from '../../APIlink'
 
@@ -17,21 +17,23 @@ describe('RegisterForm', () => {
   test('renders the form fields', () => {
     render(<RegisterForm />)
 
-    expect(screen.getByLabelText(/First Name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Last Name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Username/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/Confirm Password/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('First Name')).toBeInTheDocument()
+    expect(screen.getByLabelText('Last Name')).toBeInTheDocument()
+    expect(screen.getByLabelText('Username')).toBeInTheDocument()
+    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument()
   })
 
   test('displays validation errors for empty fields', async () => {
     render(<RegisterForm />)
 
-    fireEvent.click(screen.getByText(/Submit/i))
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Submit/i))
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/Required/i)).toBeInTheDocument()
+      expect(screen.getAllByText(/Required/i)).toHaveLength(6)
     })
   })
 
@@ -40,26 +42,30 @@ describe('RegisterForm', () => {
 
     render(<RegisterForm />)
 
-    fireEvent.change(screen.getByLabelText(/First Name/i), {
-      target: { value: 'John' },
-    })
-    fireEvent.change(screen.getByLabelText(/Last Name/i), {
-      target: { value: 'Doe' },
-    })
-    fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: 'johndoe' },
-    })
-    fireEvent.change(screen.getByLabelText(/Email/i), {
-      target: { value: 'john.doe@example.com' },
-    })
-    fireEvent.change(screen.getByLabelText(/Password/i), {
-      target: { value: 'password123' },
-    })
-    fireEvent.change(screen.getByLabelText(/Confirm Password/i), {
-      target: { value: 'password123' },
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('First Name'), {
+        target: { value: 'John' },
+      })
+      fireEvent.change(screen.getByLabelText('Last Name'), {
+        target: { value: 'Doe' },
+      })
+      fireEvent.change(screen.getByLabelText('Username'), {
+        target: { value: 'johndoe' },
+      })
+      fireEvent.change(screen.getByLabelText('Email'), {
+        target: { value: 'john.doe@example.com' },
+      })
+      fireEvent.change(screen.getByLabelText('Password'), {
+        target: { value: 'password123' },
+      })
+      fireEvent.change(screen.getByLabelText('Confirm Password'), {
+        target: { value: 'password123' },
+      })
     })
 
-    fireEvent.click(screen.getByText(/Submit/i))
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Submit/i))
+    })
 
     await waitFor(() => {
       expect(mockAPIPost).toHaveBeenCalledWith('/api/user/', {
@@ -77,29 +83,42 @@ describe('RegisterForm', () => {
 
     render(<RegisterForm />)
 
-    fireEvent.change(screen.getByLabelText(/First Name/i), {
-      target: { value: 'John' },
-    })
-    fireEvent.change(screen.getByLabelText(/Last Name/i), {
-      target: { value: 'Doe' },
-    })
-    fireEvent.change(screen.getByLabelText(/Username/i), {
-      target: { value: 'johndoe' },
-    })
-    fireEvent.change(screen.getByLabelText(/Email/i), {
-      target: { value: 'john.doe@example.com' },
-    })
-    fireEvent.change(screen.getByLabelText(/Password/i), {
-      target: { value: 'password123' },
-    })
-    fireEvent.change(screen.getByLabelText(/Confirm Password/i), {
-      target: { value: 'password123' },
+    await act(async () => {
+      fireEvent.change(screen.getByLabelText('First Name'), {
+        target: { value: 'John' },
+      })
+      fireEvent.change(screen.getByLabelText('Last Name'), {
+        target: { value: 'Doe' },
+      })
+      fireEvent.change(screen.getByLabelText('Username'), {
+        target: { value: 'johndoe' },
+      })
+      fireEvent.change(screen.getByLabelText('Email'), {
+        target: { value: 'john.doe@example.com' },
+      })
+      fireEvent.change(screen.getByLabelText('Password'), {
+        target: { value: 'password123' },
+      })
+      fireEvent.change(screen.getByLabelText('Confirm Password'), {
+        target: { value: 'password123' },
+      })
     })
 
-    fireEvent.click(screen.getByText(/Submit/i))
+    await act(async () => {
+      fireEvent.click(screen.getByText(/Submit/i))
+    })
 
     await waitFor(() => {
-      expect(screen.getByText(/Registration failed/i)).toBeInTheDocument()
+      const errorMessage = screen.queryByText((content, element) => {
+        const hasText = (text: string) => text.includes('Registration failed')
+        const elementHasText = hasText(element?.textContent || '')
+        const childrenDontHaveText = Array.from(element?.children || []).every(
+          (child) => !hasText(child.textContent || '')
+        )
+        return elementHasText && childrenDontHaveText
+      })
+
+      expect(errorMessage).toBeInTheDocument()
     })
   })
 })

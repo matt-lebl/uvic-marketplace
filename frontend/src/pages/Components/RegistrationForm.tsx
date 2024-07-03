@@ -1,5 +1,11 @@
 import React from 'react'
-import { FormControl, TextField, FormHelperText, Box } from '@mui/material'
+import {
+  FormControl,
+  TextField,
+  FormHelperText,
+  Box,
+  Typography,
+} from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik, FormikHelpers } from 'formik'
 import { APIPost } from '../../APIlink'
@@ -52,7 +58,7 @@ const validate = (values: FormValues) => {
 
 const handleSubmit = async (
   values: FormValues,
-  { setSubmitting }: FormikHelpers<FormValues>
+  { setSubmitting, setStatus }: FormikHelpers<FormValues>
 ) => {
   setSubmitting(true)
 
@@ -68,11 +74,10 @@ const handleSubmit = async (
   try {
     const response = await APIPost(loginURL, newUserRequest)
     console.log(response)
-    alert('Registration successful')
-    // TODO: handle user ID and redirect to home page
+    alert('Registration successful, now please implement storage of user ID.')
   } catch (error) {
     console.error(error)
-    alert('Registration failed: ' + error)
+    setStatus({ error: 'Registration failed' })
   } finally {
     setSubmitting(false)
   }
@@ -93,6 +98,7 @@ export default function RegisterForm() {
         handleBlur,
         handleSubmit,
         isSubmitting,
+        status,
       }) => (
         <form onSubmit={handleSubmit} data-testid="register-form">
           <Box display="flex" justifyContent="space-between">
@@ -185,6 +191,9 @@ export default function RegisterForm() {
               {errors.confirmPassword}
             </FormHelperText>
           </FormControl>
+          {status && status.error && (
+            <Typography color="error">{status.error}</Typography>
+          )}
           <div>
             <Button
               type="submit"
