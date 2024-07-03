@@ -1,8 +1,8 @@
 import uuid
-from .sql_models import *
+from core.sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
-from .dependencies import get_session
-from .schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
+from core.dependencies import get_session
+from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
 import argon2
 import logging
 

@@ -6,7 +6,7 @@ reverse-proxy\main.py
 
 from fastapi import FastAPI, Depends, Request
 import httpx
-from auth import JWTBearer, sign_jwt
+from core.auth import JWTBearer, sign_jwt
 from services.backend_connect import send_request_to_backend_with_user_id
 from routers import users
 from fastapi.middleware.cors import CORSMiddleware

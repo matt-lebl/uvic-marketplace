@@ -1,8 +1,7 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
-import { APIPost } from '../../APIlink'
-import { User } from '../../interfaces'
+import { APIGet, APIPost } from '../../APIlink'
 import { LoginRequest } from '../../interfaces'
 
 export default function LoginForm() {
@@ -24,12 +23,24 @@ export default function LoginForm() {
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
-        setTimeout(() => {
-          // redirect to home page  
+        setTimeout(async () => {
+          // redirect to home page
           setSubmitting(false)
-          alert("Login Successful")
-          // Redirect to home page after clearing alert
-          window.location.href = "/"
+
+          const loginRequest: LoginRequest = {
+            email: values.email,
+            password: values.password,
+            totp_code: '',
+          }
+          const loginURL: string = '/api/user/'
+          try {
+            const response = await APIPost(loginURL, loginRequest)
+            console.log(response)
+            alert('Login successful, now please implement storage of user ID.')
+          } catch (error) {
+            console.error(error)
+            alert('Login failed: ' + error)
+          }
         }, 400)
       }}
     >
