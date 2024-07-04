@@ -3,7 +3,16 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 import os
 
-SQLALCHEMY_DATABASE_URL = os.environ["DATABASE_URL"]
+# Get the enviroment variables that make up the database URL
+database_scheme = os.environ["DATABASE_SCHEME"]
+postgres_user = os.environ["POSTGRES_USER"]
+postgres_password = os.environ["POSTGRES_PASSWORD"]
+postgres_host = os.environ["POSTGRES_HOST"] 
+postgres_port = os.environ["POSTGRES_PORT"]
+postgres_name = os.environ["POSTGRES_NAME"]
+
+SQLALCHEMY_DATABASE_URL = f"{database_scheme}{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_name}"
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
