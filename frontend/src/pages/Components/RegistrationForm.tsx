@@ -9,7 +9,7 @@ import {
 import { Button } from '@mui/material'
 import { Formik, FormikHelpers } from 'formik'
 import { APIPost } from '../../APIlink'
-import { NewUserReq } from '../../interfaces'
+import { NewUserReq, NewUser } from '../../interfaces'
 
 interface FormValues {
   firstName: string
@@ -72,8 +72,20 @@ const handleSubmit = async (
   const loginURL: string = '/api/user/'
 
   try {
-    const response = await APIPost(loginURL, newUserRequest)
-    localStorage.setItem('user', JSON.stringify(response))
+    const response = await APIPost<NewUser, NewUserReq>(
+      loginURL,
+      newUserRequest
+    )
+    if (response) {
+      localStorage.setItem('userID', response.userID)
+      localStorage.setItem('username', response.username)
+      localStorage.setItem('name', response.name)
+      localStorage.setItem('bio', response.bio)
+      localStorage.setItem('profileUrl', response.profileUrl)
+      alert('Registration successful.')
+    } else {
+      throw new Error('Response is undefined')
+    }
   } catch (error) {
     console.error(error)
     setStatus({ error: 'Registration failed' })
