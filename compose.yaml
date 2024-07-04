@@ -34,7 +34,13 @@ services:
         condition: service_started
     environment:
       HF_HOME: /.cache
-      DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
+      #DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
+      POSTGRES_SCHEME: postgresql://
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: mydatabase
       ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./elastic_cache:/.cache
