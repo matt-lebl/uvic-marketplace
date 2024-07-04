@@ -78,15 +78,14 @@ services:
       context: . # The algorithms directory
       dockerfile: ./app/api/Dockerfile
     environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      #- DATABASE_URL=postgresql://user:password@db:5432/mydatabase
-      - POSTGRES_SCHEME=postgresql://
-      - POSTGRES_USER=user
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - POSTGRES_NAME=mydatabase
-      - KAFKA_BOOTSTRAP_SERVERS=70.66.242.15:29092
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      POSTGRES_SCHEME: postgresql://
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_NAME: mydatabase
+      KAFKA_BOOTSTRAP_SERVERS: 70.66.242.15:29092
     command: >
       sh -c "sleep 10 && pytest -v"
     volumes:
