@@ -36,11 +36,11 @@ services:
       HF_HOME: /.cache
       #DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
       POSTGRES_SCHEME: postgresql://
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_NAME: mydatabase
+      POSTGRES_USER: algorithms
+      POSTGRES_PASSWORD: algorithms
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_NAME: algorithms
       ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./elastic_cache:/.cache
