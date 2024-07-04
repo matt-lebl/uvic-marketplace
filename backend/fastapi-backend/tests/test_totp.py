@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 from app.services.auth import Auth_Handler
-from app.schemas import NewUser
+from app.core.schemas import NewUser
 import pyotp
 from urllib.parse import unquote
 

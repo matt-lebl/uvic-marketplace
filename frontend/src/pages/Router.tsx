@@ -28,7 +28,7 @@ const Router = () => {
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Registration />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="listing" element={<Listing />} />
+        <Route path="listing/:listingID" element={<Listing />} />
         <Route path="messaging" element={<Messaging />} />
         <Route path="new-listing" element={<CreateListing />} />
         <Route path="edit-listing" element={<EditListing />} />

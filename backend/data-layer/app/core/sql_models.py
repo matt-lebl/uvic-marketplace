@@ -13,7 +13,7 @@ from sqlmodel import (
     or_,
 )
 from datetime import datetime
-from .schemas import ListingSchema, UserProfile
+from core.schemas import ListingSchema, UserProfile
 from fastapi import HTTPException
 
 

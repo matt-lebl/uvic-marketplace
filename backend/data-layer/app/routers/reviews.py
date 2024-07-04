@@ -1,8 +1,8 @@
 import uuid
-from .sql_models import *
+from core.sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
-from .dependencies import get_session
-from .schemas import NewReview, ReviewSchema
+from core.dependencies import get_session
+from core.schemas import NewReview, ReviewSchema
 from datetime import datetime
 import logging
 
