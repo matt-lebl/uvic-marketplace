@@ -6,32 +6,27 @@ import SellerCard from './Components/SellerCard'
 import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
-import {Button} from '@mui/material'
 
-function listingRequest(listingID : string | undefined) {
+function listingRequest(listingID: string | undefined) {
 
   let response: ListingEntity | undefined
 
   const listingURL: string = '/api/listing/' + listingID
 
-  const apiClick = () => {
-    setTimeout(async () => {
-      try {
-        response = await APIGet(listingURL)
+  setTimeout(async () => {
+    try {
+      response = await APIGet(listingURL)
 
-        if (response) {
-          console.log(response.title)
-          console.log(response)
-        }
-      } catch (error) {
-        console.log('Request Error' + error)
+      if (response) {
+        console.log('Response Title' + response.title)
+        console.log('Response' + response)
       }
-
-    }, 1000)
-  }
+    } catch (error) {
+      console.log('Request Error' + error)
+    }
+  }, 1000)
 
   return response
-
 }
 
 function Listing() {
@@ -39,13 +34,6 @@ function Listing() {
   const { listingID } = useParams();
 
   const listingData = listingRequest(listingID);
-
-  if(listingData == undefined){
-    return <Typography>No listing found</Typography>
-  }
-
-
-
 
   return (
     <div className="Listing">
@@ -69,7 +57,7 @@ function Listing() {
               overflow: 'auto',
             }}
           >
-            <SellerCard data={listingData}/>
+            <SellerCard data={listingData} />
           </Paper>
         </Box>
       </header>

@@ -4,7 +4,7 @@ import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
 
 interface Props {
-  data : ListingEntity
+  data? : ListingEntity
 }
 
 const SellerCard: React.FC<Props> = ({data}) => {
