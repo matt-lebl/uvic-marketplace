@@ -17,7 +17,7 @@ services:
       POSTGRES_USER: backend
       POSTGRES_PASSWORD: backend
       POSTGRES_DB: backend
-      DB_HOST: localhost
+      DB_HOST: postgres
       DB_PORT: 5432
     depends_on:
       postgres:
@@ -34,7 +34,13 @@ services:
         condition: service_started
     environment:
       HF_HOME: /.cache
-      DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
+      #DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
+      POSTGRES_SCHEME: postgresql://
+      POSTGRES_USER: algorithms
+      POSTGRES_PASSWORD: algorithms
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_NAME: algorithms
       ELASTICSEARCH_URL: http://elasticsearch:9200
     volumes:
       - ./elastic_cache:/.cache
