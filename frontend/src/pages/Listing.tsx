@@ -4,10 +4,48 @@ import { Typography, Box, Paper } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
 import { useParams } from 'react-router-dom'
+import { APIGet } from '../APIlink'
+import { ListingEntity } from '../interfaces'
+import {Button} from '@mui/material'
+
+function listingRequest(listingID : string | undefined) {
+
+  let response: ListingEntity | undefined
+
+  const listingURL: string = '/api/listing/' + listingID
+
+  const apiClick = () => {
+    setTimeout(async () => {
+      try {
+        response = await APIGet(listingURL)
+
+        if (response) {
+          console.log(response.title)
+          console.log(response)
+        }
+      } catch (error) {
+        console.log('Request Error' + error)
+      }
+
+    }, 1000)
+  }
+
+  return response
+
+}
 
 function Listing() {
 
-  let {listingID} = useParams();
+  const { listingID } = useParams();
+
+  const listingData = listingRequest(listingID);
+
+  if(listingData == undefined){
+    return <Typography>No listing found</Typography>
+  }
+
+
+
 
   return (
     <div className="Listing">
@@ -18,7 +56,7 @@ function Listing() {
             height: '85vh',
             backgroundColor: '#ffffff'
           }}>
-            <Typography sx={{fontWeight:'700', }}>Photo Gallery{listingID}</Typography>
+            <Typography sx={{ fontWeight: '700', }}>Photo Gallery{listingID}</Typography>
             <PhotoGallery />
           </Paper>
           <Paper
@@ -31,7 +69,7 @@ function Listing() {
               overflow: 'auto',
             }}
           >
-            <SellerCard />
+            <SellerCard data={listingData}/>
           </Paper>
         </Box>
       </header>
