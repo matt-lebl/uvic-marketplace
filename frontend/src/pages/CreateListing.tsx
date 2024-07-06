@@ -4,16 +4,32 @@ import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
 import { useState } from 'react'
 import { ChangeEvent } from 'react'
-import { ListingEntity } from '../interfaces'
+import { ListingEntity, ListingResponse } from '../interfaces'
+import { APIPost } from '../APIlink'
+
 
 function apiSubmit(listing: ListingEntity) {
 
+  let response : ListingResponse | undefined
+
+  setTimeout( async() => {
+    try {
+      response = await APIPost('/api/listing', listing)
+    } catch (error) {
+
+    }
+    if(response) {
+      console.log('Response: ' + response)
+    }
+  })
 }
 
 function CreateListing() {
   const [title, setTitle] = useState<string>('')
 
   const [desc, setDesc] = useState<string>('')
+
+  const [price, setPrice] = useState<number>(0)
 
   const [imageNames, setImageNames] = useState<Array<string>>([])
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
@@ -53,11 +69,38 @@ function CreateListing() {
     setDesc(event.target.value)
   }
 
+  const priceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPrice(+event.target.value)
+  }
+
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     console.log(title)
     console.log(desc)
     console.log(imageNames[0])
+
+    let submitListing : ListingEntity = {
+      title : title,
+      description: desc,
+      listingID: '1234',
+      price: price,
+      images: imageURLs.map((urltext) => ({url: urltext})),
+      seller_profile: {
+        userID:'1345',
+        username:'bartholomew',
+        name:'bart',
+        bio:'stairs',
+        profilePictureUrl:'example.com'
+      },
+      location: {latitude: 0, longitude: 0},
+      status:'open',
+      dateCreated:'1/2/3030',
+      dateModified: '2/3/3030',
+      reviews:[],
+      distance:2
+    }
+
+    apiSubmit(submitListing)
   }
 
   return (
@@ -98,6 +141,24 @@ function CreateListing() {
                 onChange={titleChange}
               />
             </Paper>
+            <Paper
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                p: '20px',
+                m: '20px 0px 10px 0px',
+              }}
+            >
+              <InputBase
+                id="Listing-Price"
+                placeholder="Price"
+                fullWidth={true}
+                multiline={true}
+                sx={{ fontWeight: 700 }}
+                onChange={priceChange}
+              />
+            </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
               <InputBase
                 id="Listing-Description"
@@ -111,8 +172,11 @@ function CreateListing() {
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
               <Box>
                 <Typography>Photos (max 8)</Typography>
+
                 <PhotoPreviewList imageNames={imageNames}/>
-                <input id='photoInput' type="file" multiple={true} max={8} onChange={handlPhotoUpload}></input>
+
+                <input id='photoInput' type="file" multiple={true} max={8} accept='image/*' onChange={handlPhotoUpload}></input>
+
                 <Button variant="contained" sx={{ ml: '20px' }} onClick={handleRemoveAll}>
                   Remove All
                 </Button>
