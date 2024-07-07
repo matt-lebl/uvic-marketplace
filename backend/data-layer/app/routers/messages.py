@@ -5,7 +5,7 @@ from core.dependencies import get_session
 from core.schemas import MessageSchema, MessageThread
 import logging
 
-logging.basicConfig(format="%(asctime)s $(message)s")
+logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(

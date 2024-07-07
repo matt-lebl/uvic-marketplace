@@ -6,7 +6,7 @@ from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserR
 import argon2
 import logging
 
-logging.basicConfig(format="%(asctime)s $(message)s")
+logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
