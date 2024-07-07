@@ -3,7 +3,6 @@ from functools import lru_cache
 from sqlmodel import Session, create_engine
 from . import config
 
-
 """
 Settings dependency: Use this for all settings (environment vars in .env)
 
@@ -19,11 +18,22 @@ async def info(settings: Annotated[config.Settings, Depends(get_settings)]):
 
 
 """
+
+
+class Dependencies:
+    settings = config.Settings()
+    engine = create_engine(settings.database_url)
+
+
 @lru_cache
 def get_settings():
-    return config.Settings()
+    return Dependencies.settings
+
+
+def get_engine():
+    return Dependencies.engine
+
 
 def get_session():
-    settings = get_settings()
-    engine = create_engine(settings.database_url)
-    return engine
+    with Session(Dependencies.engine) as session:
+        yield session
