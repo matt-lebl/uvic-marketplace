@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import Dict
 from sqlalchemy.orm import Session
-from app.db.models import DB_Interaction
-from app.db.deps import get_db
+from db.models import DB_Interaction
+from db.deps import get_db
 from sqlalchemy.exc import SQLAlchemyError
 
 router = APIRouter()

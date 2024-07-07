@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.endpoints import search, recommendations, listings, interactions
+from endpoints import search, recommendations, listings, interactions
 
 app = FastAPI()
 

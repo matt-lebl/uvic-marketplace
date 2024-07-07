@@ -1,5 +1,3 @@
-
-# TODO: Add actual schemas for the API 
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, List
 from enum import Enum

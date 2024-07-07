@@ -1,9 +1,9 @@
-from fastapi import HTTPException
-from app.api.schemas import ItemStatusEnum
+from confluent_kafka import KafkaException 
+from util.schemas import ItemStatusEnum
 from sqlalchemy.orm import Session
-from app.db.models import DB_Listing
-from app.util.embedding import generate_embedding
-from app.util.elasticsearch_wrapper import ElasticsearchWrapper
+from db.models import DB_Listing
+from util.embedding import generate_embedding
+from util.elasticsearch_wrapper import ElasticsearchWrapper
 from sqlalchemy.exc import SQLAlchemyError
 
 es_wrapper = ElasticsearchWrapper()
@@ -44,7 +44,7 @@ async def create_listing(data: dict, db: Session):
     except SQLAlchemyError as e:
         print("Error adding listing to postgres: ", e)
         db.rollback()
-        return HTTPException(status_code=501, detail="Error adding listing to database")
+        raise KafkaException(e)
     
     # Format listing into proper response 
     del listing_data['embedding']
@@ -64,7 +64,7 @@ async def delete_listing(data: dict, db: Session):
         print(f"Deleted from ES: {es_response}")
     except Exception as e:
         print(f"Error deleting from Elasticsearch: {e}")
-        raise HTTPException(status_code=500, detail="Failed to delete listing from Elasticsearch")
+        raise KafkaException(e)
 
     # Delete from PostgreSQL
     try:
@@ -74,10 +74,11 @@ async def delete_listing(data: dict, db: Session):
             db.commit()
             print(f"Deleted from DB: Listing ID {listing_id}")
         else:
-            raise HTTPException(status_code=404, detail="Listing not found in database")
+            print("Listing not found in database")
+            raise KafkaException()
     except SQLAlchemyError as e:
         db.rollback()
         print(f"Error deleting from database: {e}")
-        raise HTTPException(status_code=500, detail="Failed to delete listing from database")
+        raise KafkaException(e)
 
     return {"message": "Listing deleted successfully"}

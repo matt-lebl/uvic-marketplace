@@ -2,7 +2,7 @@ services:
   fastapi:
     build: 
       context: . # The algorithms directory
-      dockerfile: fastapi/app/api/Dockerfile
+      dockerfile: fastapi/Dockerfile
     command: "./entrypoint.sh"
     ports:
       - "8000:80"
@@ -76,7 +76,7 @@ services:
   tests:
     build: 
       context: . # The algorithms directory
-      dockerfile: fastapi/app/api/Dockerfile
+      dockerfile: fastapi/Dockerfile
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       POSTGRES_SCHEME: postgresql://

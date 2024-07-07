@@ -29,7 +29,8 @@ services:
       KAFKA_BOOSTRAP_SERVERS: https://kafka:9092
   algorithms-kafka-consumer:
     build:
-      context: algorithms/kafka
+      context: algorithms
+      dockerfile: kafka/Dockerfile
     depends_on:
       elasticsearch:
         condition: service_started
@@ -49,7 +50,8 @@ services:
       ELASTICSEARCH_URL: http://elasticsearch:9200
   algorithms:
     build:
-      context: algorithms/fastapi
+      context: algorithms
+      dockerfile: fastapi/Dockerfile
     ports:
       - "8000:80"
     depends_on:

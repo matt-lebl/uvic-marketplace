@@ -107,7 +107,7 @@ def add_listings(base_url):
         ("Tennis Balls", "Pack of three, high-quality, suitable for all court types.")
     ]
 
-    for i in range(100):
+    for i in range(5):
         listing_data = {
             "listing": {
                 "listingID": str(i + 1),

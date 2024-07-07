@@ -4,7 +4,7 @@ import json
 from consumers.interactions import record_click 
 from consumers.listings import create_listing, delete_listing
 from consumers.users import add_user, edit_user, delete_user
-from app.db.deps import get_db
+from db.deps import get_db
 
 # Kafka Consumer configuration
 conf = {

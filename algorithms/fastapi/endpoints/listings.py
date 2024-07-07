@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Body, Header, HTTPException, status, Depends
 from typing import Dict, Optional
-from app.api.schemas import ListingResponse, ErrorMessage, ItemStatusEnum
+from util.schemas import ListingResponse, ErrorMessage, ItemStatusEnum
 from sqlalchemy.orm import Session
-from app.db.models import DB_Listing
-from app.db.deps import get_db
-from app.util.embedding import generate_embedding
-from app.util.elasticsearch_wrapper import ElasticsearchWrapper
+from db.models import DB_Listing
+from db.deps import get_db
+from util.embedding import generate_embedding
+from util.elasticsearch_wrapper import ElasticsearchWrapper
 from sqlalchemy.exc import SQLAlchemyError
 
 es_wrapper = ElasticsearchWrapper()
