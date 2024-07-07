@@ -9,9 +9,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the current directory contents into the container at /code
 COPY app /code/app
+COPY alembic.ini /code/
+COPY alembic /code/alembic
 COPY entrypoint.sh /code/
+RUN chmod 755 /code/entrypoint.sh
 
 ENV PYTHONPATH=/code
 
 # Run the application
-CMD ["python", "/code/app/kafka/kafka_consumer.py"]
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "80"]
