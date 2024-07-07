@@ -43,7 +43,7 @@ class DataFactory:
             "images": image_urls,
             "location": {"latitude": latitude, "longitude": longitude}
         }
-        return listing
+        return {"listing": listing}
 
     def generate_message(self, listing, sender, receiver):
         message_id = str(uuid.uuid4())

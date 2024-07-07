@@ -32,7 +32,7 @@ def update_listing(
     listing: NewListing,
     session: Session = Depends(get_session),
 ):
-    listing_data = Listing.convert_to_db_object(listing.model_dump(), seller_id)
+    listing_data = Listing.convert_to_db_object(listing.model_dump()["listing"], seller_id)
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
     updated_listing = Listing.update(seller_id=seller_id, session=session, **listing_data)

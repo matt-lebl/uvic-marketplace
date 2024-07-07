@@ -83,9 +83,9 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
         if not password:
             raise HTTPException(status_code=401)
         try:
-            argon2.verify_password(hashed_password.encode(), password.encode())
+            argon2.PasswordHasher().verify(hashed_password, password)
         except Exception as e:
-            print(e)
+            logger.error(str(e))
             raise HTTPException(status_code=401)
         user = User.login(session, request.email)
         if not user:

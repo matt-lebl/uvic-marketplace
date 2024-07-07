@@ -79,7 +79,7 @@ async def test_get_user():
 async def test_login():
     user = data_factory.generate_user()
     p1 = user["password"]
-    user["password"] = argon2.hash_password(user["password"].encode()).decode()
+    user["password"] = argon2.PasswordHasher().hash(user["password"])
 
     create_response = client.post("/user/", json=user)
     assert create_response.status_code == 200
@@ -89,7 +89,7 @@ async def test_login():
     assert response.status_code == 200
 
     login_req2 = dict(login_req)
-    login_req2["password"] = argon2.hash_password("asdlf[kj".encode()).decode()
+    login_req2["password"] = argon2.PasswordHasher().hash("asdlf[kj")
     response = client.post(f"/user/login", json=login_req2)
     assert response.status_code == 401
 
@@ -129,7 +129,7 @@ async def test_create_listing():
     seller_id = response.json()["userID"]
     response = client.post(f"/listing/{seller_id}", json=listing)
     assert response.status_code == 200
-    assert response.json()["title"] == listing["title"]
+    assert response.json()["title"] == listing["listing"]["title"]
 
 
 @pytest.mark.asyncio

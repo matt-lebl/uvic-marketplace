@@ -1,6 +1,3 @@
-from pathlib import Path
-from pydantic.v1 import BaseSettings
-from sqlmodel import Session, create_engine
 from decouple import config
 
 class Settings:
