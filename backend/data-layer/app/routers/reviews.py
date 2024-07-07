@@ -6,7 +6,7 @@ from core.schemas import NewReview, ReviewSchema
 from datetime import datetime
 import logging
 
-logging.basicConfig(format="%(asctime)s $(message)s")
+logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
 
 router = APIRouter(
