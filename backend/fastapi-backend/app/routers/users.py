@@ -67,7 +67,7 @@ async def reset_password(emailModel: EmailModel):
 @userRouter.post("/login")
 async def login(loginRequest: LoginRequest):
     path = "user/login"
-    email_password = {"email": loginRequest.email, "password": Auth_Handler.hash_password(loginRequest.password)}
+    email_password = {"email": loginRequest.email, "password": loginRequest.password}
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
         if loginResponse.status_code == 200:
