@@ -32,10 +32,14 @@ def update_listing(
     listing: NewListing,
     session: Session = Depends(get_session),
 ):
-    listing_data = Listing.convert_to_db_object(listing.model_dump()["listing"], seller_id)
+    listing_data = Listing.convert_to_db_object(
+        listing.model_dump()["listing"], seller_id
+    )
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
-    updated_listing = Listing.update(seller_id=seller_id, session=session, **listing_data)
+    updated_listing = Listing.update(
+        seller_id=seller_id, session=session, **listing_data
+    )
     logger.info(f"Updated listing{updated_listing}")
     return updated_listing
 
@@ -51,7 +55,9 @@ def get_listing(listingID: str, session: Session = Depends(get_session)):
 
 
 @router.delete("/{listingID}/{seller_id}")
-def delete_listing(listingID: str, seller_id: str, session: Session = Depends(get_session)):
+def delete_listing(
+    listingID: str, seller_id: str, session: Session = Depends(get_session)
+):
     logger.info(f"Listing deleted{listingID}")
     try:
         result = Listing.delete(listingID, seller_id, session)
