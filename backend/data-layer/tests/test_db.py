@@ -77,19 +77,14 @@ async def test_get_user():
 
 @pytest.mark.asyncio
 async def test_login():
-    user = data_factory.generate_user()
-    p1 = user["password"]
-    user["password"] = argon2.PasswordHasher().hash(user["password"])
-
+    user, p1 = data_factory.generate_user(need_password=True)
     create_response = client.post("/user/", json=user)
     assert create_response.status_code == 200
 
     login_req = DataFactory.generate_login_request(user["email"], p1)
     response = client.post(f"/user/login", json=login_req)
     assert response.status_code == 200
-
-    login_req2 = dict(login_req)
-    login_req2["password"] = argon2.PasswordHasher().hash("asdlf[kj")
+    login_req2 = DataFactory.generate_login_request(user["email"], "wrongpassword")
     response = client.post(f"/user/login", json=login_req2)
     assert response.status_code == 401
 

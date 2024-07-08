@@ -5,6 +5,7 @@ from core.dependencies import get_session
 from core.schemas import NewListing, ListingSchema
 from datetime import datetime
 import logging
+
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
 

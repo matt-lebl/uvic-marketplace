@@ -19,7 +19,7 @@ router = APIRouter(
 def create_user(user: NewUserReq, session: Session = Depends(get_session)):
     user_data = user.model_dump()
     user_data["userID"] = str(uuid.uuid4())
-    logger.info(f"new user creation: {user_data["userID"]}")
+    logger.info(f"new user creation: {user_data["userID"]}, {user_data["password"]}")
     try:
         new_user = User.create(session=session, **user_data)
         return new_user
