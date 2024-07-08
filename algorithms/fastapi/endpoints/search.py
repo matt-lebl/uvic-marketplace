@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List, Optional
-from ..schemas import ListingSummary, SearchResponse, ErrorMessage
-from ...util.elasticsearch_wrapper import ElasticsearchWrapper
+from util.schemas import ListingSummary, SearchResponse, ErrorMessage
+from util.elasticsearch_wrapper import ElasticsearchWrapper
 import torch
 import numpy as np
-from ...util.embedding import generate_embedding, find_closest_matches
+from util.embedding import generate_embedding, find_closest_matches
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es

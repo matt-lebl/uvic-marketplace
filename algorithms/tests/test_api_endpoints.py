@@ -1,6 +1,6 @@
 import httpx
 import pytest
-from app.util.elasticsearch_wrapper import ElasticsearchWrapper
+from util.elasticsearch_wrapper import ElasticsearchWrapper
 
 # Change to http://localhost:8000 for local testing on host
 BASE_URL = "http://fastapi:80"

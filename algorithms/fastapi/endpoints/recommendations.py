@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List
-from ..schemas import ListingSummary, ErrorMessage
+from util.schemas import ListingSummary, ErrorMessage
 
 router = APIRouter()
 

@@ -2,7 +2,7 @@ services:
   fastapi:
     build: 
       context: . # The algorithms directory
-      dockerfile: ./app/api/Dockerfile
+      dockerfile: fastapi/Dockerfile
     command: "./entrypoint.sh"
     ports:
       - "8000:80"
@@ -28,7 +28,7 @@ services:
   kafka-consumer:
     build:
       context: . # The algorithms directory
-      dockerfile: ./app/kafka/Dockerfile
+      dockerfile: kafka/Dockerfile
     depends_on:
       elasticsearch:
         condition: service_started
@@ -76,7 +76,7 @@ services:
   tests:
     build: 
       context: . # The algorithms directory
-      dockerfile: ./app/api/Dockerfile
+      dockerfile: fastapi/Dockerfile
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       POSTGRES_SCHEME: postgresql://
