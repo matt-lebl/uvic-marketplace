@@ -3,7 +3,6 @@ from core.schemas import NewUser, LoginRequest, ResetPassword, User, UserBaseMod
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
-
 usersRouter = APIRouter(
     prefix="/api/user",
     tags=["users"],
@@ -14,7 +13,7 @@ usersRouter = APIRouter(
 ## These endpoints can be interacted with without a valid JWT token
 @usersRouter.post("/")
 async def create_user(
-    user: NewUser,
+        user: NewUser,
 ):
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
     return response_backend.json()
@@ -30,7 +29,6 @@ async def reset_password(resetPassword: ResetPassword):
 
 @usersRouter.post("/login")
 async def login(loginRequest: LoginRequest, response: Response):
-
     response_backend = await send_request_to_backend(
         "user/login", "POST", loginRequest.model_dump()
     )
@@ -51,3 +49,9 @@ async def login(loginRequest: LoginRequest, response: Response):
 async def logout(response: Response):
     response.delete_cookie(key="authorization")
     return {"message": "Successfully signed out"}
+
+
+@usersRouter.get("/validate-email/{auth_code}")
+async def validate_email(auth_code: str):
+    print(auth_code)
+    return {"message": auth_code}

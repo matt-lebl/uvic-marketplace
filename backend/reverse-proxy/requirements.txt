@@ -35,3 +35,9 @@ ujson==5.10.0
 uvicorn==0.30.1
 watchfiles==0.22.0
 websockets==12.0
+google-api-core==2.19.1
+google-api-python-client==2.136.0
+google-auth==2.31.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.0
+googleapis-common-protos==1.63.2
