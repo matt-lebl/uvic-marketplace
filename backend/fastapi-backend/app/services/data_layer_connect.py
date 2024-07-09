@@ -14,8 +14,8 @@ async def perform_http_request(method: str, url: str, data: dict | None = None):
             return response
         except httpx.HTTPError as exc:
             raise HTTPException(
-                status_code=exc.response.status_code,
-                detail="Error in the data layer request",
+                status_code=500,
+                detail="Error in the data layer request" + str(exc),
             )
 
 

@@ -24,10 +24,7 @@ class UpdateUser(BaseModel):
     username: str = Field(None, description="Username of the user", example="john_doe")
     name: str = Field(None, description="Name of the user", example="John Doe")
     bio: str = Field(None, description="TODO", example="TODO")
-    password: str = Field(
-        None, description="Hashed? password of the user", example="securepassword123"
-    )
-    profilepictureURL: str = Field(
+    profilePictureUrl: str = Field(
         None,
         description="URL of the user's profile picture",
         example="https://image.com/2202",

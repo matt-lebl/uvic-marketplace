@@ -6,7 +6,7 @@ import argon2
 from .env_vars import FB_ENV_VARS
 
 
-class Auth_Handler():
+class AuthHandler:
     def __init__(self, key=None):
         enc_key = ""
         if not key:
@@ -32,5 +32,5 @@ class Auth_Handler():
 
     @classmethod
     def hash_password(cls, password: str):
-        hashed = argon2.hash_password(password.encode())
-        return hashed.decode()
+        hasher = argon2.PasswordHasher()
+        return hasher.hash(password)

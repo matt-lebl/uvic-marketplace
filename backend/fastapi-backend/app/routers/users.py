@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, HTTPException
 from core.schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
 from services.data_layer_connect import send_request_to_data_layer
-from services.auth import Auth_Handler
+from services.auth import AuthHandler
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -10,7 +10,7 @@ userRouter = APIRouter(
     responses={404: {"description": "Not found"}, 401: {"description": "Unauthorized"}},
 )
 
-authHandler = Auth_Handler()
+authHandler = AuthHandler()
 
 ## Auth Not Required
 @userRouter.post("/")
@@ -21,8 +21,8 @@ async def create_user(user: NewUser):
     path = "user/"
 
     user = user.model_dump()
-    totp_secret, uri = Auth_Handler.generate_otp(user["email"])
-    user["password"] = Auth_Handler.hash_password(user["password"])
+    totp_secret, uri = AuthHandler.generate_otp(user["email"])
+    user["password"] = AuthHandler.hash_password(user["password"])
     user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
 
     response = await send_request_to_data_layer(path, "POST", user)
