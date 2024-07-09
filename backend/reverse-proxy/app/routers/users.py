@@ -51,7 +51,7 @@ async def logout(response: Response):
     return {"message": "Successfully signed out"}
 
 
-@usersRouter.get("/validate-email/{auth_code}")
-async def validate_email(auth_code: str):
-    print(auth_code)
-    return {"message": auth_code}
+@usersRouter.get("/validate-email/{validation_code}/{email}")
+async def validate_email(validation_code: str, email: str):
+    response = await send_request_to_backend(f"user/validate-email/{validation_code}/{email}", "POST")
+    return response.json()

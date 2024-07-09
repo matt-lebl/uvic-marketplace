@@ -1,4 +1,3 @@
-import uuid
 from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
@@ -40,7 +39,6 @@ async def create_user(user: NewUser):
 
 @userRouter.get("/{id}")
 async def get_user(id: str, authUserID: str):
-
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
     if response.status_code == 200:
@@ -60,7 +58,6 @@ async def edit_user(user: UpdateUser, authUserID: str):
 
 @userRouter.delete("/")
 async def delete_user(authUserID: str):
-
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "DELETE")
     return response.json()
@@ -82,6 +79,7 @@ async def login(loginRequest: LoginRequest):
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
@@ -94,18 +92,8 @@ async def login(loginRequest: LoginRequest):
 
 
 # Logout need not be implemented, it is implemented in RP
+@userRouter.post("/validate-email/{validation_code}/{email}")
+async def validate_email(validation_code: str, email: str):
+    response = await send_request_to_data_layer(f"/user/validate-email/{validation_code}/{email}", "POST")
+    return response.json()
 
-
-@userRouter.post("/send-confirmation-email")
-async def send_confirmation_email(emailModel: EmailModel, authUserID: str):
-    # TODO: Implement sending confirmation email
-    return {
-        "TODO": "Confirmation email sent to {}".format(emailModel.email),
-        "Reqested by": authUserID,
-    }
-
-
-@userRouter.post("/confirm-email")
-async def confirm_email(token: str, authUserID: str):
-    # TODO: Implement email confirmation
-    return {"TODO": "Email confirmed", "Reqested by": authUserID}

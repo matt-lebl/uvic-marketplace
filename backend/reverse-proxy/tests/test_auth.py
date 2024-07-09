@@ -62,6 +62,7 @@ def test_validate_email():
     assert validate_email_domain(valid)
     assert not validate_email_domain(invalid)
 
+
 def test_validation_email():
     email = "conwebert@gmail.com"
     ev = EmailValidator()

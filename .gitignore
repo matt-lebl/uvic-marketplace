@@ -30,3 +30,6 @@ postgres_data/*
 */elastic_cache/*
 */elastic_data/*
 */postgres_data/*
+
+**/client_secret.json
+**/token.json
