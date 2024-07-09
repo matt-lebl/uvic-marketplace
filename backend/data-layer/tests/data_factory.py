@@ -19,7 +19,8 @@ class DataFactory:
             "name": self.fake.name(),
             "email": self.fake.email(),
             "password": self.hasher.hash(password),
-            "totp_secret": self.fake.password()
+            "totp_secret": self.fake.password(),
+            "validation_code": self.fake.uuid4()
         }
         if need_password:
             return user_data, password

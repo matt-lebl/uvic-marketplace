@@ -203,6 +203,7 @@ class NewUserReq(BaseModel):
     email: str
     password: str
     totp_secret: str
+    validation_code: str
 
 
 class UpdateUser(BaseModel):

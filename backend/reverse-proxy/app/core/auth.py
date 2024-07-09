@@ -102,7 +102,7 @@ class EmailValidator:
 
         unique_id = str(uuid.uuid4())
         subject = "Email Validation"
-        body = f"{API_URL}/user/validate-email/{unique_id}"
+        body = f"{API_URL}/user/validate-email/{unique_id}/{str(receiver_email.encode())}"
 
         message = MIMEMultipart()
         message["From"] = self.email
