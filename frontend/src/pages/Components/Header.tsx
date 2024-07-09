@@ -8,13 +8,19 @@ import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
+import { SearchRequest} from '../../interfaces'
+import { AddData, GetData } from '../../DataContext'
 
-export default function Header() {
-  const handleSearch = (query: string) => {
+const Header: React.FC = () =>{
+  const searchRequestID = "searchRequest"
+  const navigate = useNavigate()
+
+  const handleSearch = (query: SearchRequest) => {
     console.log(query)
+    AddData(searchRequestID, query);
+    navigate('/search')
   }
 
-  const navigate = useNavigate()
 
   return (
     <Box sx={{ flexGrow: 1, height: '7vh' }}>
@@ -41,6 +47,7 @@ export default function Header() {
                 border: '1px solid',
               }}
               submit={handleSearch}
+              previousSearchRequest={GetData(searchRequestID)}
             />
           </Box>
           <Button
@@ -98,3 +105,5 @@ export default function Header() {
     </Box>
   )
 }
+
+export default  Header

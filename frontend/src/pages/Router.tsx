@@ -10,6 +10,7 @@ import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
+import Search from './Search'
 
 /*
 Add paths for new pages here
@@ -32,6 +33,7 @@ const Router = () => {
         <Route path="messaging" element={<Messaging />} />
         <Route path="new-listing" element={<CreateListing />} />
         <Route path="edit-listing" element={<EditListing />} />
+        <Route path="search" element={<Search/>}/>
       </Route>
     </Routes>
   )
