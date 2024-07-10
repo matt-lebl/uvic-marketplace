@@ -3,11 +3,12 @@ import httpx
 from fastapi import HTTPException
 
 
-DATA_LAYER_URL = "http://localhost:8002"
+DATA_LAYER_URL = "http://backend-data-layer:8002"
 
 
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
+        print(url)
         try:
             response = await client.request(method, url, json=data)
             response.raise_for_status()
