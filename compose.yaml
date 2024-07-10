@@ -29,6 +29,9 @@ services:
       - "8000:8000"
     environment:
       FB_URL: "http://backend-fastapi-backend:8001"
+    depends_on:
+      backend-fastapi-backend:
+        condition: service_started
   backend-fastapi-backend:
     build:
       context: backend/fastapi-backend
@@ -37,6 +40,11 @@ services:
     environment:
       DATA_LAYER_URL: http://backend-data-layer:8002
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_started
+      backend-data-layer:
+        condition: service_started
   algorithms-kafka-consumer:
     build:
       context: algorithms
