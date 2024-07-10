@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/listing", tags=["listings"])
 
 
-@router.post("/{seller_id}")
+@router.post("/{seller_id}", response_model=ListingSchema)
 def create_listing(
     seller_id: str, listing: NewListing, session: Session = Depends(get_session)
 ):
@@ -23,6 +23,7 @@ def create_listing(
     listing_data["dateModified"] = listing_data["dateCreated"]
     new_listing = Listing.create(session=session, **listing_data)
     logger.info(f"New Listing Created{new_listing}")
+    new_listing = new_listing.convert_to_schema(session)
     return new_listing
 
 

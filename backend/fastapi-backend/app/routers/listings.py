@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from core.schemas import NewListing, NewReview
+from core.schemas import Listing, Location, NewListing, NewReview
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 from services.data_layer_connect import send_request_to_data_layer
 
@@ -24,11 +24,12 @@ async def get_listing(id: str, authUserID: str):
 
 @listingsRouter.post("/")
 async def create_listing(listing: NewListing, authUserID: str):
-    dsKafkaProducer.push_new_listing(listing)
-
     path = "listing/" + authUserID
     response = await send_request_to_data_layer(path, "POST", listing.model_dump())
-    return response.json()
+    response = response.json()
+    listing = {"listing": response}
+    dsKafkaProducer.push_new_listing(listing)
+    return listing
 
 
 @listingsRouter.patch("/{id}")
