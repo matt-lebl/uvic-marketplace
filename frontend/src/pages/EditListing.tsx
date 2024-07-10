@@ -10,7 +10,7 @@ function EditListing() {
 
   const [desc, setDesc] = useState<string>('')
 
-  const [pics, setPics] = useState(null)
+  const [pics, setPics] = useState<Array<string>>([])
 
   const titleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)

@@ -32,8 +32,10 @@ class UserBase(SQLModel):
 
 class User(UserBase, table=True):
     listings: list["Listing"] | None = Relationship(back_populates="seller")
-    sent_messages: list["Message"] | None = Relationship(back_populates="sender")
-    received_messages: list["Message"] | None = Relationship(back_populates="receiver")
+    sent_messages: list["Message"] = Relationship(back_populates="sender",
+                                                  sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
+    received_messages: list["Message"] = Relationship(back_populates="receiver",
+                                                      sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -286,15 +288,17 @@ class ListingReview(ListingReviewBase, table=True):
 class MessageBase(SQLModel):
     message_id: str = Field(default=None, primary_key=True)
     sender_id: str = Field(foreign_key="user.userID", index=True)
-    receiver_id: str = Field(index=True)
+    receiver_id: str = Field(foreign_key="user.userID", index=True)
     listing_id: str = Field(foreign_key="listing.listingID", index=True)
     content: str | None = None
     sent_at: datetime | None = Field(index=True)
 
 
 class Message(MessageBase, table=True):
-    sender: User = Relationship(back_populates="sent_messages")
-    receiver: User = Relationship(back_populates="received_messages")
+    sender: User | None = Relationship(back_populates="sent_messages",
+                                          sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
+    receiver: User | None = Relationship(back_populates="received_messages",
+                                            sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
     listing: Listing = Relationship(back_populates="messages")
 
     @classmethod
@@ -318,7 +322,7 @@ class Message(MessageBase, table=True):
     @classmethod
     def get_overview(cls, userID: str, session: Session):
         subquery = (
-            session.query(
+            select(
                 Message.sender_id,
                 Message.receiver_id,
                 func.max(Message.sent_at).label("max_timestamp"),
@@ -329,7 +333,7 @@ class Message(MessageBase, table=True):
         )
 
         query = (
-            session.query(
+            select(
                 Message, User.userID.label("other_user_id"), User.name, User.profileUrl
             )
             .join(
@@ -353,7 +357,7 @@ class Message(MessageBase, table=True):
             )
         )
 
-        messages = query.all()
+        messages = session.exec(query).all()
 
         overview = []
         for message, other_user_id, name, profileUrl in messages:

@@ -6,7 +6,7 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from app.db.models import Base
+from db.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -17,7 +17,18 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', os.getenv('DATABASE_URL'))
+
+# Get the enviroment variables that make up the database URL
+postgres_scheme = os.environ["POSTGRES_SCHEME"]
+postgres_user = os.environ["POSTGRES_USER"]
+postgres_password = os.environ["POSTGRES_PASSWORD"]
+postgres_host = os.environ["POSTGRES_HOST"] 
+postgres_port = os.environ["POSTGRES_PORT"]
+postgres_name = os.environ["POSTGRES_NAME"]
+
+database_url = f"{postgres_scheme}{postgres_user}:{postgres_password}@{postgres_host}:{postgres_port}/{postgres_name}"
+
+config.set_main_option('sqlalchemy.url', database_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

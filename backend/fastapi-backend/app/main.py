@@ -35,7 +35,7 @@ async def data_layer_request(path: str | None):
             response = await client.get(url)
             return response.text
         except httpx.HTTPError as exc:
-            raise HTTPException(status_code=exc.response.status_code, detail=str(exc))
+            raise HTTPException(status_code=500, detail=str(exc))
 
 
 # Catch-all route to handle requests to other paths

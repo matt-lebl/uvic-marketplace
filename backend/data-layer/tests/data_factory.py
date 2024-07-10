@@ -1,5 +1,6 @@
 import random
 import uuid
+import argon2
 from faker import Faker
 import pyotp
 from cryptography.fernet import Fernet
@@ -9,15 +10,19 @@ class DataFactory:
     def __init__(self):
         self.fake = Faker()
         self.fernet = Fernet(Fernet.generate_key())
+        self.hasher = argon2.PasswordHasher()
 
-    def generate_user(self):
+    def generate_user(self, need_password=False):
+        password = self.fake.password()
         user_data = {
             "username": self.fake.user_name(),
             "name": self.fake.name(),
             "email": self.fake.email(),
-            "password": self.fake.password(),
+            "password": self.hasher.hash(password),
             "totp_secret": self.fake.password()
         }
+        if need_password:
+            return user_data, password
         return user_data
 
     def generate_user_update(self):
@@ -36,12 +41,13 @@ class DataFactory:
         latitude = float(self.fake.latitude())
         longitude = float(self.fake.longitude())
 
-        listing = {
+        listing = {"listing": {
             "title": title,
             "price": price,
             "description": description,
             "images": image_urls,
             "location": {"latitude": latitude, "longitude": longitude}
+            }
         }
         return listing
 

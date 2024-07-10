@@ -8,6 +8,7 @@ from .env_vars import RP_ENV_VARS
 FASTAPI_BACKEND_URL = config(RP_ENV_VARS.FB_URL, default="http://localhost:8001")
 USER_ID_FIELD = "authUserID"
 
+
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
         try:
@@ -16,8 +17,8 @@ async def perform_http_request(method: str, url: str, data: dict | None = None):
             return response
         except httpx.HTTPError as exc:
             raise HTTPException(
-                status_code=exc.response.status_code,
-                detail="Error in the backend request: " + exc.response.text,
+                status_code=500,
+                detail="Error in the backend request: " + str(exc),
             )
 
 
@@ -27,7 +28,7 @@ async def send_request_to_backend(path: str, method: str, data: dict | None = No
 
 
 async def send_request_to_backend_with_user_id(
-    path: str, method: str, token: str, data: dict | None = None
+        path: str, method: str, token: str, data: dict | None = None
 ):
     user_id = get_user_id_from_token(token)
 
