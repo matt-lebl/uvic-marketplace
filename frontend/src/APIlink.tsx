@@ -1,6 +1,7 @@
 import axios, { AxiosResponse, AxiosInstance } from 'axios'
 
-export const baseUrl = process.env.REACT_APP_BASEURL
+export const baseUrl = process.env.REACT_APP_BASEURL ?? 'http://localhost:8000'
+
 var instance = axios.create({ baseURL: baseUrl, withCredentials: true })
 export default class APIError extends Error {
   status: number
