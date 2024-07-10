@@ -1,15 +1,26 @@
 import * as React from 'react'
-import { Button, Box } from '@mui/material'
+import { Button, Box, List, ListItem } from '@mui/material'
+import { useState, useRef } from 'react'
+import { KeyObject } from 'crypto'
 
-export default function PhotoGallery() {
+interface Props {
+  imageNames? : Array<string>
+}
+
+const PhotoGallery: React.FC<Props> = ({imageNames}) => {
   return (
     <div className="Photo-Previews">
-      <Box>
-        <input type="file"></input>
-        <Button variant="contained" sx={{ ml: '20px' }}>
-          Remove All
-        </Button>
+      <Box >
+        <List>
+          {imageNames?.map((name) => (
+            <ListItem key={name}>
+              {name}
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </div>
   )
 }
+
+export default PhotoGallery

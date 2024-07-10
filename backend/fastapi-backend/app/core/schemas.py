@@ -231,7 +231,7 @@ class LoginRequest(BaseModel):
     password: str = Field(
         None, description="Hashed? password of the user", example="securepassword123"
     )
-    totp: str = Field(
+    totp_code: str = Field(
         None,
         description="Temporary One Time Password(TOTP) from an MFA application",
         example="123456",
