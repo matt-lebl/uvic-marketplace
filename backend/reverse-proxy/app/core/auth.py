@@ -11,15 +11,9 @@ JWT_ALGORITHM = config(RP_ENV_VARS.JWT_ALGORITHM, default="HS256")
 EXPIRY_TIME = config(RP_ENV_VARS.EXPIRY_TIME, default=600)
 
 
-def token_response(token: str):
-    return {"access_token": token}
-
-
 def sign_jwt(user_id: str) -> Dict[str, str]:
     payload = {"user_id": user_id, "expires": time.time() + int(EXPIRY_TIME)}
-    token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
-    return token_response(token)
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
 def decode_jwt(token: str) -> dict | None:
@@ -63,18 +57,15 @@ class JWTBearer(HTTPBearer):
         super(JWTBearer, self).__init__(auto_error=auto_error)
 
     async def __call__(self, request: Request):
-        credentials: HTTPAuthorizationCredentials = await super(
-            JWTBearer, self
-        ).__call__(request)
-        if credentials:
-            if credentials.scheme != "Bearer":
-                raise HTTPException(
-                    status_code=403, detail="Invalid authentication scheme."
-                )
-            if not verify_jwt(credentials.credentials):
-                raise HTTPException(
-                    status_code=403, detail="Invalid token or expired token."
-                )
-            return credentials.credentials
-        else:
-            raise HTTPException(status_code=403, detail="Invalid authorization code.")
+        credentials: HTTPAuthorizationCredentials = None
+        auth_cookie = request.cookies.get("authorization")
+
+        if not auth_cookie:
+            raise HTTPException(status_code=403, detail="No authorization provided.")
+
+        if not verify_jwt(auth_cookie):
+            raise HTTPException(
+                status_code=403, detail="Invalid token or expired token."
+            )
+
+        return auth_cookie
