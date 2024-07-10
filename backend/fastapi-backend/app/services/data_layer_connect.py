@@ -1,9 +1,10 @@
 from urllib.parse import urljoin
 import httpx
 from fastapi import HTTPException
+from decouple import config
+from .env_vars import FB_ENV_VARS
 
-
-DATA_LAYER_URL = "http://backend-data-layer:8002"
+DATA_LAYER_URL = config(FB_ENV_VARS.DATA_LAYER_URL, default="http://localhost:8002")
 
 
 async def perform_http_request(method: str, url: str, data: dict | None = None):

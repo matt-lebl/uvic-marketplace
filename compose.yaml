@@ -26,7 +26,7 @@ services:
     build:
       context: backend/reverse-proxy
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       FB_URL: "http://backend-fastapi-backend:8001"
   backend-fastapi-backend:
@@ -36,7 +36,7 @@ services:
       - "8001:8001"
     environment:
       DATA_LAYER_URL: http://backend-data-layer:8002
-      KAFKA_BOOSTRAP_SERVERS: https://kafka:9092
+      KAFKA_BOOSTRAP_SERVERS: kafka:9092
   algorithms-kafka-consumer:
     build:
       context: algorithms
@@ -63,7 +63,7 @@ services:
       context: algorithms
       dockerfile: fastapi/Dockerfile
     ports:
-      - "8000:80"
+      - "8004:80"
     depends_on:
       postgres:
         condition: service_healthy
