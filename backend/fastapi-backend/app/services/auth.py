@@ -11,7 +11,7 @@ from .env_vars import FB_ENV_VARS
 
 VALIDATION_EMAIL = config(FB_ENV_VARS.VALIDATION_EMAIL, default="no.reply.uvic.cybermarketplace@gmail.com")
 VALIDATION_EMAIL_ENCRYPTION_KEY = config(FB_ENV_VARS.VALIDATION_EMAIL_ENCRYPTION_KEY, default="xlCv7LmY28UfIoIXajSBcRvGnTQvNENdu_N3NKUQyS8=")
-API_URL = config(FB_ENV_VARS.API_URL, default="http://localhost:8000/api")
+API_URL = config(FB_ENV_VARS.FRONTEND_URL, default="http://localhost:8000/")
 SMTP_SERVER = "smtp.gmail.com"
 VALIDATION_EMAIL_PASSWORD = config(FB_ENV_VARS.VALIDATION_EMAIL_PASSWORD)
 
@@ -65,7 +65,7 @@ class EmailValidator:
         subject = "Email Validation"
         encrypted_email = self.encrypter.encrypt_secret(receiver_email)
         encrypted_unique_id = self.encrypter.encrypt_secret(unique_id)
-        body = f"{API_URL}/user/validate-email/{encrypted_unique_id}/{encrypted_email}"
+        body = f"{API_URL}/validate-email/?code={{{encrypted_unique_id}}}&email={{{encrypted_email}}}"
 
         message = MIMEMultipart()
         message["From"] = self.email
