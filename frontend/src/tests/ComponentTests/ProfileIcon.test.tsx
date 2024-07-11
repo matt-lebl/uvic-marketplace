@@ -8,7 +8,6 @@ describe('ProfileIcon', () => {
     const name: string = 'Test Name'
     render(<ProfileIcon id={id} name={name} />)
     const icon = screen.getByTestId(id)
-    console.log(icon.outerHTML)
 
     expect(icon).toHaveAttribute('id', id)
     expect(icon.querySelector('img')).toBeNull()
