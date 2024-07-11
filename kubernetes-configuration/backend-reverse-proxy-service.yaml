@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-reverse-proxy
+spec:
+  selector:
+    app: backend-reverse-proxy
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
