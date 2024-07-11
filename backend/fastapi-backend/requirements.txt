@@ -41,9 +41,3 @@ cryptography==42.0.8
 pycparser==2.22
 argon2-cffi-bindings==21.2.0
 argon2-cffi==23.1.0
-google-api-core==2.19.1
-google-api-python-client==2.136.0
-google-auth==2.31.0
-google-auth-httplib2==0.2.0
-google-auth-oauthlib==1.2.0
-googleapis-common-protos==1.63.2
