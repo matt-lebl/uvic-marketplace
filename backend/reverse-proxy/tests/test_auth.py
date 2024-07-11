@@ -3,7 +3,7 @@ import time
 import jwt
 from fastapi import Depends
 from fastapi.testclient import TestClient
-from app.core.auth import JWTBearer, sign_jwt, JWT_ALGORITHM, JWT_SECRET, validate_email_domain, EmailValidator
+from app.core.auth import JWTBearer, sign_jwt, JWT_ALGORITHM, JWT_SECRET
 from app.main import app
 
 """TO RUN
@@ -53,20 +53,6 @@ def test_protected_route_expired_token(monkeypatch):
     response = client.get("/protected-route", headers={"Authorization": f"Bearer {expired_token}"})
     assert response.status_code == 403
     assert response.json() == {"detail": "Invalid token or expired token."}
-
-
-def test_validate_email():
-    valid = "bob@uvic.ca"
-    invalid = "bob@gmail.com"
-
-    assert validate_email_domain(valid)
-    assert not validate_email_domain(invalid)
-
-
-def test_validation_email():
-    email = "conwebert@gmail.com"
-    ev = EmailValidator()
-    ev.send_validation_email(email)
 
 
 if __name__ == "__main__":

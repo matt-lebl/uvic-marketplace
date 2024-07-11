@@ -118,6 +118,15 @@ def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(ge
         raise HTTPException(status_code=401, detail="Error adding TOTP Secret")
 
 
+@router.get("/validation-code/{email}")
+def get_validation_code(email: str, session: Session = Depends(get_session)):
+    logger.info(f"getting email validation code for {email}")
+    try:
+        return User.get_validation_code(email, session)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=400, detail="Error retrieving validation code")
+
 @router.post("/validate-email/{validation_code}/{email}")
 def validate_email(validation_code: str, email: str, session: Session = Depends(get_session)):
     logger.info(f"attempting to validate email for {email}")

@@ -110,6 +110,11 @@ class User(UserBase, table=True):
         return {"message": "totp added successfully"}
 
     @classmethod
+    def get_validation_code(cls, email: str, session: Session):
+        statement = select(cls.validation_code).where(cls.email == email)
+        return session.exec(statement).first()
+
+    @classmethod
     def validate_email(cls, validation_code: str, email: str, session: Session):
         statement = select(cls).where(and_(cls.email == email, cls.validation_code == validation_code))
         user = session.exec(statement).first()

@@ -63,6 +63,20 @@ async def test_check_validation():
     assert response.status_code == 200
     assert response.json()
 
+
+@pytest.mark.asyncio
+async def test_get_validation_code():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    validation_code = user["validation_code"]
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    response = client.get(f"/user/validation_code/{user["email"]}")
+    assert response.status_code == 200
+    assert response.json() == validation_code
+
+
 @pytest.mark.asyncio
 async def test_update_user():
     user = data_factory.generate_user()
