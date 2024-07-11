@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Header, HTTPException
 from typing import List, Optional
-from util.schemas import ListingSummary, SearchResponse, ErrorMessage
+from util.schemas import ListingSummary, UserProfile, SearchResponse, SearchUserResponse, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
 import torch
 import numpy as np
@@ -79,4 +79,38 @@ async def search(authorization: str = Header(...),
 
     else:
         return []  # What do we return if no query?
+    
+
+@router.get("/search-users", response_model=SearchUserResponse, responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
+async def search_users(authorization: Optional[str] = Header(None),
+                       query: str = Query(...),
+                       page: Optional[int] = Query(1),
+                       limit: Optional[int] = Query(20)):
+    search_body = {
+        "from": (page - 1) * limit,
+        "size": limit,
+        "query": {
+            "multi_match": {
+                "query": query,
+                "fields": ["username", "name"],  # Search across both username and name
+                "type": "best_fields",
+                "fuzziness": "AUTO"  # Add some tolerance for misspellings
+            }
+        }
+    }
+
+    # Perform the search query
+    response = es.search(index="users_index", body=search_body)
+
+    # Extract users from the response
+    users = []
+    for doc in response['hits']['hits']:
+        users.append(UserProfile(userID=doc["_id"],
+                                  username=doc["_source"]["username"],
+                                  name=doc["_source"]["name"],
+                                  bio=doc["_source"].get("bio"),
+                                  profileUrl=doc["_source"].get("profileUrl")))
+
+    print("Users: {}".format(users))
+    return SearchUserResponse(items=users, totalItems=response['hits']['total']['value'])
 
