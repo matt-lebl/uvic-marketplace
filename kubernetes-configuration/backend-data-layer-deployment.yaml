@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-data-layer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-data-layer
+  template:
+    metadata:
+      labels:
+        app: backend-data-layer
+    spec:
+      containers:
+        - name: backend-data-layer
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-data-layer:b19b635
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8002
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USER
+                  name: backend-psql-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: backend-psql-secret
+            - name: POSTGRES_DB
+              value: backend
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+      imagePullSecrets:
+        - name: github-container-registry

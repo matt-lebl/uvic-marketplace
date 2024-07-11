@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorithms-fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: algorithms-fastapi
+  template:
+    metadata:
+      labels:
+        app: algorithms-fastapi
+    spec:
+      containers:
+        - name: algorithms-fastapi
+          image: ghcr.io/matt-lebl/uvic-marketplace/algorithms-fastapi:9edebad
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8002
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USER
+                  name: algorithms-psql-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: algorithms-psql-secret
+            - name: POSTGRES_SCHEME
+              value: postgresql://
+            - name: POSTGRES_NAME
+              value: algorithms
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: ELASTICSEARCH_URL
+              value: http://elastic:9200
+            - name: HF_HOME
+              value: /.cache
+          volumeMounts:
+            - mountPath: /.cache
+              name: cache
+      volumes:
+        - name: cache
+          emptyDir: {}
+      imagePullSecrets:
+        - name: github-container-registry

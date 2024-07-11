@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-fastapi
+spec:
+  selector:
+    app: backend-fastapi
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
