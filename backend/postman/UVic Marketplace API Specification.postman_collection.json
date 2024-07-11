@@ -734,7 +734,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"listing\": {\n    \"listingID\": \"af7a1879-f267-42be-a81b-73819e4bce21\",\n    \"seller_profile\": {\n        \"userID\": \"a793b397-3b9d-45f9-ad6e-147a57e4cb96\",\n        \"username\": \"test_user28\",\n        \"name\": \"test_user15\",\n        \"bio\": \"abcd\",\n        \"profileUrl\": \"url.com\"\n    },\n    \"title\": \"Listing2\",\n    \"description\": \"Test Description\",\n    \"price\": 1.0,\n    \"location\": {\n        \"latitude\": 0.1,\n        \"longitude\": 0.1\n    },\n    \"dateCreated\": \"2024-07-11T03:19:50.282094\",\n    \"dateModified\": \"2024-07-11T03:19:50.282094\",\n    \"reviews\": [],\n    \"images\": [\n        {\n            \"url\": \"imageurl.com\"\n        }\n    ]\n}\n}",
+											"raw": "{\n    \"listing\": {\n    \"listingID\": \"ea88fadf-4886-4db4-8cc7-b6d7ea5cc8eb\",\n    \"seller_profile\": {},\n    \"title\": \"Listing6\",\n    \"description\": \"Test Description\",\n    \"price\": 1.0,\n    \"location\": {\n        \"latitude\": 0.1,\n        \"longitude\": 0.1\n    },\n    \"dateCreated\": \"2024-07-11T22:20:09.455383\",\n    \"dateModified\": \"2024-07-11T22:20:09.455383\",\n    \"reviews\": [],\n    \"images\": [\n        {\n            \"url\": \"imageurl.com\"\n        }\n    ]\n}\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
