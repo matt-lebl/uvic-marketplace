@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - deployment-ci # remove this---just for testing for now
+      - develop
     paths:
       - 'frontend/**'
 
