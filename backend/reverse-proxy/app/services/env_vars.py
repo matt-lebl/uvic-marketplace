@@ -3,5 +3,3 @@ class RP_ENV_VARS:
     JWT_ALGORITHM = "JWT_ALGORITHM"  # the algorithm used to create the JWT tokens e.g. HS256
     EXPIRY_TIME = "EXPIRY_TIME"  # the expiry time of the tokens e.g. 600
     FB_URL = "FB_URL"  # url used to connect to the fastapi backend
-    VALIDATION_EMAIL = "VALIDATION_EMAIL"
-    API_URL = "API_URL"

@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
@@ -8,8 +10,12 @@ from core.schemas import (
     UserBaseModel,
 )
 from services.data_layer_connect import send_request_to_data_layer
+<<<<<<< HEAD
 from services.auth import AuthHandler
 from services.utils import convert_to_type
+=======
+from services.auth import AuthHandler, EmailValidator
+>>>>>>> 976a350 (Finishing email verification functionality)
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -18,7 +24,7 @@ userRouter = APIRouter(
 )
 
 authHandler = AuthHandler()
-
+email_validator = EmailValidator()
 
 ## Auth Not Required
 @userRouter.post("/")
@@ -26,9 +32,14 @@ async def create_user(user: NewUser):
     path = "user/"
 
     user = user.model_dump()
+
+    if not EmailValidator.validate_email_domain(user["email"]):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
-    user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
+    user["totp_secret"] = authHandler.encrypt_secret(totp_secret)
+    user["validation_code"] = str(uuid.uuid4())
 
     response = await send_request_to_data_layer(path, "POST", user)
     response = response.json()
@@ -94,6 +105,22 @@ async def login(loginRequest: LoginRequest):
 # Logout need not be implemented, it is implemented in RP
 @userRouter.post("/validate-email/{validation_code}/{email}")
 async def validate_email(validation_code: str, email: str):
-    response = await send_request_to_data_layer(f"/user/validate-email/{validation_code}/{email}", "POST")
+    decrypted_email = authHandler.decrypt_secret(email)
+    decrypted_validation_code = authHandler.decrypt_secret(validation_code)
+    response = await send_request_to_data_layer(f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}",
+                                                "POST")
     return response.json()
+
+
+@userRouter.get("/send-validation-link/{email}")
+async def send_validation_link(email: str):
+
+    if not EmailValidator.validate_email_domain(email):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
+    validation_code = response.json()
+
+    email_validator.send_validation_email(email, validation_code)
+    return {"message": "Validation email sent"}
 
