@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik, FormikHelpers } from 'formik'
-import { APIPost } from '../../APIlink'
+import { APIGet, APIPost } from '../../APIlink'
 import { NewUserReq, NewUser } from '../../interfaces'
 
 interface FormValues {
@@ -77,14 +77,22 @@ const handleSubmit = async (
       newUserRequest
     )
     if (response) {
-      localStorage.setItem('userID', response.userID)
-      localStorage.setItem('username', response.username)
-      localStorage.setItem('name', response.name)
-      localStorage.setItem('bio', response.bio)
-      localStorage.setItem('profileUrl', response.profileUrl)
-      alert('Registration successful.')
+      // Registration successful alert with verify email
+      const verifyEmailURL =
+        '/api/user/send-validation-link/' + newUserRequest.email
+      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
+
+      if (verifyEmailResponse) {
+        alert(
+          'Registration successful. Please check your email for a verification link.'
+        )
+        // Redirect to login page
+        window.location.href = '/login'
+      } else {
+        setStatus({ error: 'Failed to send verification email' })
+      }
     } else {
-      throw new Error('Response is undefined')
+      setStatus({ error: 'Response undefined' })
     }
   } catch (error) {
     setStatus({ error: 'Registration failed' })

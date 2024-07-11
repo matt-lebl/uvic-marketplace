@@ -6,7 +6,7 @@ const Footer = () => {
 
   return (
     <BottomNavigation
-      showLabelsw
+      showLabels
       value={value}
       onChange={(event, newValue) => {
         setValue(newValue)
