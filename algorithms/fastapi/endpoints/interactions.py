@@ -35,7 +35,7 @@ def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
 
 
 # Create a temp add user endpoint for testing
-@router.post("/interactions/new_user")
+@router.post("/interactions/add_user")
 async def add_user(user_id: str, db: Session = Depends(get_db)):
     """
     Temporary API endpoint to add a user ID to the SQL user database.

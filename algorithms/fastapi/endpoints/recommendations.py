@@ -3,16 +3,16 @@ from typing import List
 from util.schemas import ListingSummary, ErrorMessage
 # import base64
 # import json
-from app.api.deps import get_db
+from db.deps import get_db
 from sqlalchemy.orm import Session
-from app.db.models import DB_User, DB_Listing, DB_Interaction
+from db.models import DB_User, DB_Listing, DB_Interaction
 
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from ...elasticsearch_wrapper import ElasticsearchWrapper
+from util.elasticsearch_wrapper import ElasticsearchWrapper
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-from .cold_start import add_interactions_for_user
+#from .cold_start import add_interactions_for_user
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es

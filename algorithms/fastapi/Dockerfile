@@ -42,7 +42,7 @@ RUN adduser \
     appuser
 
 # Switch to the non-privileged user to run the application.
-USER appuser
+#USER appuser
 
 # Expose the port that the application listens on.
 EXPOSE 80
