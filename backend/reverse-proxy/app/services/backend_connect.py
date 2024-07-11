@@ -11,6 +11,7 @@ USER_ID_FIELD = "authUserID"
 
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
+        print(url)
         try:
             response = await client.request(method, url, json=data)
             response.raise_for_status()

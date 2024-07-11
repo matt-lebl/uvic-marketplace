@@ -9,7 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
 
-async def create_listing(data: dict, db: Session):
+def create_listing(data: dict, db: Session):
     print(data)
     # Save the listing to Elasticsearch
     listing_data = data['listing']
@@ -56,7 +56,7 @@ async def create_listing(data: dict, db: Session):
 
     return response
 
-async def delete_listing(data: dict, db: Session):
+def delete_listing(data: dict, db: Session):
     listing_id = data["listingID"]
     # Delete from Elasticsearch
     try:

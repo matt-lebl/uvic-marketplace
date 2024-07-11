@@ -17,7 +17,10 @@ app = FastAPI()
 app.include_router(users.usersRouter)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8080", # TODO: Remove localhost from production environment
+                   "https://localhost:8080",
+                   "http://market.lebl.ca",
+                   "https://market.lebl.ca"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
