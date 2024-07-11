@@ -26,7 +26,7 @@ services:
     build:
       context: backend/reverse-proxy
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       FB_URL: "http://backend-fastapi-backend:8001"
   backend-fastapi-backend:

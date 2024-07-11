@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Paper, IconButton, InputBase, Menu, MenuItem} from '@mui/material'
+import { Paper, IconButton, InputBase, Menu, MenuItem } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { SxProps } from '@mui/material'
 import { useState } from 'react'
@@ -9,9 +9,6 @@ import { FilterAlt } from '@mui/icons-material'
 import NumericInput from './NumericOnlyInput'
 import SelectInput from './SelectInput'
 
-const BASELAT: string = process.env.BASE_LATITUDE ?? ""; // ?? "" only exists to prevent type errors. It should never be reached.
-const BASELONG: string = process.env.BASE_LONGITUDE ?? ""; // ?? "" only exists to prevent type errors. It should never be reached.
-const BASESEARCHLIMIT: number = parseInt(process.env.DEFAULT_BULK_RETURN_LIMIT ?? "0"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
 interface Props {
   id: string
@@ -22,10 +19,14 @@ interface Props {
 }
 
 const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearchRequest }) => {
+  const BASELAT: string = process.env.REACT_APP_BASE_LATITUDE ?? "48.4631"; // ?? "" only exists to prevent type errors. It should never be reached.
+  const BASELONG: string = process.env.REACT_APP_BASE_LONGITUDE ?? "123.3122"; // ?? "" only exists to prevent type errors. It should never be reached.
+  const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "1"); // ?? "0" only exists to prevent type errors. It should never be reached.
+
   const existingSearchInputs: SearchRequest | undefined = previousSearchRequest;
   const [query, setQuery] = useState<string>(existingSearchInputs?.query ?? '')
   const [minPrice, setMinPrice] = useState<string | null>(existingSearchInputs?.minPrice?.toString() ?? null)
-  const [maxPrice, setMaxPrice] = useState<string | null >(existingSearchInputs?.maxPrice?.toString() ?? null)
+  const [maxPrice, setMaxPrice] = useState<string | null>(existingSearchInputs?.maxPrice?.toString() ?? null)
   const [status, setStatus] = useState<string>(existingSearchInputs?.status ?? ItemStatus.AVAILABLE)
   const [searchType, setSearchType] = useState<string>(existingSearchInputs?.searchType ?? SearchType.LISTINGS)
   const [latitude, setLatitude] = useState<string>(existingSearchInputs?.latitude?.toString() ?? BASELAT)
@@ -39,7 +40,7 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
     handleClick();
-    }
+  }
 
   const handleClick = () => {
     const newQuery: SearchRequest = {
@@ -75,7 +76,7 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
         sx={{ ml: 1, flex: 1 }}
         onChange={handleChange}
       />
-       <IconButton
+      <IconButton
         aria-label="filters"
         id="filter-button"
         aria-controls={open ? 'filter-menu' : undefined}
@@ -93,24 +94,24 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
         onClose={handleMenuClose}
       >
         <MenuItem>
-          <NumericInput label='Min Price' placeholder={minPrice} onChange={(value: string | null) => {setMinPrice(value)}}/>             
+          <NumericInput label='Min Price' placeholder={minPrice} onChange={(value: string | null) => { setMinPrice(value) }} />
         </MenuItem>
         <MenuItem>
-          <NumericInput label='Max Price' placeholder={maxPrice} onChange={(value: string | null) => {setMaxPrice(value)}}/>             
+          <NumericInput label='Max Price' placeholder={maxPrice} onChange={(value: string | null) => { setMaxPrice(value) }} />
         </MenuItem>
         <MenuItem>
-          <SelectInput label='Status' defaultVal={status} onChange={(value: string | null) => {setStatus(value ?? ItemStatus.AVAILABLE)}} options={ Object.values(ItemStatus)}/>
+          <SelectInput label='Status' defaultVal={status} onChange={(value: string | null) => { setStatus(value ?? ItemStatus.AVAILABLE) }} options={Object.values(ItemStatus)} />
         </MenuItem>
         <MenuItem>
-          <SelectInput label='Search Type' defaultVal={searchType} onChange={(value: string | null) => {setSearchType(value ?? SearchType.LISTINGS)}} options={ Object.values(SearchType)}/>
+          <SelectInput label='Search Type' defaultVal={searchType} onChange={(value: string | null) => { setSearchType(value ?? SearchType.LISTINGS) }} options={Object.values(SearchType)} />
         </MenuItem>
         <MenuItem>
-          <NumericInput label='Latitude' placeholder={latitude} onChange={(value: string | null) => {setLatitude(value ?? BASELAT)}}/>
+          <NumericInput label='Latitude' placeholder={latitude} onChange={(value: string | null) => { setLatitude(value ?? BASELAT) }} />
         </MenuItem>
         <MenuItem>
-          <NumericInput label='Latitude' placeholder={longitude} onChange={(value: string | null) => {setLongitude(value ?? BASELONG)}}/>
+          <NumericInput label='Latitude' placeholder={longitude} onChange={(value: string | null) => { setLongitude(value ?? BASELONG) }} />
         </MenuItem>
-      </Menu>  
+      </Menu>
       <IconButton
         type="button"
         sx={{ p: '10px' }}

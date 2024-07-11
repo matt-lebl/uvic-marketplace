@@ -8,7 +8,7 @@ import { AddData, GetData } from '../../DataContext'
 import { APIGet } from '../../APIlink'
 import SelectInput from './SelectInput'
 
-const BASESEARCHLIMIT: number = parseInt(process.env.DEFAULT_BULK_RETURN_LIMIT ?? "0"); // ?? "0" only exists to prevent type errors. It should never be reached.
+const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "0"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
 const SearchListings: React.FC = () => {
   const searchRequestID = "searchRequest"
@@ -29,8 +29,8 @@ const SearchListings: React.FC = () => {
   )
 
   const doSearch = async () => {
-    const queryParams : [string, string | number][] = Object.entries(searchRequest).filter(([key, value]) => value !== undefined && value !== null) as [string, string | number][];
-    try{
+    const queryParams: [string, string | number][] = Object.entries(searchRequest).filter(([key, value]) => value !== undefined && value !== null) as [string, string | number][];
+    try {
       const res = await APIGet<SearchResultsResponse>('api/search', queryParams)
       setListings(res.items)
       setTotalListingsCount(res.totalItems)
@@ -38,7 +38,7 @@ const SearchListings: React.FC = () => {
       console.error(e)
     }
   }
-  useEffect(() => {doSearch()})
+  useEffect(() => { doSearch() })
 
   // Change page handler
   const handleChangePage = async (event: ChangeEvent<unknown>, newPage: number) => {
@@ -59,7 +59,7 @@ const SearchListings: React.FC = () => {
 
   // Calculate total pages
   const totalPages = Math.ceil(totalListingsCount / itemsPerPage)
-      //<SelectInput label='Sort' defaultVal={sorting} onChange={() => handleChangeSorting} options={Object.values(Sort)} />
+  //<SelectInput label='Sort' defaultVal={sorting} onChange={() => handleChangeSorting} options={Object.values(Sort)} />
 
   return (
     <Box
