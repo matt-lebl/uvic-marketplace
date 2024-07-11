@@ -1,8 +1,16 @@
 import uuid
 from fastapi import APIRouter, HTTPException
-from core.schemas import LoginRequest, NewUser, EmailModel, UpdateUser, User
+from core.schemas import (
+    LoginRequest,
+    NewUser,
+    EmailModel,
+    UpdateUser,
+    User,
+    UserBaseModel,
+)
 from services.data_layer_connect import send_request_to_data_layer
 from services.auth import AuthHandler
+from services.utils import convert_to_type
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -12,12 +20,10 @@ userRouter = APIRouter(
 
 authHandler = AuthHandler()
 
+
 ## Auth Not Required
 @userRouter.post("/")
 async def create_user(user: NewUser):
-
-    # return user.model_dump()
-
     path = "user/"
 
     user = user.model_dump()
@@ -37,6 +43,9 @@ async def get_user(id: str, authUserID: str):
 
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
+    if response.status_code == 200:
+        return convert_to_type(response.json(), UserBaseModel)
+    print("Getting user failed")
     return response.json()
 
 
@@ -44,6 +53,8 @@ async def get_user(id: str, authUserID: str):
 async def edit_user(user: UpdateUser, authUserID: str):
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
+    if response.status_code == 200:
+        return convert_to_type(response.json(), UserBaseModel)
     return response.json()
 
 
@@ -67,15 +78,18 @@ async def reset_password(emailModel: EmailModel):
 async def login(loginRequest: LoginRequest):
     path = "user/login"
     email_password = {"email": loginRequest.email, "password": loginRequest.password}
+
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
-        if loginResponse.status_code == 200:
-            return loginResponse.json()
-            # if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
-            #     return loginResponse.json()
-        else:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
     except Exception as e:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+    if loginResponse.status_code == 200:
+        return convert_to_type(loginResponse.json(), UserBaseModel)
+        # if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
+        #     return loginResponse.json()
+    else:
+        # TODO: Check what the data layer sends back and send the correct error message.
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
 

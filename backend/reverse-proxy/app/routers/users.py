@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response
-from core.schemas import NewUser, LoginRequest, ResetPassword, User
+from core.schemas import NewUser, LoginRequest, ResetPassword, User, UserBaseModel
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -35,7 +35,7 @@ async def login(loginRequest: LoginRequest, response: Response):
         "user/login", "POST", loginRequest.model_dump()
     )
 
-    user: User = response_backend.json()
+    user = response_backend.json()
 
     if response_backend.status_code == 200:
         response.set_cookie(
