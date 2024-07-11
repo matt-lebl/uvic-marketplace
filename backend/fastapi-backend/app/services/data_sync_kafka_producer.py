@@ -46,9 +46,12 @@ class DataSyncKafkaProducer:
     # Listings
     # POST /api/listing/
     def push_new_listing(self, listing):
-        self.push_message("create-listing", json.dumps(listing))
+        self.push_message(
+            "create-listing", json.dumps(listing.model_dump(), default=str)
+        )
 
     # PATCH /api/listing/{id}
+    # TODO
     def push_updated_listing(self, listingID: str, listing: NewListing):
         # TODO
         pass
@@ -81,6 +84,7 @@ class DataSyncKafkaProducer:
 
     # Users
     # POST /api/user/
+    # TODO {userID: str}
     def push_new_user(self, user: NewUser):
         # TODO
         pass

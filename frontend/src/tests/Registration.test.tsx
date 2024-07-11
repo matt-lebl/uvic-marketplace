@@ -1,12 +1,17 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import Registration from '../pages/Registration'
 
-// Jest test suite for frontend
-// Invoke with `yarn test` or `npm test`
+describe('Registration', () => {
+  test('renders the Registration page', () => {
+    const { getByText } = render(<Registration />)
 
-test('renders registration page', () => {
-  render(<Registration />)
-  const linkElement = screen.getByText(/Register Page/i)
-  expect(linkElement).toBeInTheDocument()
+    expect(getByText(/Register/i)).toBeInTheDocument()
+  })
+
+  test('contains the RegisterForm component', () => {
+    const { getByTestId } = render(<Registration />)
+
+    expect(getByTestId('register-form')).toBeInTheDocument()
+  })
 })

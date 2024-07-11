@@ -4,19 +4,15 @@ import { useState, useRef } from 'react'
 import { KeyObject } from 'crypto'
 
 interface Props {
-  imageNames? : Array<string>
+  imageNames?: Array<string>
 }
 
-const PhotoGallery: React.FC<Props> = ({imageNames}) => {
+const PhotoGallery: React.FC<Props> = ({ imageNames }) => {
   return (
     <div className="Photo-Previews">
-      <Box >
+      <Box>
         <List>
-          {imageNames?.map((name) => (
-            <ListItem key={name}>
-              {name}
-            </ListItem>
-          ))}
+          {imageNames?.map((name) => <ListItem key={name}>{name}</ListItem>)}
         </List>
       </Box>
     </div>

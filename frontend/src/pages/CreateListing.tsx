@@ -7,18 +7,14 @@ import { ChangeEvent } from 'react'
 import { ListingEntity, ListingResponse } from '../interfaces'
 import { APIPost } from '../APIlink'
 
-
 function apiSubmit(listing: ListingEntity) {
+  let response: ListingResponse | undefined
 
-  let response : ListingResponse | undefined
-
-  setTimeout( async() => {
+  setTimeout(async () => {
     try {
       response = await APIPost('/api/listing', listing)
-    } catch (error) {
-
-    }
-    if(response) {
+    } catch (error) {}
+    if (response) {
       console.log('Response: ' + response)
     }
   })
@@ -53,7 +49,6 @@ function CreateListing() {
 
     setImageNames(imageNames.concat(names))
     setImageURLs(imageURLs.concat(urls))
-
   }
 
   const handleRemoveAll = () => {
@@ -79,25 +74,25 @@ function CreateListing() {
     console.log(desc)
     console.log(imageNames[0])
 
-    let submitListing : ListingEntity = {
-      title : title,
+    let submitListing: ListingEntity = {
+      title: title,
       description: desc,
       listingID: '1234',
       price: price,
-      images: imageURLs.map((urltext) => ({url: urltext})),
+      images: imageURLs.map((urltext) => ({ url: urltext })),
       seller_profile: {
-        userID:'1345',
-        username:'bartholomew',
-        name:'bart',
-        bio:'stairs',
-        profilePictureUrl:'example.com'
+        userID: '1345',
+        username: 'bartholomew',
+        name: 'bart',
+        bio: 'stairs',
+        profilePictureUrl: 'example.com',
       },
-      location: {latitude: 0, longitude: 0},
-      status:'open',
-      dateCreated:'1/2/3030',
+      location: { latitude: 0, longitude: 0 },
+      status: 'open',
+      dateCreated: '1/2/3030',
       dateModified: '2/3/3030',
-      reviews:[],
-      distance:2
+      reviews: [],
+      distance: 2,
     }
 
     apiSubmit(submitListing)
@@ -173,11 +168,22 @@ function CreateListing() {
               <Box>
                 <Typography>Photos (max 8)</Typography>
 
-                <PhotoPreviewList imageNames={imageNames}/>
+                <PhotoPreviewList imageNames={imageNames} />
 
-                <input id='photoInput' type="file" multiple={true} max={8} accept='image/*' onChange={handlPhotoUpload}></input>
+                <input
+                  id="photoInput"
+                  type="file"
+                  multiple={true}
+                  max={8}
+                  accept="image/*"
+                  onChange={handlPhotoUpload}
+                ></input>
 
-                <Button variant="contained" sx={{ ml: '20px' }} onClick={handleRemoveAll}>
+                <Button
+                  variant="contained"
+                  sx={{ ml: '20px' }}
+                  onClick={handleRemoveAll}
+                >
                   Remove All
                 </Button>
               </Box>

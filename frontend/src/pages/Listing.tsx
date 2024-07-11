@@ -8,7 +8,6 @@ import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 
 function listingRequest(listingID: string | undefined) {
-
   let response: ListingEntity | undefined
 
   const listingURL: string = '/api/listing/' + listingID
@@ -30,21 +29,24 @@ function listingRequest(listingID: string | undefined) {
 }
 
 function Listing() {
+  const { listingID } = useParams()
 
-  const { listingID } = useParams();
-
-  const listingData = listingRequest(listingID);
+  const listingData = listingRequest(listingID)
 
   return (
     <div className="Listing">
       <header className="App-header">
-        <Box sx={{ display: 'flex', flexDirection: 'row', }}>
-          <Paper sx={{
-            padding: '20px 20px 20px 20px',
-            height: '85vh',
-            backgroundColor: '#ffffff'
-          }}>
-            <Typography sx={{ fontWeight: '700', }}>Photo Gallery{listingID}</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Paper
+            sx={{
+              padding: '20px 20px 20px 20px',
+              height: '85vh',
+              backgroundColor: '#ffffff',
+            }}
+          >
+            <Typography sx={{ fontWeight: '700' }}>
+              Photo Gallery{listingID}
+            </Typography>
             <PhotoGallery />
           </Paper>
           <Paper

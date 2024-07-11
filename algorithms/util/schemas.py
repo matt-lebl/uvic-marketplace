@@ -28,7 +28,7 @@ class UserProfile(BaseModel): # used in Listing
     username: Optional[str] = Field(None, example="hubert123")
     name: Optional[str] = Field(None, example="Bartholomew Hubert")
     bio: Optional[str] = Field(None, example="I love stuff")
-    profilePictureUrl: Optional[HttpUrl] = Field(None, example="https://example.com/image.png")
+    profileUrl: Optional[HttpUrl] = Field(None, example="https://example.com/image.png")
 
 class Location(BaseModel): # used in Listing
     """Schema for location."""
@@ -87,9 +87,18 @@ class ListingResponse(BaseModel):
     """Schema for listing response."""
     listing: Listing
 
+class UserResponse(BaseModel):
+    """Schema for listing response."""
+    user: UserProfile
+
 class SearchResponse(BaseModel):
     """Schema for search response."""
     items: List[ListingSummary]
+    totalItems: int
+
+class SearchUserResponse(BaseModel):
+    """Schema for search response."""
+    items: List[UserProfile]
     totalItems: int
 
 class ErrorMessage(BaseModel):
