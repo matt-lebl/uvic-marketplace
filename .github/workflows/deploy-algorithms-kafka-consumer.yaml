@@ -44,7 +44,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/algorithms-kafka-consumer:${{ steps.get_commit.outputs.hash }} --platform=linux/amd64 -f kafka/Dockerfile algorithms/
+          docker build -t ghcr.io/${{ github.repository }}/algorithms-kafka-consumer:${{ steps.get_commit.outputs.hash }} --platform=linux/amd64 -f algorithms/kafka/Dockerfile algorithms/
           docker push ghcr.io/${{ github.repository }}/algorithms-kafka-consumer:${{ steps.get_commit.outputs.hash }}
 
       - name: Verify image in GitHub Container Registry
