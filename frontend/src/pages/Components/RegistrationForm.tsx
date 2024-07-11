@@ -87,7 +87,6 @@ const handleSubmit = async (
       throw new Error('Response is undefined')
     }
   } catch (error) {
-    console.error(error)
     setStatus({ error: 'Registration failed' })
   } finally {
     setSubmitting(false)
