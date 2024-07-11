@@ -4,10 +4,10 @@ import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
 
 interface Props {
-  data? : ListingEntity
+  data?: ListingEntity
 }
 
-const SellerCard: React.FC<Props> = ({data}) => {
+const SellerCard: React.FC<Props> = ({ data }) => {
   return (
     <div className="Seller-Card">
       <Box>
