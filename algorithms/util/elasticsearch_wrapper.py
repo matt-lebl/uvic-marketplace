@@ -80,6 +80,19 @@ class ElasticsearchWrapper:
                     }
                 }
             })
+
+        if not self._es.indices.exists(index="users_index"):
+            self._es.indices.create(index="users_index", body={
+                "mappings": {
+                    "properties": {
+                        "userID": {"type": "keyword"},
+                        "username": {"type": "keyword"},
+                        "name": {"type": "text"},
+                        "bio": {"type": "text"},
+                        "profileUrl": {"type": "keyword"}
+                    }
+                }
+            })
         
     @classmethod
     def reset_instance(cls):
