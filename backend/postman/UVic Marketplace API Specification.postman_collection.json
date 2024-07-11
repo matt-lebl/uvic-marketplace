@@ -1,0 +1,1848 @@
+{
+	"info": {
+		"_postman_id": "2240287c-7d25-4691-8c7d-671db6f515f7",
+		"name": "UVic Marketplace API Specification",
+		"description": "API specification for communication between the frontend application and the backend application.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36586575"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "search",
+					"item": [
+						{
+							"name": "Return search results and for the Profile Page User Listings",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{bearerToken}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseSearchUrl}}/api/search?latitude={{latitude}}&longitude={{longitude}}&query=golf",
+									"host": [
+										"{{baseSearchUrl}}"
+									],
+									"path": [
+										"api",
+										"search"
+									],
+									"query": [
+										{
+											"key": "minPrice",
+											"value": "<integer>",
+											"disabled": true
+										},
+										{
+											"key": "maxPrice",
+											"value": "<integer>",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "AVAILABLE",
+											"disabled": true
+										},
+										{
+											"key": "searchType",
+											"value": "LISTINGS",
+											"disabled": true
+										},
+										{
+											"key": "latitude",
+											"value": "{{latitude}}"
+										},
+										{
+											"key": "longitude",
+											"value": "{{longitude}}"
+										},
+										{
+											"key": "sort",
+											"value": "RELEVANCE",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										},
+										{
+											"key": "query",
+											"value": "golf"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Successful response",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "authorization",
+												"value": "<API Key>",
+												"description": "Added as a part of security scheme: apikey"
+											}
+										],
+										"url": {
+											"raw": "http://0.0.0.0:8000/api/search?query=<string>&minPrice=<integer>&maxPrice=<integer>&status=AVAILABLE&searchType=LISTINGS&latitude=<float>&longitude=<float>&sort=RELEVANCE&page=1&limit=20",
+											"protocol": "http",
+											"host": [
+												"0",
+												"0",
+												"0",
+												"0"
+											],
+											"port": "8000",
+											"path": [
+												"api",
+												"search"
+											],
+											"query": [
+												{
+													"key": "query",
+													"value": "<string>"
+												},
+												{
+													"key": "minPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "maxPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "status",
+													"value": "AVAILABLE"
+												},
+												{
+													"key": "searchType",
+													"value": "LISTINGS"
+												},
+												{
+													"key": "latitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "longitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "sort",
+													"value": "RELEVANCE"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"items\": [\n    {\n      \"listingID\": \"<string>\",\n      \"title\": \"<string>\",\n      \"price\": \"<float>\",\n      \"dateCreated\": \"<dateTime>\",\n      \"sellerID\": \"<string>\",\n      \"sellerName\": \"<string>\",\n      \"description\": \"<string>\",\n      \"imageUrl\": \"<string>\"\n    },\n    {\n      \"listingID\": \"<string>\",\n      \"title\": \"<string>\",\n      \"price\": \"<float>\",\n      \"dateCreated\": \"<dateTime>\",\n      \"sellerID\": \"<string>\",\n      \"sellerName\": \"<string>\",\n      \"description\": \"<string>\",\n      \"imageUrl\": \"<string>\"\n    }\n  ],\n  \"totalItems\": \"<integer>\"\n}"
+								},
+								{
+									"name": "Invalid Request",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "authorization",
+												"value": "<API Key>",
+												"description": "Added as a part of security scheme: apikey"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/search?query=<string>&minPrice=<integer>&maxPrice=<integer>&status=AVAILABLE&searchType=LISTINGS&latitude=<float>&longitude=<float>&sort=RELEVANCE&page=1&limit=20",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"search"
+											],
+											"query": [
+												{
+													"key": "query",
+													"value": "<string>"
+												},
+												{
+													"key": "minPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "maxPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "status",
+													"value": "AVAILABLE"
+												},
+												{
+													"key": "searchType",
+													"value": "LISTINGS"
+												},
+												{
+													"key": "latitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "longitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "sort",
+													"value": "RELEVANCE"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"error\": \"<string>\"\n}"
+								},
+								{
+									"name": "Internal Server Error",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											},
+											{
+												"key": "authorization",
+												"value": "<API Key>",
+												"description": "Added as a part of security scheme: apikey"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/search?query=<string>&minPrice=<integer>&maxPrice=<integer>&status=AVAILABLE&searchType=LISTINGS&latitude=<float>&longitude=<float>&sort=RELEVANCE&page=1&limit=20",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"search"
+											],
+											"query": [
+												{
+													"key": "query",
+													"value": "<string>"
+												},
+												{
+													"key": "minPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "maxPrice",
+													"value": "<integer>"
+												},
+												{
+													"key": "status",
+													"value": "AVAILABLE"
+												},
+												{
+													"key": "searchType",
+													"value": "LISTINGS"
+												},
+												{
+													"key": "latitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "longitude",
+													"value": "<float>",
+													"description": "(Required) "
+												},
+												{
+													"key": "sort",
+													"value": "RELEVANCE"
+												},
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"error\": \"<string>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "listing",
+					"item": [
+						{
+							"name": "get",
+							"item": [
+								{
+									"name": "Get a listing's details",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/listing/{{listingID}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"listing",
+												"{{listingID}}"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "OK",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "http://0.0.0.0:8000/api/listing/:id",
+													"protocol": "http",
+													"host": [
+														"0",
+														"0",
+														"0",
+														"0"
+													],
+													"port": "8000",
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"title\": \"<string>\",\n  \"price\": \"<float>\",\n  \"status\": \"AVAILABLE\",\n  \"listingID\": \"<string>\",\n  \"seller_profile\": {\n    \"userID\": \"<string>\",\n    \"username\": \"<string>\",\n    \"name\": \"<string>\",\n    \"bio\": \"<string>\",\n    \"profilePictureUrl\": \"<string>\"\n  },\n  \"description\": \"<string>\",\n  \"location\": {\n    \"latitude\": \"<number>\",\n    \"longitude\": \"<number>\"\n  },\n  \"dateCreated\": \"<dateTime>\",\n  \"dateModified\": \"<dateTime>\",\n  \"reviews\": [\n    {\n      \"listingID\": \"<string>\",\n      \"reviewerName\": \"<string>\",\n      \"listing_review_id\": \"<string>\",\n      \"stars\": \"<integer>\",\n      \"comment\": \"<string>\",\n      \"userID\": \"<string>\",\n      \"dateCreated\": \"<dateTime>\",\n      \"dateModified\": \"<dateTime>\"\n    },\n    {\n      \"listingID\": \"<string>\",\n      \"reviewerName\": \"<string>\",\n      \"listing_review_id\": \"<string>\",\n      \"stars\": \"<integer>\",\n      \"comment\": \"<string>\",\n      \"userID\": \"<string>\",\n      \"dateCreated\": \"<dateTime>\",\n      \"dateModified\": \"<dateTime>\"\n    }\n  ],\n  \"images\": [\n    {\n      \"url\": \"<string>\"\n    },\n    {\n      \"url\": \"<string>\"\n    }\n  ],\n  \"distance\": \"<number>\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "create listing",
+							"item": [
+								{
+									"name": "Create a new listing.",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"listing\": {\n    \"title\": \"Listing2\",\n    \"location\": {\n      \"latitude\": 0.1,\n      \"longitude\": 0.1\n    },\n    \"price\": 1.0,\n    \"description\": \"Test Description\",\n    \"images\": [\n      {\n        \"url\": \"imageurl.com\"\n      }\n    ]\n  }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/listing/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"listing",
+												""
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Listing Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "http://0.0.0.0:8000/api/listing",
+													"protocol": "http",
+													"host": [
+														"0",
+														"0",
+														"0",
+														"0"
+													],
+													"port": "8000",
+													"path": [
+														"api",
+														"listing"
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"price\": \"<float>\",\n    \"status\": \"AVAILABLE\",\n    \"listingID\": \"<string>\",\n    \"seller_profile\": {\n      \"userID\": \"<string>\",\n      \"username\": \"<string>\",\n      \"name\": \"<string>\",\n      \"bio\": \"<string>\",\n      \"profilePictureUrl\": \"<string>\"\n    },\n    \"description\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"dateCreated\": \"<dateTime>\",\n    \"dateModified\": \"<dateTime>\",\n    \"reviews\": [\n      {\n        \"listingID\": \"<string>\",\n        \"reviewerName\": \"<string>\",\n        \"listing_review_id\": \"<string>\",\n        \"stars\": \"<integer>\",\n        \"comment\": \"<string>\",\n        \"userID\": \"<string>\",\n        \"dateCreated\": \"<dateTime>\",\n        \"dateModified\": \"<dateTime>\"\n      },\n      {\n        \"listingID\": \"<string>\",\n        \"reviewerName\": \"<string>\",\n        \"listing_review_id\": \"<string>\",\n        \"stars\": \"<integer>\",\n        \"comment\": \"<string>\",\n        \"userID\": \"<string>\",\n        \"dateCreated\": \"<dateTime>\",\n        \"dateModified\": \"<dateTime>\"\n      }\n    ],\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ],\n    \"distance\": \"<number>\"\n  }\n}"
+										},
+										{
+											"name": "Invalid Request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/listing",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing"
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										},
+										{
+											"name": "Internal Server Error",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/listing",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing"
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "edit",
+							"item": [
+								{
+									"name": "Edit an existing listing",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"listing\": {\n    \"listingID\": \"af7a1879-f267-42be-a81b-73819e4bce21\",\n    \"seller_profile\": {\n        \"userID\": \"a793b397-3b9d-45f9-ad6e-147a57e4cb96\",\n        \"username\": \"test_user28\",\n        \"name\": \"test_user15\",\n        \"bio\": \"abcd\",\n        \"profileUrl\": \"url.com\"\n    },\n    \"title\": \"Listing2\",\n    \"description\": \"Test Description\",\n    \"price\": 1.0,\n    \"location\": {\n        \"latitude\": 0.1,\n        \"longitude\": 0.1\n    },\n    \"dateCreated\": \"2024-07-11T03:19:50.282094\",\n    \"dateModified\": \"2024-07-11T03:19:50.282094\",\n    \"reviews\": [],\n    \"images\": [\n        {\n            \"url\": \"imageurl.com\"\n        }\n    ]\n}\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/listing/{{listingID}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"listing",
+												"{{listingID}}"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Listing edited successfully",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  },\n  \"status\": \"AVAILABLE\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "http://0.0.0.0:8000/api/listing/:id",
+													"protocol": "http",
+													"host": [
+														"0",
+														"0",
+														"0",
+														"0"
+													],
+													"port": "8000",
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Invalid Request",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  },\n  \"status\": \"AVAILABLE\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  },\n  \"status\": \"AVAILABLE\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Server Error",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"listing\": {\n    \"title\": \"<string>\",\n    \"location\": {\n      \"latitude\": \"<number>\",\n      \"longitude\": \"<number>\"\n    },\n    \"price\": \"<float>\",\n    \"description\": \"<string>\",\n    \"images\": [\n      {\n        \"url\": \"<string>\"\n      },\n      {\n        \"url\": \"<string>\"\n      }\n    ]\n  },\n  \"status\": \"AVAILABLE\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "delete",
+							"item": [
+								{
+									"name": "Delete an existing listing",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/listing/{{listingID}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"listing",
+												"{{listingID}}"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Listing deleted successfully",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "http://0.0.0.0:8000/api/listing/:id",
+													"protocol": "http",
+													"host": [
+														"0",
+														"0",
+														"0",
+														"0"
+													],
+													"port": "8000",
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Invalid Request",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Not Found",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Not Found",
+											"code": 404,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Server Error",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/listing/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"listing",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "get",
+							"item": [
+								{
+									"name": "Get a user object",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/user/{{userID}}",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"{{userID}}"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "User found",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/user/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"userID\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\",\n  \"bio\": \"<string>\",\n  \"profilePictureUrl\": \"<string>\"\n}"
+										},
+										{
+											"name": "Invalid Request",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/user/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/user/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										},
+										{
+											"name": "Internal Server Error",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													},
+													{
+														"key": "authorization",
+														"value": "<API Key>",
+														"description": "Added as a part of security scheme: apikey"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/api/user/:id",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														":id"
+													],
+													"variable": [
+														{
+															"key": "id"
+														}
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "login",
+							"item": [
+								{
+									"name": "Attempt Login",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"{{user}}{{rand_int}}@uvic.ca\",\n  \"password\": \"1234567890\",\n  \"totp_code\": \"964225\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/user/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"login"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Login Success",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"totp_code\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/user/login",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														"login"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"email\": \"<string>\",\n  \"userID\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\",\n  \"bio\": \"<string>\",\n  \"profileUrl\": \"<string>\"\n}"
+										},
+										{
+											"name": "Unauthorized",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"totp_code\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/user/login",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														"login"
+													]
+												}
+											},
+											"status": "Unauthorized",
+											"code": 401,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": ""
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "logout",
+							"item": [
+								{
+									"name": "Attempt Logout",
+									"request": {
+										"auth": {
+											"type": "apikey",
+											"apikey": [
+												{
+													"key": "key",
+													"value": "authorization",
+													"type": "string"
+												},
+												{
+													"key": "value",
+													"value": "{{apiKey}}",
+													"type": "string"
+												},
+												{
+													"key": "in",
+													"value": "header",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/user/logout",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"user",
+												"logout"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "sign up",
+							"item": [
+								{
+									"name": "Create a new user.",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"{{user}}{{rand_int}}@uvic.ca\",\n  \"password\": \"1234567890\",\n  \"username\": \"{{user}}{{rand_int}}\",\n  \"name\": \"rahul\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/user/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"user",
+												""
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "User Created",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/user/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														""
+													]
+												}
+											},
+											"status": "Created",
+											"code": 201,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"email\": \"<string>\",\n  \"userID\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\",\n  \"bio\": \"<string>\",\n  \"profileUrl\": \"<string>\",\n  \"totp_secret\": \"<string>\"\n}"
+										},
+										{
+											"name": "Invalid Request",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/user/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														""
+													]
+												}
+											},
+											"status": "Bad Request",
+											"code": 400,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										},
+										{
+											"name": "Internal Server Error",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"<string>\",\n  \"password\": \"<string>\",\n  \"username\": \"<string>\",\n  \"name\": \"<string>\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/user/",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"user",
+														""
+													]
+												}
+											},
+											"status": "Internal Server Error",
+											"code": 500,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"error\": \"<string>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "edit user",
+							"item": [
+								{
+									"name": "Edit an existing User",
+									"request": {
+										"auth": {
+											"type": "noauth"
+										},
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"username\": \"test_user28\",\n  \"name\": \"test_user15\",\n  \"bio\": \"abcd\",\n  \"profilePictureUrl\": \"url.com\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/user/",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"user",
+												""
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/"
+		}
+	]
+}
