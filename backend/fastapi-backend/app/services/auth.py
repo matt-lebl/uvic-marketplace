@@ -1,4 +1,4 @@
-import base64
+import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -7,21 +7,13 @@ import pyotp
 from decouple import config
 from cryptography.fernet import Fernet
 import argon2
-
 from .env_vars import FB_ENV_VARS
 
-import os.path
-
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-
 VALIDATION_EMAIL = config(FB_ENV_VARS.VALIDATION_EMAIL, default="no.reply.uvic.cybermarketplace@gmail.com")
-VALIDATION_EMAIL_KEY = config(FB_ENV_VARS.VALIDATION_EMAIL_KEY, default="xlCv7LmY28UfIoIXajSBcRvGnTQvNENdu_N3NKUQyS8=")
-API_URL = config(FB_ENV_VARS.API_URL, default="https://localhost:8000/api")
-SCOPES = ['https://www.googleapis.com/auth/gmail.send']
-CLIENT_SECRET_FILE = "client_secret.json"
+VALIDATION_EMAIL_ENCRYPTION_KEY = config(FB_ENV_VARS.VALIDATION_EMAIL_ENCRYPTION_KEY, default="xlCv7LmY28UfIoIXajSBcRvGnTQvNENdu_N3NKUQyS8=")
+API_URL = config(FB_ENV_VARS.API_URL, default="http://localhost:8000/api")
+SMTP_SERVER = "smtp.gmail.com"
+VALIDATION_EMAIL_PASSWORD = config(FB_ENV_VARS.VALIDATION_EMAIL_PASSWORD)
 
 
 class AuthHandler:
@@ -60,31 +52,15 @@ class AuthHandler:
 class EmailValidator:
 
     def __init__(self):
-        self.port = 587
+        self.port = 465
         self.context = ssl.create_default_context()
         self.email = VALIDATION_EMAIL
+        self.password = VALIDATION_EMAIL_PASSWORD
+        self.smtp_server = SMTP_SERVER
 
-        self.encrypter = AuthHandler(key=VALIDATION_EMAIL_KEY)
-
-        self.creds = None
-        if os.path.exists("token.json"):
-            self.creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-
-        if not self.creds or not self.creds.valid:
-            self.authenticate()
-
-    def authenticate(self):
-        flow = InstalledAppFlow.from_client_secrets_file(
-            CLIENT_SECRET_FILE, SCOPES
-        )
-        self.creds = flow.run_local_server(port=0)
-
-        with open("token.json", "w") as token:
-            token.write(self.creds.to_json())
+        self.encrypter = AuthHandler(key=VALIDATION_EMAIL_ENCRYPTION_KEY)
 
     def send_validation_email(self, receiver_email: str, unique_id: str):
-        if not self.creds or not self.creds.valid:
-            self.authenticate()
 
         subject = "Email Validation"
         encrypted_email = self.encrypter.encrypt_secret(receiver_email)
@@ -97,14 +73,12 @@ class EmailValidator:
         message["Subject"] = subject
         message.attach(MIMEText(body, "plain"))
 
-        raw_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-
         try:
-            service = build('gmail', 'v1', credentials=self.creds)
-            message = {'raw': raw_message}
-            send_message = service.users().messages().send(userId='me', body=message).execute()
-            return unique_id, send_message
-        except HttpError as error:
+            with smtplib.SMTP_SSL(self.smtp_server, self.port, context=self.context) as server:
+                server.login(self.email, self.password)
+                server.sendmail(self.email, receiver_email, message.as_string())
+            return unique_id
+        except Exception as error:
             print(str(error))
             raise error
 

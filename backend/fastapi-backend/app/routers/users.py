@@ -10,12 +10,8 @@ from core.schemas import (
     UserBaseModel,
 )
 from services.data_layer_connect import send_request_to_data_layer
-<<<<<<< HEAD
-from services.auth import AuthHandler
 from services.utils import convert_to_type
-=======
 from services.auth import AuthHandler, EmailValidator
->>>>>>> 976a350 (Finishing email verification functionality)
 
 userRouter = APIRouter(
     prefix="/api/user",
