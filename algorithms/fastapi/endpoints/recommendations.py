@@ -90,7 +90,7 @@ async def recommendations(page: int = Query(1),
     for listing in recommendations: 
 
         recommendation = {}
-        recommendation["listingID"] = listing.listing_id 
+        recommendation["listingID"] = str(listing.listing_id) 
 
         es_listing = es.get(index="listings_index", id=listing.listing_id)
         recommendation["title"] = es_listing['_source']['title']

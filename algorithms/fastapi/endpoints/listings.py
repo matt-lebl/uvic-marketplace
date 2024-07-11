@@ -42,7 +42,7 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     
     # Add the listing to postgres
     try:
-        db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
+        db_listing = DB_Listing(listing_id=listing_data['listingID'], listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
         db.add(db_listing)
         db.commit()
         db.refresh(db_listing)
