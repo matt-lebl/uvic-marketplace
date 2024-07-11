@@ -134,7 +134,7 @@ def validate_email(validation_code: str, email: str, session: Session = Depends(
         return User.validate_email(validation_code, email, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error validating email ")
+        raise HTTPException(status_code=401, detail="Error validating email")
 
 
 @router.get("/is-validated/{userID}")

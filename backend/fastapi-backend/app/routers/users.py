@@ -22,6 +22,7 @@ userRouter = APIRouter(
 authHandler = AuthHandler()
 email_validator = EmailValidator()
 
+
 ## Auth Not Required
 @userRouter.post("/")
 async def create_user(user: NewUser):
@@ -103,6 +104,10 @@ async def login(loginRequest: LoginRequest):
 async def validate_email(validation_code: str, email: str):
     decrypted_email = authHandler.decrypt_secret(email)
     decrypted_validation_code = authHandler.decrypt_secret(validation_code)
+
+    if not EmailValidator.validate_email_domain(decrypted_email):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
     response = await send_request_to_data_layer(f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}",
                                                 "POST")
     return response.json()
@@ -110,7 +115,6 @@ async def validate_email(validation_code: str, email: str):
 
 @userRouter.get("/send-validation-link/{email}")
 async def send_validation_link(email: str):
-
     if not EmailValidator.validate_email_domain(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
@@ -119,4 +123,3 @@ async def send_validation_link(email: str):
 
     email_validator.send_validation_email(email, validation_code)
     return {"message": "Validation email sent"}
-
