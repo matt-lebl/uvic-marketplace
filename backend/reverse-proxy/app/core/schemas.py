@@ -247,20 +247,21 @@ class NewUser(BaseModel):
         None, description="Hashed? password of the user", example="securepassword123"
     )
 
-
-class User(BaseModel):
+class UserBaseModel(BaseModel):
     userID: str = Field(
         None, description="Unique identifier for the user", example="A23434B090934"
     )
     username: str = Field(None, description="Username of the user", example="john_doe")
     name: str = Field(None, description="TODO", example="TODO")
-    bio: str = Field(None, description="TODO", example="TODO")
+    bio: str | None = Field(default="", description="TODO", example="TODO")
     # TODO: validate url
-    profileUrl: str = Field(None, description="TODO", example="TODO")
+    profileUrl: str | None = Field(default="", description="TODO", example="TODO")
     # TODO: validate email
     email: str = Field(
         None, description="Email address of the user", example="john.doe@example.com"
     )
+
+class User(UserBaseModel):
     totp_secret: str = Field(None, description="TODO", example="TODO")
 
 
