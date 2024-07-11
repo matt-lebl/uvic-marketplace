@@ -1,0 +1,8 @@
+kubernetes-configuration/**	@matt-lebl
+/.github/CODEOWNERS	@matt-lebl
+/.github/workflows/deploy**	@matt-lebl
+
+docker-compose.yaml	@matt-lebl
+docker-compose.yml	@matt-lebl
+compose.yaml	@matt-lebl
+compose.yml	@matt-lebl

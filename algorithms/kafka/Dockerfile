@@ -16,4 +16,5 @@ COPY ./util ./util
 ENV PYTHONPATH=/code
 
 # Run the application
-CMD ["python", "kafka_consumer.py"]
+# -u flag is used to force the stdout to be unbuffered, fixes the issue of logs not being printed
+CMD ["python","-u", "kafka_consumer.py"]

@@ -29,6 +29,9 @@ services:
       - "8000:8000"
     environment:
       FB_URL: "http://backend-fastapi-backend:8001"
+    depends_on:
+      backend-fastapi-backend:
+        condition: service_started
   backend-fastapi-backend:
     build:
       context: backend/fastapi-backend
@@ -36,7 +39,12 @@ services:
       - "8001:8001"
     environment:
       DATA_LAYER_URL: http://backend-data-layer:8002
-      KAFKA_BOOSTRAP_SERVERS: https://kafka:9092
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    depends_on:
+      kafka:
+        condition: service_started
+      backend-data-layer:
+        condition: service_started
   algorithms-kafka-consumer:
     build:
       context: algorithms
@@ -63,7 +71,7 @@ services:
       context: algorithms
       dockerfile: fastapi/Dockerfile
     ports:
-      - "8000:80"
+      - "8004:80"
     depends_on:
       postgres:
         condition: service_healthy

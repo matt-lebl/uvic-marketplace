@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic-volume-claim
+  labels:
+    app: elastic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      name: elastic-pv
+  storageClassName: manual
+  volumeMode: Filesystem

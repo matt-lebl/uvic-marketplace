@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: algorithms-kafka-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: algorithms-kafka-consumer
+  template:
+    metadata:
+      labels:
+        app: algorithms-kafka-consumer
+    spec:
+      containers:
+        - name: backend-fastapi
+          image: ghcr.io/matt-lebl/uvic-marketplace/algorithms-kafka-consumer:986c151
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: kafka:9092
+            - name: KAFKA_TOPICS
+              value: create-listing delete-listing update-listing view-listing create-user edit-user delete-user
+            - name: POSTGRES_SCHEME
+              value: postgresql://
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_USER
+                  name: algorithms-psql-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: algorithms-psql-secret
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_NAME
+              value: algorithms
+            - name: ELASTICSEARCH_URL
+              value: http://elastic:9200
+      imagePullSecrets:
+        - name: github-container-registry

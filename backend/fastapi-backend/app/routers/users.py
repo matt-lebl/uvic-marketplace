@@ -42,7 +42,6 @@ async def get_user(id: str, authUserID: str):
 
 @userRouter.patch("/")
 async def edit_user(user: UpdateUser, authUserID: str):
-
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
     return response.json()

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-reverse-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-reverse-proxy
+  template:
+    metadata:
+      labels:
+        app: backend-reverse-proxy
+    spec:
+      containers:
+        - name: backend-reverse-proxy
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-reverse-proxy:b19b635
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: FB_URL
+              value: "http://backend-fastapi:8001"
+      imagePullSecrets:
+        - name: github-container-registry

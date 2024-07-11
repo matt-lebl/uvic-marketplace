@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic
+  labels:
+    app: elastic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elastic
+  template:
+    metadata:
+      labels:
+        app: elastic
+    spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elastic-storage
+      containers:
+        - name: elastic
+          image: elasticsearch:7.17.21
+          env:
+            - name: discovery.type
+              value: single-node
+          ports:
+            - containerPort: 9200
+            - containerPort: 9300
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elastic-storage
+          securityContext:
+            runAsUser: 1000
+      volumes:
+        - name: elastic-storage
+          persistentVolumeClaim:
+            claimName: elastic-volume-claim

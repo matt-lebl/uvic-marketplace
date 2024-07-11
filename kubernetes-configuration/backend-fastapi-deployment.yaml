@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-fastapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-fastapi
+  template:
+    metadata:
+      labels:
+        app: backend-fastapi
+    spec:
+      containers:
+        - name: backend-fastapi
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-fastapi:b19b635
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8001
+          env:
+            - name: DATA_LAYER_URL
+              value: http://backend-data-layer:8002
+      imagePullSecrets:
+        - name: github-container-registry

@@ -39,7 +39,7 @@ async def login(loginRequest: LoginRequest, response: Response):
 
     if response_backend.status_code == 200:
         response.set_cookie(
-            key="jwt",
+            key="authorization",
             value=sign_jwt(user["userID"]),
             httponly=True,
             samesite="strict",
@@ -49,5 +49,5 @@ async def login(loginRequest: LoginRequest, response: Response):
 
 @usersRouter.post("/logout")
 async def logout(response: Response):
-    response.delete_cookie(key="jwt")
+    response.delete_cookie(key="authorization")
     return {"message": "Successfully signed out"}
