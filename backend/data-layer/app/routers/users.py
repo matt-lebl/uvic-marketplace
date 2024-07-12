@@ -122,7 +122,10 @@ def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(ge
 def get_validation_code(email: str, session: Session = Depends(get_session)):
     logger.info(f"getting email validation code for {email}")
     try:
-        return User.get_validation_code(email, session)
+        validation_code = User.get_validation_code(email, session)
+        if not validation_code:
+            raise HTTPException(status_code=404, detail=f"User not found {email}")
+        return validation_code
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=400, detail="Error retrieving validation code")

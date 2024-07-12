@@ -1,8 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.services.auth import AuthHandler, EmailValidator,
-from app.schemas import NewUser
+from app.services.auth import AuthHandler, EmailValidator
 import pyotp
 from urllib.parse import unquote
 
@@ -85,10 +84,12 @@ def test_validate_email():
     valid = "bob@uvic.ca"
     invalid = "bob@gmail.com"
     tricky_invalid = "bob@uvic.ca@gmail.com"
+    trickier_invalid = "@uvic.ca"
 
     assert EmailValidator.validate_email_domain(valid)
     assert not EmailValidator.validate_email_domain(invalid)
     assert not EmailValidator.validate_email_domain(tricky_invalid)
+    assert not EmailValidator.validate_email_domain(trickier_invalid)
 
 
 if __name__ == "__main__":
