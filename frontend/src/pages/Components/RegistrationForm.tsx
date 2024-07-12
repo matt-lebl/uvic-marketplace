@@ -80,26 +80,22 @@ const handleSubmit = async (
       newUserRequest
     )
     if (response) {
-      alert("Registration successful. Press OK to send a verification link to your e-mail.")
+      const verifyEmailURL = '/api/user/send-validation-link/' + newUserRequest.email
+      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
+      console.log(verifyEmailResponse)
+      if (verifyEmailResponse) {
+        alert("Registration successful. A verification link sent to your email.")
+      } else {
+        setStatus({ error: "Verification link failed to send" })
+      }
+      window.location.href = '/'
     } else {
-      alert("Response undefined. Registration failed.")
+      setStatus({ error: "Response undefined" })
     }
-
-    const verifyEmailURL = '/api/user/send-validation-link/' + newUserRequest.email
-    const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
-
-    console.log(verifyEmailResponse)
-    if (verifyEmailResponse) {
-      alert("Verification link successfully sent to your e-mail.")
-    } else {
-      alert("Verification link failed to send.")
-    }
-
   } catch (error) {
-    alert("Registration failed." + error)
+    setStatus({ error: "Registration failed " + error })
   } finally {
     setSubmitting(false)
-    window.location.href = '/'
   }
 }
 
