@@ -10,6 +10,7 @@ import { Button } from '@mui/material'
 import { Formik, FormikHelpers } from 'formik'
 import { APIGet, APIPost } from '../../APIlink'
 import { NewUserReq, NewUser } from '../../interfaces'
+import { Email } from '@mui/icons-material'
 
 interface FormValues {
   firstName: string
@@ -65,10 +66,10 @@ const handleSubmit = async (
   setSubmitting(true)
 
   const newUserRequest: NewUserReq = {
-    username: values.username,
-    name: `${values.firstName} ${values.lastName}`,
     email: values.email,
     password: values.password,
+    username: values.username,
+    name: `${values.firstName} ${values.lastName}`,
   }
 
   const loginURL: string = '/api/user/'
@@ -79,27 +80,26 @@ const handleSubmit = async (
       newUserRequest
     )
     if (response) {
-      // Registration successful alert with verify email
-      const verifyEmailURL =
-        '/api/user/send-validation-link/' + newUserRequest.email
-      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
-
-      if (verifyEmailResponse) {
-        alert(
-          'Registration successful. Please check your email for a verification link.'
-        )
-        // Redirect to login page
-        window.location.href = '/login'
-      } else {
-        setStatus({ error: 'Failed to send verification email' })
-      }
+      alert("Registration successful. Press OK to send a verification link to your e-mail.")
     } else {
-      setStatus({ error: 'Response undefined' })
+      alert("Response undefined. Registration failed.")
     }
+
+    const verifyEmailURL = '/api/user/send-validation-link/' + newUserRequest.email
+    const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
+
+    console.log(verifyEmailResponse)
+    if (verifyEmailResponse) {
+      alert("Verification link successfully sent to your e-mail.")
+    } else {
+      alert("Verification link failed to send.")
+    }
+
   } catch (error) {
-    setStatus({ error: 'Registration failed' })
+    alert("Registration failed." + error)
   } finally {
     setSubmitting(false)
+    window.location.href = '/'
   }
 }
 
