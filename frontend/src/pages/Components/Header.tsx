@@ -9,15 +9,18 @@ import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
 import { SearchRequest } from '../../interfaces'
-import { AddData, GetData } from '../../DataContext'
+import { AddData, DataContext, GetData } from '../../DataContext'
+import { useContext } from 'react'
 
 const Header: React.FC = () => {
   const searchRequestID = "searchRequest"
   const navigate = useNavigate()
+  const context = useContext(DataContext);
+
 
   const handleSearch = (query: SearchRequest) => {
     console.log(query)
-    AddData(searchRequestID, query);
+    AddData(context, searchRequestID, query);
     navigate('/search')
   }
 
@@ -47,7 +50,7 @@ const Header: React.FC = () => {
                 border: '1px solid',
               }}
               submit={handleSearch}
-              previousSearchRequest={GetData(searchRequestID) ?? null}
+              previousSearchRequest={GetData(context, searchRequestID) ?? null}
             />
           </Box>
           <Button

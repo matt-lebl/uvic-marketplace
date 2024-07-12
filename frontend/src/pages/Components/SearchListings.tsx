@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Pagination } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary, SearchRequest, SearchResultsResponse, Sort } from '../../interfaces'
-import { AddData, GetData } from '../../DataContext'
+import { AddData, DataContext, GetData } from '../../DataContext'
 import { APIGet } from '../../APIlink'
 import SelectInput from './SelectInput'
 
@@ -12,8 +12,10 @@ const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETU
 
 const SearchListings: React.FC = () => {
   const searchRequestID = "searchRequest"
+  const context = useContext(DataContext);
 
-  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(searchRequestID))
+
+  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID))
   const [currentPage, setCurrentPage] = useState<number>(searchRequest.page ?? 1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(searchRequest.limit ?? BASESEARCHLIMIT);
   const [listings, setListings] = useState<ListingSummary[]>([])
@@ -45,7 +47,7 @@ const SearchListings: React.FC = () => {
     setCurrentPage(newPage)
     searchRequest.page = newPage
     setSearchRequest(searchRequest)
-    AddData(searchRequestID, searchRequest)
+    AddData(context, searchRequestID, searchRequest)
     await doSearch()
   }
 

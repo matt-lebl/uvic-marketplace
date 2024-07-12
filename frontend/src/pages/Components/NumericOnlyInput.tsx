@@ -1,28 +1,36 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
+import { on } from 'events';
 
 import React, { useState, ChangeEvent } from 'react';
 
 interface props {
   label: string;
-  placeholder: string | null;
+  placeholder: string | undefined;
   errorMsg?: string | undefined;
-  onChange: (value: string | null) => void;
+  onChange: (value: string | undefined) => void;
+  onError?: (value: boolean) => void;
 }
 
-const NumericInput: React.FC<props> = ({ label, placeholder, errorMsg, onChange }) => {
-  const [error, setError] = useState<string | null>(null);
-  const [value, setValue] = useState<string | null>(placeholder);
-  const [prevValue, setPrevValue] = useState<string | null>(placeholder);
+const NumericInput: React.FC<props> = ({ label, placeholder, errorMsg, onChange, onError }) => {
+  const [error, setError] = useState<string | undefined>();
+  const [value, setValue] = useState<string | undefined>(placeholder);
+  //const [prevValue, setPrevValue] = useState<string | undefined>(placeholder);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     if (!newValue || newValue.match(/^\d*\.?\d*$/)) {
-      setError(null);
+      if (onError && error !== undefined) {
+        onError && onError(false);
+      }
+      setError(undefined);
       setValue(newValue)
-      setPrevValue(newValue);
+      //setPrevValue(newValue);
       onChange(newValue);
     } else {
-      setValue(prevValue);
+      if (onError && error === undefined) {
+        onError && onError(true);
+      }
+      //setValue(prevValue);
       setError(errorMsg ?? "Please enter a valid number (int or float)");
     }
   };
@@ -37,7 +45,7 @@ const NumericInput: React.FC<props> = ({ label, placeholder, errorMsg, onChange 
         label={label}
         placeholder={placeholder ?? ""}
         margin="normal"
-        error={Boolean(error)}
+        error={Boolean(error ?? false)}
       />
       <FormHelperText style={{ color: 'red' }}>
         {error}
