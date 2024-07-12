@@ -44,6 +44,8 @@ const validate = (values: FormValues) => {
     errors.email = 'Required'
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = 'Invalid email address'
+  } else if (!/^.*@uvic.ca$/.test(values.email)) {
+    errors.email = 'Email must end with @uvic.ca'
   }
   if (!values.password) {
     errors.password = 'Required'
