@@ -18,7 +18,7 @@ export default function ValidateEmailCompnent() {
   useEffect(() => {
     const validateEmail = async () => {
       try {
-        const res = await APIGet<boolean>(`/validate-email/${code}/${email}`)
+        const res = await APIGet<boolean>(`/api/user/validate-email/${code}/${email}`)
         setValidated(res)
       } catch (error) {
         console.log(error)
