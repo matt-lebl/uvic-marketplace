@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.services.auth import AuthHandler
+from app.services.auth import AuthHandler, EmailValidator,
 from app.schemas import NewUser
 import pyotp
 from urllib.parse import unquote
@@ -63,22 +63,33 @@ def test_encrypt_decrypt_totp_secret(auth_handler):
     email = "testuser@uvic.ca"
     totp_secret, _ = AuthHandler.generate_otp(email)
     
-    encrypted_secret = auth_handler.encrypt_totp_secret(totp_secret)
+    encrypted_secret = auth_handler.encrypt_secret(totp_secret)
     assert encrypted_secret is not None
     assert encrypted_secret != totp_secret
     
-    decrypted_secret = auth_handler.fernet.decrypt(encrypted_secret.encode()).decode()
+    decrypted_secret = auth_handler.decrypt_secret(encrypted_secret)
     assert decrypted_secret == totp_secret
 
 def test_totp_validation(auth_handler):
     email = "testuser@uvic.ca"
     totp_secret, _ = AuthHandler.generate_otp(email)
-    encrypted_secret = auth_handler.encrypt_totp_secret(totp_secret)
+    encrypted_secret = auth_handler.encrypt_secret(totp_secret)
     
     totp_code = pyotp.TOTP(totp_secret).now()
     is_valid = auth_handler.check_totp(totp_code, encrypted_secret)
     
     assert is_valid
+
+
+def test_validate_email():
+    valid = "bob@uvic.ca"
+    invalid = "bob@gmail.com"
+    tricky_invalid = "bob@uvic.ca@gmail.com"
+
+    assert EmailValidator.validate_email_domain(valid)
+    assert not EmailValidator.validate_email_domain(invalid)
+    assert not EmailValidator.validate_email_domain(tricky_invalid)
+
 
 if __name__ == "__main__":
     pytest.main()

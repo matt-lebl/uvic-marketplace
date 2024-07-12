@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
@@ -9,8 +10,8 @@ from core.schemas import (
     UserBaseModel,
 )
 from services.data_layer_connect import send_request_to_data_layer
-from services.auth import AuthHandler
 from services.utils import convert_to_type
+from services.auth import AuthHandler, EmailValidator
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -19,6 +20,7 @@ userRouter = APIRouter(
 )
 
 authHandler = AuthHandler()
+email_validator = EmailValidator()
 
 
 ## Auth Not Required
@@ -27,9 +29,14 @@ async def create_user(user: NewUser):
     path = "user/"
 
     user = user.model_dump()
+
+    if not EmailValidator.validate_email_domain(user["email"]):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
-    user["totp_secret"] = authHandler.encrypt_totp_secret(totp_secret)
+    user["totp_secret"] = authHandler.encrypt_secret(totp_secret)
+    user["validation_code"] = str(uuid.uuid4())
 
     response = await send_request_to_data_layer(path, "POST", user)
     response = response.json()
@@ -40,7 +47,6 @@ async def create_user(user: NewUser):
 
 @userRouter.get("/{id}")
 async def get_user(id: str, authUserID: str):
-
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
     if response.status_code == 200:
@@ -60,7 +66,6 @@ async def edit_user(user: UpdateUser, authUserID: str):
 
 @userRouter.delete("/")
 async def delete_user(authUserID: str):
-
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "DELETE")
     return response.json()
@@ -82,6 +87,7 @@ async def login(loginRequest: LoginRequest):
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
@@ -94,18 +100,26 @@ async def login(loginRequest: LoginRequest):
 
 
 # Logout need not be implemented, it is implemented in RP
+@userRouter.post("/validate-email/{validation_code}/{email}")
+async def validate_email(validation_code: str, email: str):
+    decrypted_email = authHandler.decrypt_secret(email)
+    decrypted_validation_code = authHandler.decrypt_secret(validation_code)
+
+    if not EmailValidator.validate_email_domain(decrypted_email):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    response = await send_request_to_data_layer(f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}",
+                                                "POST")
+    return response.json()
 
 
-@userRouter.post("/send-confirmation-email")
-async def send_confirmation_email(emailModel: EmailModel, authUserID: str):
-    # TODO: Implement sending confirmation email
-    return {
-        "TODO": "Confirmation email sent to {}".format(emailModel.email),
-        "Reqested by": authUserID,
-    }
+@userRouter.get("/send-validation-link/{email}")
+async def send_validation_link(email: str):
+    if not EmailValidator.validate_email_domain(email):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
 
+    response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
+    validation_code = response.json()
 
-@userRouter.post("/confirm-email")
-async def confirm_email(token: str, authUserID: str):
-    # TODO: Implement email confirmation
-    return {"TODO": "Email confirmed", "Reqested by": authUserID}
+    email_validator.send_validation_email(email, validation_code)
+    return {"message": "Validation email sent"}

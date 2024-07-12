@@ -14,12 +14,31 @@ spec:
     spec:
       containers:
         - name: backend-fastapi
-          image: ghcr.io/matt-lebl/uvic-marketplace/backend-fastapi:b19b635
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-fastapi:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8001
           env:
             - name: DATA_LAYER_URL
               value: http://backend-data-layer:8002
+            - name: TOTP_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: TOTP_KEY
+                  name: backend-totp-key-secret
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: http://kafka:9092
+            - name: FRONTEND_URL
+              value: 'https://market.lebl.ca'
+            - name: VALIDATION_EMAIL_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: VALIDATION_EMAIL_ENCRYPTION_KEY
+                  name: backend-validation-key-secret
+            - name: VALIDATION_EMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: VALIDATION_EMAIL_PASSWORD
+                  name: backend-validation-key-secret
       imagePullSecrets:
         - name: github-container-registry

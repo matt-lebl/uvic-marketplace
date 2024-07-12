@@ -78,18 +78,20 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
 def login(request: LoginRequest, session: Session = Depends(get_session)):
     logger.info("Login request")
     try:
+        if not User.is_validated(request.email, session):
+            raise HTTPException(status_code=401, detail="Email is not validated")
         hashed_password = User.get_password(session, request.email)
         password = request.password
         if not password:
-            raise HTTPException(status_code=401)
+            raise HTTPException(status_code=401, detail="Invalid request, no password")
         try:
             argon2.PasswordHasher().verify(hashed_password, password)
         except Exception as e:
             logger.error(str(e))
-            raise HTTPException(status_code=401)
+            raise HTTPException(status_code=401, detail="Error comparing password")
         user = User.login(session, request.email)
         if not user:
-            raise HTTPException(status_code=401)
+            raise HTTPException(status_code=401, detail="Error retrieving user info")
         return user
     except Exception as e:
         logger.error(str(e))
@@ -114,3 +116,32 @@ def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(ge
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error adding TOTP Secret")
+
+
+@router.get("/validation-code/{email}")
+def get_validation_code(email: str, session: Session = Depends(get_session)):
+    logger.info(f"getting email validation code for {email}")
+    try:
+        return User.get_validation_code(email, session)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=400, detail="Error retrieving validation code")
+
+@router.post("/validate-email/{validation_code}/{email}")
+def validate_email(validation_code: str, email: str, session: Session = Depends(get_session)):
+    logger.info(f"attempting to validate email for {email}")
+    try:
+        return User.validate_email(validation_code, email, session)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=401, detail="Error validating email")
+
+
+@router.get("/is-validated/{userID}")
+def is_validated(userID: str, session: Session = Depends(get_session)):
+    logger.info(f"Checking if email validated for {userID}")
+    try:
+        return User.is_validated(userID, session)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=401, detail="Error checking account validation")

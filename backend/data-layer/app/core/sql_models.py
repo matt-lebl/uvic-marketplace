@@ -28,6 +28,8 @@ class UserBase(SQLModel):
     totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
+    email_validated: bool = Field(default=False)
+    validation_code: str
 
 
 class User(UserBase, table=True):
@@ -106,6 +108,32 @@ class User(UserBase, table=True):
         session.commit()
 
         return {"message": "totp added successfully"}
+
+    @classmethod
+    def get_validation_code(cls, email: str, session: Session):
+        statement = select(cls.validation_code).where(cls.email == email)
+        return session.exec(statement).first()
+
+    @classmethod
+    def validate_email(cls, validation_code: str, email: str, session: Session):
+        statement = select(cls).where(and_(cls.email == email, cls.validation_code == validation_code))
+        user = session.exec(statement).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid email or validation code")
+        else:
+            setattr(user, "email_validated", True)
+            session.add(user)
+            session.commit()
+        return {"message": "Email validated successfully"}
+
+    @classmethod
+    def is_validated(cls, email: str, session: Session):
+        statement = select(cls).where(cls.email == email)
+        user = session.exec(statement).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="User ID not found")
+        else:
+            return user.email_validated
 
 
 class ListingBase(SQLModel):
@@ -376,7 +404,7 @@ class Message(MessageBase, table=True):
 
     @classmethod
     def get_thread(
-        cls, listing_id: str, receiver_id: str, user_id: str, session: Session
+            cls, listing_id: str, receiver_id: str, user_id: str, session: Session
     ):
         statement = (
             select(cls)
