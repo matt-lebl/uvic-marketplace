@@ -14,6 +14,7 @@ function Registration() {
           flexWrap="nowrap"
           alignItems="center"
           marginTop={12}
+          marginBottom={12}
         >
           <Typography variant="h4" alignSelf="flex-start" marginBottom={5}>
             Register

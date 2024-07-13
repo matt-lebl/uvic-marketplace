@@ -18,7 +18,9 @@ export default function ValidateEmailCompnent() {
   useEffect(() => {
     const validateEmail = async () => {
       try {
-        const res = await APIGet<boolean>(`/api/user/validate-email/${code}/${email}`)
+        const res = await APIGet<boolean>(
+          `/api/user/validate-email/${code}/${email}`
+        )
         setValidated(res)
       } catch (error) {
         console.log(error)
@@ -39,10 +41,12 @@ export default function ValidateEmailCompnent() {
           marginTop={12}
         >
           <Typography variant="h4" marginBottom={5}>
-            {validated ? "Email validated" : "Validating email..."}
+            {validated ? 'Email validated' : 'Validating email...'}
           </Typography>
           {validated ? (
-            <Button href="/login" variant='contained' color='primary'>Login</Button>
+            <Button href="/login" variant="contained" color="primary">
+              Login
+            </Button>
           ) : null}
         </Box>
       </header>
