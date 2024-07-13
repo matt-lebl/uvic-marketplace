@@ -1,4 +1,4 @@
-import { Typography, Box } from '@mui/material'
+import { Typography, Box, Button } from '@mui/material'
 import { useSearchParams } from 'react-router-dom'
 import { APIGet } from '../../APIlink'
 import { useEffect, useState } from 'react'
@@ -38,9 +38,12 @@ export default function ValidateEmailCompnent() {
           alignItems="center"
           marginTop={12}
         >
-          <Typography variant="h4" alignSelf="flex-start" marginBottom={5}>
+          <Typography variant="h4" marginBottom={5}>
             {validated ? "Email validated" : "Validating email..."}
           </Typography>
+          {validated ? (
+            <Button href="/login" variant='contained' color='primary'>Login</Button>
+          ) : null}
         </Box>
       </header>
     </div>
