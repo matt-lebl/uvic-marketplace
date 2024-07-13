@@ -44,7 +44,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
     setTotalListingsCount(res?.totalItems ?? 0)
   }
 
-  useEffect(() => { setTimeout(async () => { doSearch() }, 1000) })
+  setTimeout(async () => { doSearch() }, 1000);
 
   // Calculate the current listings to display
 

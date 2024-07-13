@@ -58,15 +58,19 @@ const mockListings: ListingSummary[] = [
     },
 ];
 
-const mockOnSearch = jest.fn().mockReturnValue({
-    totalItems: 5,
-    items: mockListings,
-});
+
 
 describe('SearchListings Component', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+    const mockOnSearch = jest.fn().mockImplementation((...args) => {
+        return {
+            totalItems: 5,
+            items: mockListings,
+        };
     });
+
+    // beforeEach(() => {
+    //     jest.clearAllMocks();
+    // });
 
     test('renders SearchListings component', async () => {
         render(
