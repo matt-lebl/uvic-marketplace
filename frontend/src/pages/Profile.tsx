@@ -15,14 +15,16 @@ import {
   Grid,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
+import { APIGet } from '../APIlink'
 
-const mockUser: User = {
-  userID: '1',
-  username: 'firstlast',
-  name: 'First Last',
-  bio: 'User Bio Here',
-  profileUrl: 'https://randomuser.me/api/',
-  email: 'test@gmail.com',
+const currentUser: User = {
+  userID: localStorage.getItem('userID') || '1',
+  username: localStorage.getItem('username') || 'firstlast',
+  name: localStorage.getItem('name') || 'First Last',
+  bio: localStorage.getItem('bio') || 'User Bio Here',
+  profileUrl:
+    localStorage.getItem('profileUrl') || 'https://randomuser.me/api/',
+  email: localStorage.getItem('email') || 'test@gmail.com',
 }
 
 const mockListings: ListingSummary[] = [
@@ -136,6 +138,18 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     }
   }
 
+  const handleLogout = async () => {
+    try {
+      const logoutResponse = await APIGet<boolean>(`/api/user/logout`)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      alert('Logged out successfully. See you later!')
+      localStorage.clear()
+      window.location.href = '/'
+    }
+  }
+
   useEffect(() => {
     updateListingsPerPage()
     window.addEventListener('resize', updateListingsPerPage)
@@ -209,10 +223,22 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
             </Box>
           )}
         </Box>
-
-        <Button onClick={toggleEditMode} sx={{ alignSelf: 'flex-start' }}>
-          {editMode ? 'Save' : 'Edit'}
-        </Button>
+        <Box sx={{ display: 'flex', alignSelf: 'stretch', gap: '10px' }}>
+          <Button
+            onClick={toggleEditMode}
+            sx={{ alignSelf: 'flex-start' }}
+            variant="contained"
+          >
+            {editMode ? 'Save' : 'Edit'}
+          </Button>
+          <Button
+            onClick={handleLogout}
+            sx={{ alignSelf: 'flex-start' }}
+            variant="contained"
+          >
+            Logout
+          </Button>
+        </Box>
       </Box>
       <Tabs value={activeTab} onChange={handleTabChange}>
         <Tab label="Active Listings" />
@@ -302,7 +328,7 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
 }
 
 const ProfileContainer: React.FC = () => {
-  return <Profile user={mockUser} listings={mockListings} />
+  return <Profile user={currentUser} listings={mockListings} />
 }
 
 export default ProfileContainer

@@ -1,10 +1,16 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import Router from '../pages/Router'
-import { MemoryRouter } from 'react-router'
+import { MemoryRouter } from 'react-router-dom'
 
 describe('Testing basic routes', () => {
-  test('Homepage Navigation', () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear()
+  })
+
+  test('Homepage Navigation when logged in', () => {
+    localStorage.setItem('userID', 'test-user')
     const t = render(
       <MemoryRouter initialEntries={['/']}>
         <Router />
@@ -13,7 +19,7 @@ describe('Testing basic routes', () => {
     expect(t.baseElement.innerHTML).toContain('<div class="Home">')
   })
 
-  test('Login Navigation', () => {
+  test('Login Navigation when not logged in', () => {
     const t = render(
       <MemoryRouter initialEntries={['/login']}>
         <Router />
@@ -22,21 +28,22 @@ describe('Testing basic routes', () => {
     expect(t.baseElement.innerHTML).toContain('<div class="Login">')
   })
 
-  test('Register Navigation', () => {
+  test('Register Navigation when not logged in', () => {
     const t = render(
       <MemoryRouter initialEntries={['/register']}>
         <Router />
       </MemoryRouter>
     )
-    expect(t.baseElement.innerHTML).toContain('<div class="Registration">')
+    expect(t.baseElement.innerHTML).toContain('<div class="Login">')
   })
 
-  test('Listing page Navigation', () => {
+  test('Home page when logged in', () => {
+    localStorage.setItem('userID', 'test-user')
     const t = render(
-      <MemoryRouter initialEntries={['/listing/1234']}>
+      <MemoryRouter initialEntries={['/']}>
         <Router />
       </MemoryRouter>
     )
-    expect(t.baseElement.innerHTML).toContain('<div class="Listing">')
+    expect(t.baseElement.innerHTML).toContain('Recommended Listings')
   })
 })

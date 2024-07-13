@@ -19,6 +19,10 @@ function Login() {
           </Typography>
 
           <LoginForm />
+
+          <Typography variant="body1" alignSelf="flex-start" marginTop={2}>
+            Don't have an account? <a href="/register">Register</a>
+          </Typography>
         </Box>
       </header>
     </div>

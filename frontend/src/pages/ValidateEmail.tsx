@@ -1,9 +1,10 @@
 import React from 'react'
 import './App.css'
 import { Typography, Box } from '@mui/material'
-import RegisterForm from './Components/RegistrationForm'
+import { useSearchParams } from 'react-router-dom'
+import ValidateEmailComponent from './Components/ValidateEmailComponent'
 
-function Registration() {
+function ValidateEmail() {
   return (
     <div className="Registration">
       <header className="App-header">
@@ -14,17 +15,12 @@ function Registration() {
           flexWrap="nowrap"
           alignItems="center"
           marginTop={12}
-          marginBottom={12}
         >
-          <Typography variant="h4" alignSelf="flex-start" marginBottom={5}>
-            Register
-          </Typography>
-
-          <RegisterForm />
+          <ValidateEmailComponent />
         </Box>
       </header>
     </div>
   )
 }
 
-export default Registration
+export default ValidateEmail

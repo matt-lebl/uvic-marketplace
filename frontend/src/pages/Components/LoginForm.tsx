@@ -41,12 +41,13 @@ export default function LoginForm() {
               console.log('Response: ', response) // Remove later
               alert('Login successful.')
               localStorage.setItem('userID', response.userID)
-              window.location.href = '/'
               localStorage.setItem('userID', response.userID)
               localStorage.setItem('username', response.username)
               localStorage.setItem('name', response.name)
               localStorage.setItem('bio', response.bio)
               localStorage.setItem('profileUrl', response.profilePictureUrl)
+              localStorage.setItem('email', loginRequest.email)
+              window.location.href = '/'
             }
           } catch (error) {
             console.log('Response: ', response) // Remove later

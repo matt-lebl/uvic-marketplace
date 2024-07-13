@@ -4,11 +4,9 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export default function LoginHeader() {
-  const navigate = useNavigate()
-
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -23,30 +21,27 @@ export default function LoginHeader() {
           <Typography
             variant="h1"
             component="div"
-            sx={{ flexGrow: 1, paddingX: 5 }}
+            sx={{ paddingX: 5 }}
+            overflow={'clip'}
+            noWrap
           >
-            UVic Marketplace
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              UVic Marketplace
+            </Link>
           </Typography>
           <Box
             sx={{
-              width: '10vw',
+              width: '160px',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
+              overflow: 'hidden',
             }}
           >
-            <Button
-              variant="text"
-              color="inherit"
-              onClick={() => navigate('/login')}
-            >
+            <Button variant="text" color="inherit" href="/login">
               Login
             </Button>
-            <Button
-              variant="text"
-              color="inherit"
-              onClick={() => navigate('/register')}
-            >
+            <Button variant="text" color="inherit" href="/register">
               Register
             </Button>
           </Box>

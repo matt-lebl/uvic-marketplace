@@ -182,6 +182,7 @@ describe('POST', () => {
       profileUrl: 'https://example.com/image.png',
       email: 'A23434B090934',
       totp_secret: '60b725f10c9c85c70d97880dfe8191b3',
+      totp_uri: '60b725f10c9c85c70d97880dfe8191b3',
     }
     mockedAxios.post.mockResolvedValueOnce({ status: 201, data: testResponse })
     const res = await APIPost<NewUser, NewUserReq>(testURL, testRequest)

@@ -14,6 +14,8 @@ export default function Header() {
     console.log(query)
   }
 
+  const name = localStorage.getItem('name') || 'User'
+
   const navigate = useNavigate()
 
   return (
@@ -108,7 +110,7 @@ export default function Header() {
             </Button>
             <ProfileIcon
               id="header-pfp"
-              name="header-pfp"
+              name={name}
               imageSrc="./Test_Resources/TestProfileImage.jpg"
               onClick={() => navigate('/profile')}
             />
