@@ -26,83 +26,103 @@ const Header: React.FC = () => {
 
 
   return (
-    <Box sx={{ flexGrow: 1, height: '7vh' }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography
-            variant="h1"
-            component="div"
-            sx={{ flexGrow: 0, mr: '40px' }}
-          >
-            UVic Marketplace
-          </Typography>
-          <Box sx={{ flexGrow: 1 }}>
-            <Searchbox
-              id="Header Searchbar"
-              placeholder="Search UVic Marketplace"
-              sx={{
-                m: '0px 0px',
-                p: '4px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                width: 400,
-                borderRadius: 2,
-                border: '1px solid',
-              }}
-              submit={handleSearch}
-              previousSearchRequest={GetData(context, searchRequestID) ?? null}
-            />
-          </Box>
+    <Box sx={{ flexGrow: 1 }}>
+      <AppBar
+        position="static"
+        sx={{
+          flexGrow: 1,
+          height: '8vh',
+          justifyContent: 'center',
+        }}
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Button
-            variant="text"
-            onClick={() => navigate('/listing/1234')}
-            color="inherit"
-            sx={{ mr: '40px' }}
-          >
-            Browse
-          </Button>
-          <Button
-            variant="text"
-            onClick={() => navigate('/profile')}
-            color="inherit"
-            sx={{ mr: '40px' }}
-          >
-            My Listings
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => navigate('/new-listing')}
+            onClick={() => navigate('/')}
             sx={{
-              width: '10px',
-              height: '40px',
-              backgroundColor: '#25496A',
-              color: '#B5DBFF',
-              fontSize: '30px',
-              borderRadius: '10px',
-              mr: '60px',
+              color: 'inherit',
+              textTransform: 'none',
+              '&:hover': {
+                backgroundColor: 'transparent',
+              },
+              paddingX: 5,
             }}
           >
-            +
+            <Typography variant="h1" component="div">
+              UVic Marketplace
+            </Typography>
           </Button>
-          <Button
-            variant="text"
-            onClick={() => navigate('/messaging')}
-            color="inherit"
-            sx={{ mr: '40px' }}
-          >
-            <MarkunreadIcon
-              sx={{
-                height: '50px',
-                width: '50px',
-              }}
-            />
-          </Button>
-          <ProfileIcon
-            id="header-pfp"
-            name="header-pfp"
-            imageSrc="./Test_Resources/TestProfileImage.jpg"
-            onClick={() => navigate('/profile')}
+
+          <Searchbox
+            id="Header Searchbar"
+            placeholder="Search UVic Marketplace"
+            sx={{
+              m: '0px 0px',
+              p: '4px 4px',
+              display: 'flex',
+              alignItems: 'center',
+              width: 400,
+              borderRadius: 2,
+              border: '1px solid',
+              flexGrow: 1,
+            }}
+            submit={handleSearch}
+            previousSearchRequest={GetData(context, searchRequestID) ?? null}
           />
+          <Box
+            sx={{
+              display: 'flex',
+              flexGrow: 1,
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+            }}
+          >
+            <Button
+              variant="text"
+              onClick={() => navigate('/listing/1234')}
+              color="inherit"
+            >
+              Browse
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => navigate('/profile')}
+              color="inherit"
+            >
+              My Listings
+            </Button>
+            <Button
+              variant="text"
+              onClick={() => navigate('/messaging')}
+              color="inherit"
+            >
+              <MarkunreadIcon
+                sx={{
+                  height: '60px',
+                  width: '60px',
+                }}
+              />
+            </Button>
+            <Button
+              variant="contained"
+              onClick={() => navigate('/new-listing')}
+              sx={{
+                width: '40px',
+                height: '40px',
+                backgroundColor: '#25496A',
+                color: '#B5DBFF',
+                fontSize: '30px',
+                borderRadius: '10px',
+              }}
+            >
+              +
+            </Button>
+            <ProfileIcon
+              id="header-pfp"
+              name="header-pfp"
+              imageSrc="./Test_Resources/TestProfileImage.jpg"
+              onClick={() => navigate('/profile')}
+            />
+          </Box>
         </Toolbar>
       </AppBar>
     </Box>

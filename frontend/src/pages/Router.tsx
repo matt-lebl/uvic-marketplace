@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { Routes, Route, Outlet } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Routes, Route, Outlet, useNavigate } from 'react-router-dom'
 import Login from './Login'
 import Registration from './Registration'
 import Home from './Home'
@@ -12,55 +13,58 @@ import CreateListing from './CreateListing'
 import EditListing from './EditListing'
 import Search from './Search'
 
-/*
-Add paths for new pages here
-path={} is what gets appended to the URL
-element={} is the page that gets rendered when that URL is requested
-
-TODO:
-Once login authentication is functional this needs to be modified
-Users shouldnt be abled to access most pages unless they are logged in
-*/
 const Router = () => {
+  const [loggedIn, setLoggedIn] = useState<boolean>(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const user = localStorage.getItem('userID')
+    if (user) {
+      setLoggedIn(true)
+    } else {
+      setLoggedIn(false)
+      const currentPath = window.location.pathname
+      if (currentPath !== '/login' && currentPath !== '/register') {
+        navigate('/login')
+      }
+    }
+  }, [navigate])
+
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Registration />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="listing/:listingID" element={<Listing />} />
-        <Route path="messaging" element={<Messaging />} />
-        <Route path="new-listing" element={<CreateListing />} />
-        <Route path="edit-listing" element={<EditListing />} />
-        <Route path="search" element={<Search/>}/>
+      <Route path="/" element={<Layout loggedIn={loggedIn} />}>
+        {!loggedIn ? (
+          <>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Registration />} />
+          </>
+        ) : (
+          <>
+            <Route index element={<Home />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="listing/:listingID" element={<Listing />} />
+            <Route path="messaging" element={<Messaging />} />
+            <Route path="new-listing" element={<CreateListing />} />
+            <Route path="edit-listing" element={<EditListing />} />
+            <Route path="search" element={<Search />} />
+          </>
+        )}
       </Route>
     </Routes>
   )
 }
 
-function Layout() {
+function Layout({ loggedIn }: { loggedIn: boolean }) {
   return (
     <div>
-      <HeaderLayout />
+      <HeaderLayout loggedIn={loggedIn} />
       <Outlet />
     </div>
   )
 }
 
-/*
-Function that checks the URL and switches the header displayed
-Currently only checks if you are on the login or register page
-If you are on the login or register page a different header gets displayed
-*/
-function HeaderLayout() {
-  const url = window.location.href
-  let result = <Header />
-
-  if (url.includes('/login') || url.includes('/register'))
-    result = <LoginHeader />
-
-  return result
+function HeaderLayout({ loggedIn }: { loggedIn: boolean }) {
+  return loggedIn ? <Header /> : <LoginHeader />
 }
 
 export default Router
