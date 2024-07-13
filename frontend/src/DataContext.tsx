@@ -36,7 +36,6 @@ export const DataProvider: React.FC<props> = ({ children }) => {
    * @returns The data object that matches the ID if it exists, null otherwise
    */
 export function GetData(context: DataContextType | undefined, id: string): any {
-  debugger;
   if (context === undefined) {
     throw new Error('useData must be used within a DataProvider');
   }
@@ -52,7 +51,6 @@ export function GetData(context: DataContextType | undefined, id: string): any {
    * @returns The data object that matches the ID if it exists, null otherwise
    */
 export function AddData(context: DataContextType | undefined, id: string, newData: any) {
-  debugger;
   if (context === undefined) {
     throw new Error('useData must be used within a DataProvider');
   }
@@ -73,7 +71,6 @@ export function AddData(context: DataContextType | undefined, id: string, newDat
    * @param id - The ID of the data object
    */
 export const RemoveData = (context: DataContextType | undefined, id: string) => {
-  debugger;
   if (context === undefined) {
     throw new Error('useData must be used within a DataProvider');
   }
