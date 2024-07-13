@@ -35,6 +35,10 @@ FROM deps as build
 
 # Copy the rest of the source files into the image.
 COPY . .
+
+# Copy the .env file
+COPY .env .env
+
 # Run the build script.
 RUN npm run build
 
