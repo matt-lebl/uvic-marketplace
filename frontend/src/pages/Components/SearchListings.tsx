@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Pagination } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
-import { ListingSummary, SearchRequest, SearchResultsResponse, Sort } from '../../interfaces'
+import { ListingSummary, SearchRequest, Sort } from '../../interfaces'
 import { AddData, DataContext, GetData } from '../../DataContext'
 import SelectInput from './SelectInput'
 
@@ -30,28 +30,24 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
     limit: BASESEARCHLIMIT,
   }
 
+
   const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? blankSearchRequest)
   const [currentPage, setCurrentPage] = useState<number>(searchRequest.page ?? 1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(searchRequest.limit ?? BASESEARCHLIMIT);
-  const [listings, setListings] = useState<ListingSummary[]>([])
+  const [listings, setListings] = useState<ListingSummary[]>([] as ListingSummary[])
   const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
   const [sorting, setSorting] = useState<Sort>(searchRequest.sort ?? Sort.RELEVANCE)
 
-  // Calculate the current listings to display
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentListings = listings.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  )
-
   const doSearch = async () => {
     const res = await onSearch(searchRequest)
-    setListings(res.items)
-    setTotalListingsCount(res.totalItems)
+    setListings(res?.items ?? [] as ListingSummary[])
+    setTotalListingsCount(res?.totalItems ?? 0)
   }
 
   useEffect(() => { setTimeout(async () => { doSearch() }, 1000) })
+
+  // Calculate the current listings to display
+
 
   // Change page handler
   const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
@@ -112,7 +108,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
         }}
       >
         <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-          {currentListings.map((listing, index) => (
+          {listings.map((listing, index) => (
             <Grid item sx={{ width: '100%' }} key={index}>
               <ListingCard {...listing} />
             </Grid>
