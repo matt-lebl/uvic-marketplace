@@ -91,6 +91,7 @@ export interface NewUser {
   profileUrl: string
   email: string
   totp_secret: string
+  totp_uri: string
 }
 
 export interface User {

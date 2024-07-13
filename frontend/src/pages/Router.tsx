@@ -12,6 +12,8 @@ import Header from './Components/Header'
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
 import Search from './Search'
+import ValidateEmail from './ValidateEmail'
+import Footer from './Components/Footer'
 
 const Router = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
@@ -37,6 +39,7 @@ const Router = () => {
           <>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Registration />} />
+            <Route path="validate-email" element={<ValidateEmail />} />
           </>
         ) : (
           <>

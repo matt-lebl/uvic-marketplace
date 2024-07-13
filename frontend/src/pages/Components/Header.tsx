@@ -24,6 +24,8 @@ const Header: React.FC = () => {
     navigate('/search')
   }
 
+  const name = localStorage.getItem('name') || 'User'
+
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -118,7 +120,7 @@ const Header: React.FC = () => {
             </Button>
             <ProfileIcon
               id="header-pfp"
-              name="header-pfp"
+              name={name}
               imageSrc="./Test_Resources/TestProfileImage.jpg"
               onClick={() => navigate('/profile')}
             />
