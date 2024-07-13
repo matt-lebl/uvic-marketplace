@@ -5,12 +5,15 @@ import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary, SearchRequest, SearchResultsResponse, Sort } from '../../interfaces'
 import { AddData, DataContext, GetData } from '../../DataContext'
-import { APIGet } from '../../APIlink'
 import SelectInput from './SelectInput'
 
 const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "0"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
-const SearchListings: React.FC = () => {
+interface props {
+  onSearch: (searchRequest: SearchRequest) => Promise<{ totalItems: number, items: ListingSummary[] }>;
+}
+
+const SearchListings: React.FC<props> = ({ onSearch }) => {
   const searchRequestID = "searchRequest"
   const context = useContext(DataContext);
 
@@ -31,37 +34,40 @@ const SearchListings: React.FC = () => {
   )
 
   const doSearch = async () => {
-    const queryParams: [string, string | number][] = Object.entries(searchRequest).filter(([key, value]) => value !== undefined && value !== null) as [string, string | number][];
-    try {
-      const res = await APIGet<SearchResultsResponse>('api/search', queryParams)
-      setListings(res.items)
-      setTotalListingsCount(res.totalItems)
-    } catch (e) {
-      console.error(e)
-    }
+    const res = await onSearch(searchRequest)
+    setListings(res.items)
+    setTotalListingsCount(res.totalItems)
   }
-  useEffect(() => { doSearch() })
+
+  useEffect(() => { setTimeout(async () => { doSearch() }, 1000) })
 
   // Change page handler
-  const handleChangePage = async (event: ChangeEvent<unknown>, newPage: number) => {
+  const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
     setCurrentPage(newPage)
     searchRequest.page = newPage
     setSearchRequest(searchRequest)
     AddData(context, searchRequestID, searchRequest)
-    await doSearch()
+    setTimeout(async () => {
+      await doSearch()
+    }, 1000)
   }
 
-  // const handleChangeSorting = async (sort: Sort) => {
-  //   setSorting(sort)
-  //   searchRequest.sort = sort
-  //   setSearchRequest(searchRequest)
-  //   AddData(searchRequestID, searchRequest)
-  //   await doSearch()
-  // }
+  const handleChangeSorting = (sort: string | undefined) => {
+    if (sort !== undefined && sort in Sort) {
+      var enumSort = sort as Sort;
+      setSorting(enumSort)
+      searchRequest.sort = enumSort
+      searchRequest.page = 1;
+      setSearchRequest(searchRequest)
+      AddData(context, searchRequestID, searchRequest)
+      setTimeout(async () => {
+        await doSearch()
+      }, 1000)
+    }
+  }
 
   // Calculate total pages
   const totalPages = Math.ceil(totalListingsCount / itemsPerPage)
-  //<SelectInput label='Sort' defaultVal={sorting} onChange={() => handleChangeSorting} options={Object.values(Sort)} />
 
   return (
     <Box
@@ -78,6 +84,7 @@ const SearchListings: React.FC = () => {
       <Typography variant="h4" alignSelf={'flex-start'}>
         Listings Found
       </Typography>
+      <SelectInput label='Sort' defaultVal={sorting} onChange={handleChangeSorting} options={Object.values(Sort)} />
       <Box
         sx={{
           maxHeight: '800px',

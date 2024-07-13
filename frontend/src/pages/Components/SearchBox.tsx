@@ -23,14 +23,13 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
   const BASELONG: string = process.env.REACT_APP_BASE_LONGITUDE ?? "123.3122"; // ?? "" only exists to prevent type errors. It should never be reached.
   const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
-  const existingSearchInputs: SearchRequest | undefined = previousSearchRequest;
-  const [query, setQuery] = useState<string>(existingSearchInputs?.query ?? '')
-  const [minPrice, setMinPrice] = useState<string | undefined>(existingSearchInputs?.minPrice?.toString() ?? undefined)
-  const [maxPrice, setMaxPrice] = useState<string | undefined>(existingSearchInputs?.maxPrice?.toString() ?? undefined)
-  const [status, setStatus] = useState<string>(existingSearchInputs?.status ?? ItemStatus.AVAILABLE)
-  const [searchType, setSearchType] = useState<string>(existingSearchInputs?.searchType ?? SearchType.LISTINGS)
-  const [latitude, setLatitude] = useState<string>(existingSearchInputs?.latitude?.toString() ?? BASELAT)
-  const [longitude, setLongitude] = useState<string>(existingSearchInputs?.longitude?.toString() ?? BASELONG)
+  const [query, setQuery] = useState<string | undefined>(previousSearchRequest?.query ?? '')
+  const [minPrice, setMinPrice] = useState<string | undefined>(previousSearchRequest?.minPrice?.toString() ?? undefined)
+  const [maxPrice, setMaxPrice] = useState<string | undefined>(previousSearchRequest?.maxPrice?.toString() ?? undefined)
+  const [status, setStatus] = useState<string>(previousSearchRequest?.status ?? ItemStatus.AVAILABLE)
+  const [searchType, setSearchType] = useState<string>(previousSearchRequest?.searchType ?? SearchType.LISTINGS)
+  const [latitude, setLatitude] = useState<string>(previousSearchRequest?.latitude?.toString() ?? BASELAT)
+  const [longitude, setLongitude] = useState<string>(previousSearchRequest?.longitude?.toString() ?? BASELONG)
   const [hasError, setHasError] = useState<number>(0)
 
 
@@ -44,18 +43,18 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
   }
 
   const handleClick = () => {
-    if (hasError <= 0) {
+    if (hasError <= 0 && query !== undefined) {
       const newQuery: SearchRequest = {
-        query: query,
+        query: query!,
         minPrice: minPrice ? parseFloat(minPrice) : undefined,
         maxPrice: maxPrice ? parseFloat(maxPrice) : undefined,
         status: status as ItemStatus,
         searchType: searchType as SearchType,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
-        sort: existingSearchInputs?.sort ?? Sort.RELEVANCE,
-        page: existingSearchInputs?.page ?? 1,
-        limit: existingSearchInputs?.limit ?? BASESEARCHLIMIT,
+        sort: previousSearchRequest?.sort ?? Sort.RELEVANCE,
+        page: previousSearchRequest?.page ?? 1,
+        limit: previousSearchRequest?.limit ?? BASESEARCHLIMIT,
       }
       submit(newQuery)
     }
@@ -80,8 +79,10 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
     <Paper component="form" sx={sx} id={id} onSubmit={handleSubmit}>
       <InputBase
         id="Search Field"
+        data-testid="search-field"
         placeholder={placeholder}
         sx={{ ml: 1, flex: 1 }}
+        value={query ?? undefined}
         onChange={handleChange}
       />
       <IconButton
@@ -118,7 +119,7 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
           <NumericInput label='Latitude' placeholder={latitude} onChange={(value: string | undefined) => { setLatitude(value ?? BASELAT) }} onError={onInvalidInputs} />
         </MenuItem>
         <MenuItem>
-          <NumericInput label='Latitude' placeholder={longitude} onChange={(value: string | undefined) => { setLongitude(value ?? BASELONG) }} onError={onInvalidInputs} />
+          <NumericInput label='Longitude' placeholder={longitude} onChange={(value: string | undefined) => { setLongitude(value ?? BASELONG) }} onError={onInvalidInputs} />
         </MenuItem>
       </Menu>
       <IconButton

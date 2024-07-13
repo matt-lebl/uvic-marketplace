@@ -5,7 +5,7 @@ import React, { useState, ChangeEvent } from 'react';
 
 interface props {
   label: string;
-  placeholder: string | undefined;
+  placeholder?: string | undefined;
   errorMsg?: string | undefined;
   onChange: (value: string | undefined) => void;
   onError?: (value: boolean) => void;
@@ -40,6 +40,8 @@ const NumericInput: React.FC<props> = ({ label, placeholder, errorMsg, onChange,
       <TextField
         type="text"
         name={label.replace('_', ' ')}
+        data-testid={label + "-numeric-input"}
+        id={label + "-numeric-input"}
         onChange={handleChange}
         value={value}
         label={label}

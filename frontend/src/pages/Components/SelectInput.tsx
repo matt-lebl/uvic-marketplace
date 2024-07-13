@@ -19,9 +19,13 @@ const SelectInput: React.FC<props> = ({ label, defaultVal, onChange, options }) 
 
   return (
     <div>
-      <InputLabel id={label + "-select-label"}>{label}</InputLabel>
+      <InputLabel
+        id={label + "-select-label"}
+        data-testid={label + "-select-label"}
+      >{label}</InputLabel>
       <Select
         labelId={label + "-select-label"}
+        data-testid={label + "-simple-select"}
         id={label + "-simple-select"}
         value={value}
         label={label}
