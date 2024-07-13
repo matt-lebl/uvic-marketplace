@@ -18,125 +18,150 @@ import {
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
-import { MessageThread, Message } from '../interfaces'
-
-// TODO: remove mock data and implement API calls
-const generateMessageThreads = (count: number): MessageThread[] => {
-  const threads: MessageThread[] = []
-
-  for (let i = 1; i <= count; i++) {
-    threads.push({
-      listing_id: `listing-${i}`,
-      other_participant: {
-        user_id: `user-${i}`,
-        name: `User ${i}`,
-        profilePicture: `https://example.com/profile-${i}.jpg`,
-      },
-      last_message: {
-        sender_id: `user-${i}`,
-        receiver_id: 'user-1',
-        listing_id: `listing-${i}`,
-        content: `This is the last message for listing ${i}`,
-        sent_at: Date.now(),
-      },
-    })
-  }
-
-  return threads
-}
-
-const generateMessagesForThread = (
-  threadId: string,
-  count: number
-): Message[] => {
-  const messages: Message[] = []
-
-  for (let i = 1; i <= count; i++) {
-    messages.push({
-      sender_id: i % 2 === 0 ? 'user-1' : threadId.split('-')[1],
-      receiver_id: i % 2 === 0 ? threadId.split('-')[1] : 'user-1',
-      listing_id: threadId,
-      content: `Message ${i} for ${threadId}`,
-      sent_at: Date.now() - (count - i) * 60000,
-    })
-  }
-
-  return messages
-}
-
-const messageThreads: MessageThread[] = generateMessageThreads(25)
-const messages: Record<string, Message[]> = {}
-
-messageThreads.forEach((thread) => {
-  messages[thread.listing_id] = generateMessagesForThread(thread.listing_id, 20)
-})
+import { MessageThread, Message, User } from '../interfaces'
+import { APIGet, APIPost } from '../APIlink'
 
 const Messaging: React.FC = () => {
-  const [selectedListingId, setSelectedListingId] = useState<string>(
-    messageThreads[0].listing_id
-  )
+  const [selectedListingId, setSelectedListingId] = useState<string>('')
   const [messageInput, setMessageInput] = useState<string>('')
-  const [threads, setThreads] = useState<MessageThread[]>(messageThreads)
+  const [threads, setThreads] = useState<MessageThread[]>([])
+  const [messages, setMessages] = useState<Record<string, Message[]>>({})
   const [open, setOpen] = useState<boolean>(false)
   const [newParticipant, setNewParticipant] = useState<string>('')
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const userIdFromStorage = localStorage.getItem('userID')
+    setUserId(userIdFromStorage)
+  }, [])
+
+  useEffect(() => {
+    if (userId) {
+      fetchMessageThreads()
+    }
+  }, [userId])
+
+  useEffect(() => {
+    if (selectedListingId) {
+      scrollToBottom()
+    }
+  }, [selectedListingId, messages[selectedListingId]])
+
+  const fetchMessageThreads = async () => {
+    try {
+      const fetchedThreads = await APIGet<MessageThread[]>(
+        '/api/messages/overview'
+      )
+      setThreads(fetchedThreads)
+      if (fetchedThreads.length > 0) {
+        setSelectedListingId(fetchedThreads[0].listing_id)
+        fetchMessagesForThread(fetchedThreads[0].listing_id)
+      }
+    } catch (error) {
+      console.error('Failed to fetch message threads:', error)
+    }
+  }
+
+  const fetchMessagesForThread = async (listing_id: string) => {
+    if (!userId) return
+    try {
+      const fetchedMessages = await APIGet<Message[]>(
+        `/api/messages/thread/${listing_id}/${userId}`
+      )
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [listing_id]: fetchedMessages,
+      }))
+    } catch (error) {
+      console.error(`Failed to fetch messages for thread ${listing_id}:`, error)
+    }
+  }
 
   const handleNewConversation = () => {
     setOpen(true)
   }
 
-  const handleCreateNewConversation = () => {
-    if (!newParticipant) return
+  const handleCreateNewConversation = async () => {
+    if (!newParticipant || !userId) return
 
-    const newThread: MessageThread = {
-      listing_id: `listing-${threads.length + 1}`,
-      other_participant: {
-        user_id: `user-${threads.length + 1}`,
-        name: newParticipant,
-        profilePicture: `https://example.com/profile-${threads.length + 1}.jpg`,
-      },
-      last_message: {
-        sender_id: `user-${threads.length + 1}`,
-        receiver_id: 'user-1',
+    try {
+      const user = await APIGet<User>(`/api/user/${newParticipant}`)
+      if (!user) {
+        alert('User not found')
+        return
+      }
+
+      const initialMessage: Message = {
+        sender_id: userId,
+        receiver_id: user.userID,
         listing_id: `listing-${threads.length + 1}`,
-        content: `Start of conversation with ${newParticipant}`,
+        content: `Start of conversation with ${user.name}`,
         sent_at: Date.now(),
-      },
+      }
+
+      await APIPost<Message, Message>('/messages/', initialMessage)
+
+      const newThread: MessageThread = {
+        listing_id: initialMessage.listing_id,
+        other_participant: {
+          user_id: user.userID,
+          name: user.name,
+          profilePicture: user.profileUrl,
+        },
+        last_message: initialMessage,
+      }
+
+      setThreads([newThread, ...threads])
+      setSelectedListingId(newThread.listing_id)
+      setOpen(false)
+      setNewParticipant('')
+
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [newThread.listing_id]: [initialMessage],
+      }))
+      scrollToBottom()
+    } catch (error) {
+      console.error('Failed to create new conversation:', error)
     }
-
-    setThreads([newThread, ...threads])
-    setSelectedListingId(newThread.listing_id)
-    setOpen(false)
-    setNewParticipant('')
-
-    messages[newThread.listing_id] = []
-    scrollToBottom()
   }
 
-  const handleSendMessage = () => {
-    if (!messageInput) {
+  const handleSendMessage = async () => {
+    if (!messageInput || !selectedListingId || !userId) {
       return
     }
     const newMessage: Message = {
-      sender_id: 'user-1',
+      sender_id: userId,
       receiver_id: selectedListingId.split('-')[1],
       listing_id: selectedListingId,
       content: messageInput,
       sent_at: Date.now(),
     }
-    messages[selectedListingId].push(newMessage)
-
-    const thread = threads.find(
-      (thread) => thread.listing_id === selectedListingId
-    )
-    if (thread) {
-      thread.last_message = newMessage
+    try {
+      await APIPost<Message, Message>(
+        `/api/messages/thread/${selectedListingId}/${userId}`,
+        newMessage
+      )
+      setMessages((prevMessages) => ({
+        ...prevMessages,
+        [selectedListingId]: [
+          ...(prevMessages[selectedListingId] || []),
+          newMessage,
+        ],
+      }))
+      const updatedThreads = threads.map((thread) =>
+        thread.listing_id === selectedListingId
+          ? { ...thread, last_message: newMessage }
+          : thread
+      )
+      setThreads(updatedThreads)
+      setMessageInput('')
+      sortThreads()
+      scrollToBottom()
+    } catch (error) {
+      console.error('Failed to send message:', error)
     }
-
-    setThreads([...threads])
-    setMessageInput('')
-    sortThreads()
-    scrollToBottom()
   }
 
   const scrollToBottom = () => {
@@ -150,6 +175,9 @@ const Messaging: React.FC = () => {
 
   const handleSelectMessage = (listing_id: string) => {
     setSelectedListingId(listing_id)
+    if (!messages[listing_id]) {
+      fetchMessagesForThread(listing_id)
+    }
   }
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -162,10 +190,6 @@ const Messaging: React.FC = () => {
   const selectedConversation = threads.find(
     (thread) => thread.listing_id === selectedListingId
   )
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [selectedListingId, messages[selectedListingId]])
 
   const sortThreads = () => {
     setThreads((prevThreads) =>
@@ -217,13 +241,14 @@ const Messaging: React.FC = () => {
               ref={messagesContainerRef}
             >
               <List>
-                {messages[selectedListingId].map((message, index) => (
-                  <MessageBubble
-                    key={index}
-                    content={message.content}
-                    isSender={message.sender_id === 'user-1'}
-                  />
-                ))}
+                {messages[selectedListingId] &&
+                  messages[selectedListingId].map((message, index) => (
+                    <MessageBubble
+                      key={index}
+                      content={message.content}
+                      isSender={message.sender_id === userId}
+                    />
+                  ))}
               </List>
             </Box>
             {selectedConversation && (
