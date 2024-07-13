@@ -3,24 +3,10 @@ import { useState } from 'react'
 import { Box, Typography, Grid, Pagination } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
-
-// Define an interface for the listing structure
-interface Listing {
-  title: string
-  description: string
-  price: string
-}
+import { ListingSummary } from '../../interfaces'
 
 // Mock list of recommended listings with explicit type
-const recommendedListings: Listing[] = []
-
-for (let i = 1; i <= 25; i++) {
-  recommendedListings.push({
-    title: `Listing ${i}`,
-    description: `This is ${i === 1 ? 'a' : 'yet another'} recommended listing`,
-    price: `$${i * 100}`,
-  })
-}
+const recommendedListings: ListingSummary[] = []
 
 // TODO: Implement hooks for fetching recommended listings, and dynamically render them
 export default function RecommendedListings() {

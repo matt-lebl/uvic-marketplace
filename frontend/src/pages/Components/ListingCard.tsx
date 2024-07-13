@@ -1,7 +1,10 @@
 import React from 'react'
 import { Box, Typography } from '@mui/material'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { ListingSummary } from '../../interfaces'
 
-export default function ListingCard(listing: any) {
+export default function ListingCard(listing: ListingSummary) {
+  const navigate = useNavigate()
   return (
     <Box
       sx={{
@@ -29,14 +32,14 @@ export default function ListingCard(listing: any) {
         }}
       >
         <Box>
-          <Typography variant="h6" alignSelf={'flex-start'}>
+          <Typography variant="h6" alignSelf={'flex-start'} onClick={() => {navigate("listing/"+listing.listingID)}}>
             {listing.title}
           </Typography>
           <Typography variant="body1" alignSelf={'flex-start'}>
             {listing.description}
           </Typography>
           <Typography variant="h6" alignSelf={'flex-start'}>
-            {listing.price}
+            ${listing.price}
           </Typography>
         </Box>
         <Box>
