@@ -17,8 +17,20 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
   const searchRequestID = "searchRequest"
   const context = useContext(DataContext);
 
+  const blankSearchRequest: SearchRequest = {
+    query: '',
+    minPrice: undefined,
+    maxPrice: undefined,
+    status: undefined,
+    searchType: undefined,
+    latitude: 0,
+    longitude: 0,
+    sort: Sort.RELEVANCE,
+    page: 1,
+    limit: BASESEARCHLIMIT,
+  }
 
-  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID))
+  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? blankSearchRequest)
   const [currentPage, setCurrentPage] = useState<number>(searchRequest.page ?? 1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(searchRequest.limit ?? BASESEARCHLIMIT);
   const [listings, setListings] = useState<ListingSummary[]>([])
@@ -82,7 +94,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
       }}
     >
       <Typography variant="h4" alignSelf={'flex-start'}>
-        Listings Found
+        Listings Found (Unfinished. These are mocked values.)
       </Typography>
       <SelectInput label='Sort' defaultVal={sorting} onChange={handleChangeSorting} options={Object.values(Sort)} />
       <Box
