@@ -30,6 +30,7 @@ class UserBase(SQLModel):
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
     email_validated: bool = Field(default=False)
     validation_code: str
+    ignoreCharityListings: bool | None
 
 
 class User(UserBase, table=True):
@@ -148,6 +149,7 @@ class ListingBase(SQLModel):
     images: str | None
     latitude: float | None = None
     longitude: float | None = None
+    charityId: str | None = None
 
 
 class Listing(ListingBase, table=True):
@@ -213,6 +215,9 @@ class Listing(ListingBase, table=True):
         listing_data["latitude"] = float(listing_data["location"]["latitude"])
         listing_data["longitude"] = float(listing_data["location"]["longitude"])
         listing_data["images"] = json.dumps(listing_data["images"])
+        if listing_data["markedForCharity"]:
+            listing_data["charityId"] = "1"  # TODO implement getting current charity ID
+        del listing_data["markedForCharity"]
         del listing_data["location"]
         return listing_data
 
@@ -319,14 +324,14 @@ class MessageBase(SQLModel):
     receiver_id: str = Field(foreign_key="user.userID", index=True)
     listing_id: str = Field(foreign_key="listing.listingID", index=True)
     content: str | None = None
-    sent_at: datetime | None = Field(index=True)
+    sent_at: int = Field(index=True)
 
 
 class Message(MessageBase, table=True):
     sender: User | None = Relationship(back_populates="sent_messages",
-                                          sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
+                                       sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
     receiver: User | None = Relationship(back_populates="received_messages",
-                                            sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
+                                         sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
     listing: Listing = Relationship(back_populates="messages")
 
     @classmethod
@@ -421,3 +426,20 @@ class Message(MessageBase, table=True):
         )
 
         return session.exec(statement)
+
+
+class OrganizationTable(SQLModel, table=True):
+    id: str = Field(default=None, primary_key=True)
+    name: str
+    donated: float = Field(default=0.0)
+    receiving: bool = Field(default=False)
+
+
+class CharityTable(SQLModel, table=True):
+    id: str = Field(default=None, primary_key=True)
+    name: str
+    description: str
+    startDate: datetime
+    endDate: datetime
+    imageUrl: str | None
+    organizations: list[str]
