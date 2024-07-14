@@ -76,7 +76,7 @@ services:
   tests:
     build: 
       context: . # The algorithms directory
-      dockerfile: fastapi/Dockerfile
+      dockerfile: tests/Dockerfile
     environment:
       ELASTICSEARCH_URL: http://elasticsearch:9200
       POSTGRES_SCHEME: postgresql://
