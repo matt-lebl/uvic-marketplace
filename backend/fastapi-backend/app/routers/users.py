@@ -4,10 +4,8 @@ from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
     NewUser,
-    EmailModel,
     UpdateUser,
     User,
-    UserBaseModel,
 )
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
@@ -45,7 +43,7 @@ async def create_user(user: NewUser):
     return response
 
 
-@userRouter.get("/{id}")
+@userRouter.get("/{id}", response_model=User)
 async def get_user(id: str, authUserID: str):
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
@@ -72,10 +70,10 @@ async def delete_user(authUserID: str):
 
 
 ## Auth Not Required
-@userRouter.post("/reset-password")
-async def reset_password(emailModel: EmailModel):
-    # TODO: Implement password reset
-    return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
+# @userRouter.post("/reset-password")
+# async def reset_password(emailModel: EmailModel):
+#     # TODO: Implement password reset
+#     return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
 
 
 ## Auth Not Required

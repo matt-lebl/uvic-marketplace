@@ -72,7 +72,7 @@ async def test_get_validation_code():
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
-    response = client.get(f"/user/validation_code/{user["email"]}")
+    response = client.get(f"/user/validation-code/{user["email"]}")
     assert response.status_code == 200
     assert response.json() == validation_code
 
@@ -133,9 +133,7 @@ async def test_login():
     assert validate_response.status_code == 200
 
     login_req = DataFactory.generate_login_request(email, p1)
-    print(login_req)
     response = client.post(f"/user/login", json=login_req)
-    print(response.json())
     assert response.status_code == 200
     login_req2 = DataFactory.generate_login_request(user["email"], "wrongpassword")
     response = client.post(f"/user/login", json=login_req2)
@@ -178,6 +176,7 @@ async def test_create_listing():
     response = client.post(f"/listing/{seller_id}", json=listing)
     assert response.status_code == 200
     assert response.json()["title"] == listing["listing"]["title"]
+    assert response.json()["charityId"]
 
 
 @pytest.mark.asyncio

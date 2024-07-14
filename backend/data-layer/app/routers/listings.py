@@ -24,16 +24,13 @@ def create_listing(
     new_listing = Listing.create(session=session, **listing_data)
     logger.info(f"New Listing Created{new_listing}")
     new_listing = new_listing.convert_to_schema(session)
+    print(new_listing)
     return new_listing
 
 
-@router.patch("/{listingID}/{seller_id}")
-def update_listing(
-    listingID: str,
-    seller_id: str,
-    listing: NewListing,
-    session: Session = Depends(get_session),
-):
+@router.patch("/{listingID}/{seller_id}", response_model=ListingSchema)
+def update_listing(listingID: str, seller_id: str, listing: NewListing,
+                   session: Session = Depends(get_session)):
     listing_data = Listing.convert_to_db_object(
         listing.model_dump()["listing"], seller_id
     )
@@ -43,6 +40,7 @@ def update_listing(
         seller_id=seller_id, session=session, **listing_data
     )
     logger.info(f"Updated listing{updated_listing}")
+    updated_listing = updated_listing.convert_to_schema(session)
     return updated_listing
 
 

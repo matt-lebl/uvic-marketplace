@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response
-from core.schemas import NewUser, LoginRequest, ResetPassword, User, UserBaseModel
+from core.schemas import NewUser, LoginRequest, User
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -19,12 +19,12 @@ async def create_user(
     return response_backend.json()
 
 
-@usersRouter.post("/reset-password")
-async def reset_password(resetPassword: ResetPassword):
-    response_backend = await send_request_to_backend(
-        "user/reset-password", "POST", resetPassword.model_dump()
-    )
-    return response_backend.json()
+# @usersRouter.post("/reset-password")
+# async def reset_password(resetPassword: ResetPassword):
+#     response_backend = await send_request_to_backend(
+#         "user/reset-password", "POST", resetPassword.model_dump()
+#     )
+#     return response_backend.json()
 
 
 @usersRouter.post("/login")
