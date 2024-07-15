@@ -42,16 +42,26 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     
     # Add the listing to postgres
     try:
-        db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
-        db.add(db_listing)
+        # Check if the record already exists
+        existing_listing = db.query(DB_Listing).filter(DB_Listing.elasticsearch_id == listing_data['listingID']).first()
+        
+        if existing_listing:
+            # Update the existing record
+            existing_listing.listing_name = listing_data['title']
+            print(f"Updated DB listing id: {existing_listing.listing_id}, ES listing id: {existing_listing.elasticsearch_id}")
+        else:
+            # Add a new record
+            db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
+            db.add(db_listing)
+            db.flush()  # Use flush to get the id before commit
+            print(f"Added DB listing id: {db_listing.listing_id}, ES listing id: {db_listing.elasticsearch_id}")
+
         db.commit()
-        db.refresh(db_listing)
-        print(f"DB listing id: {db_listing.listing_id}, ES listing id: {db_listing.elasticsearch_id}")
     except SQLAlchemyError as e:
-        print("Error adding listing to postgres: ", e)
+        print("Error adding/updating listing to postgres: ", e)
         db.rollback()
-        return HTTPException(status_code=501, detail="Error adding listing to database")
-    
+        return HTTPException(status_code=501, detail="Error adding/updating listing to database")
+        
     # Format listing into proper response 
     del listing_data['embedding']
     listing_data['status'] = ItemStatusEnum.AVAILABLE
