@@ -51,10 +51,10 @@ class DataSyncKafkaProducer:
         )
 
     # PATCH /api/listing/{id}
-    # TODO
     def push_updated_listing(self, listingID: str, listing: NewListing):
-        # TODO
-        pass
+        listing_dict = listing.model_dump()
+        listing_dict["listing"]["listingID"] = listingID
+        self.push_message("update-listing", json.dumps(listing_dict, default=str))
 
     # DELETE /api/listing/{id}
     def push_deleted_listing(self, listingID: str):
