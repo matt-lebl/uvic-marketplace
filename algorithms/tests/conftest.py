@@ -1,7 +1,7 @@
 # Run tests from /algorithms directory with command: pytest -s tests/
 from fastapi.testclient import TestClient
 from pytest import fixture
-from fastapi.main import app 
+import app 
 
 @fixture(scope="module")
 def client():

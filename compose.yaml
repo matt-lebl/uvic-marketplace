@@ -7,7 +7,7 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - "80:8080"
+      - "8080:8080"
   backend-data-layer:
     build:
       context: backend/data-layer
@@ -51,7 +51,7 @@ services:
       dockerfile: kafka/Dockerfile
     depends_on:
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
       postgres:
         condition: service_healthy
       kafka:
@@ -76,7 +76,7 @@ services:
       postgres:
         condition: service_healthy
       elasticsearch:
-        condition: service_started
+        condition: service_healthy
     environment:
       HF_HOME: /.cache
       #DATABASE_URL: postgresql://algorithms:algorithms@postgres:5432/algorithms
@@ -98,6 +98,11 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
   postgres:
     image: postgres:13
     volumes:
@@ -131,3 +136,4 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
