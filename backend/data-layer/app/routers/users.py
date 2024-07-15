@@ -38,7 +38,6 @@ def update_user(userID: str, user: UpdateUser, session: Session = Depends(get_se
         new_user = User.update(userID=userID, session=session, **user_data)
         return new_user
     except Exception as e:
-        raise e
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error updating user")
 
