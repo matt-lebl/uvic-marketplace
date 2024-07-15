@@ -9,6 +9,8 @@ import httpx
 from core.dependencies import require_jwt
 from services.backend_connect import send_request_to_backend_with_user_id
 from services.algorithms_connect import send_request_to_algorithms_with_user_id
+from services.env_vars import RP_ENV_VARS
+from decouple import config
 from routers import users
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -29,9 +31,8 @@ app.add_middleware(
 
 ALGORITHMS_PATHS = ["search", "recommendations"]
 
-# TODO: Update for prod
-fastapi_backend_url = "http://localhost:8001"
-fastapi_algorithms_url = "http://localhost:8004"
+fastapi_backend_url = config(RP_ENV_VARS.FA_URL, default="http://localhost:8001")
+fastapi_algorithms_url = config(RP_ENV_VARS.FA_URL, default="http://localhost:8004")
 
 """
 TODO:
