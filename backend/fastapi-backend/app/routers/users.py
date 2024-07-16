@@ -91,9 +91,8 @@ async def login(loginRequest: LoginRequest):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
-        return convert_to_type(loginResponse.json(), UserBaseModel)
-        # if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
-        #     return loginResponse.json()
+        if authHandler.check_totp(loginRequest.totp_code, loginResponse.totp_code):
+            return convert_to_type(loginResponse.json(), UserBaseModel)
     else:
         # TODO: Check what the data layer sends back and send the correct error message.
         raise HTTPException(status_code=401, detail="Invalid credentials")
