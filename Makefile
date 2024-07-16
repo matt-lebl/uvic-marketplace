@@ -47,7 +47,7 @@ run-all: ## Runs all containers
 	@echo "=================================================="
 	@docker-compose -f compose.yaml up -d
 
-cleanall: ## Closes and cleans (removes) all containers
+clean-all: ## Closes and cleans (removes) all containers
 	@echo "=================================================="
 	@echo "Make: cleanall - closing and cleaning containers"
 	@echo "=================================================="
