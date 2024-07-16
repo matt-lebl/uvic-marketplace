@@ -3,11 +3,22 @@ import { Typography, Box, Paper } from '@mui/material'
 import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
 
-interface Props {
-  data?: ListingEntity
+interface SellerCardProps {
+  data: ListingEntity
 }
 
-const SellerCard: React.FC<Props> = ({ data }) => {
+const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
+  const {
+    seller_profile,
+    title,
+    description,
+    status,
+    dateCreated,
+    location,
+    images,
+    distance,
+  } = data
+
   return (
     <div className="Seller-Card">
       <Box>
@@ -22,14 +33,17 @@ const SellerCard: React.FC<Props> = ({ data }) => {
           <ProfileIcon
             id="listing-pfp"
             name="listing-pfp"
-            imageSrc="../tests/Test_Resources/TestProfileImage.jpg"
+            imageSrc={seller_profile.profilePictureUrl}
           />
           <Paper sx={{ flexGrow: 1, ml: '30px' }}>
             <Typography sx={{ m: '30px' }}>Contact Information</Typography>
+            <Typography sx={{ m: '30px' }}>
+              {seller_profile.username} ({seller_profile.name})
+            </Typography>
             <Typography sx={{ m: '30px' }}>Payment Preference</Typography>
           </Paper>
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'cloumn' }}></Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}></Box>
         <Paper
           sx={{
             flexGrow: 1,
@@ -51,7 +65,7 @@ const SellerCard: React.FC<Props> = ({ data }) => {
             m: '10px 50px 10px 50px',
           }}
         >
-          <Typography sx={{ fontWeight: 800 }}>Listing Title</Typography>
+          <Typography sx={{ fontWeight: 800 }}>{title}</Typography>
         </Paper>
         <Paper
           sx={{
@@ -62,7 +76,10 @@ const SellerCard: React.FC<Props> = ({ data }) => {
             m: '10px 50px 10px 50px',
           }}
         >
-          <Typography>Status, Date Created...</Typography>
+          <Typography>Status: {status}</Typography>
+          <Typography sx={{ ml: '20px' }}>
+            Date Created: {new Date(dateCreated).toLocaleDateString()}
+          </Typography>
         </Paper>
         <Paper
           sx={{
@@ -73,7 +90,7 @@ const SellerCard: React.FC<Props> = ({ data }) => {
             m: '0 50px 10px 50px',
           }}
         >
-          <Typography>Listing Description</Typography>
+          <Typography>{description}</Typography>
         </Paper>
       </Box>
     </div>
