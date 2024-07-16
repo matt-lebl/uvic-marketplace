@@ -7,7 +7,7 @@ from services.utils import convert_to_type
 
 # Development note: The DataSyncKafkaProducer class is used to send messages to Kafka.
 # If you want to disable sending messages to Kafka, you can set disable=True when initializing the DataSyncKafkaProducer class.
-dsKafkaProducer = DataSyncKafkaProducer(disable=True)
+dsKafkaProducer = DataSyncKafkaProducer(disable=False)
 
 listingsRouter = APIRouter(
     prefix="/api/listing",

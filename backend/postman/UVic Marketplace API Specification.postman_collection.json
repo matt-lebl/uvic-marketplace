@@ -34,9 +34,9 @@
 									}
 								],
 								"url": {
-									"raw": "{{baseSearchUrl}}/api/search?latitude={{latitude}}&longitude={{longitude}}&query=golf",
+									"raw": "{{baseUrl}}/api/search?latitude={{latitude}}&longitude={{longitude}}&query=golf",
 									"host": [
-										"{{baseSearchUrl}}"
+										"{{baseUrl}}"
 									],
 									"path": [
 										"api",
