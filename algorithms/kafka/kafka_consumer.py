@@ -92,8 +92,8 @@ if __name__ == "__main__":
     try:
         print("Kafka start")
         topic_list = os.environ['KAFKA_TOPICS'].split()
-        consume_topics(topic_list)
     except KeyError:
         print("Could not find environment variable 'KAFKA_TOPICS'")
     except ValueError:
         print("Could not fetch Kafka topic list")
+    consume_topics(topic_list)
