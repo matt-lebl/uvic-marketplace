@@ -12,7 +12,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from util.elasticsearch_wrapper import ElasticsearchWrapper
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-#from .cold_start import add_interactions_for_user
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -43,7 +42,7 @@ async def recommendations(page: int = Query(1),
     #     raise HTTPException(status_code=401, detail="Invalid token")
 
     # temp userID - without real token auth
-    user_id = "1"
+    user_id = authorization if authorization in ["2", "3", "4", "5", "6", "7", "8", "9", "10"] else "1"
 
     # Check if the user_id exists in the database
     user_exists = db.query(DB_User).filter(DB_User.user_id == user_id).first()

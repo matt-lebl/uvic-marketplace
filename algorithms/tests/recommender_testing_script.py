@@ -151,6 +151,46 @@ def add_random_interactions(base_url):
         response = requests.post(f"{base_url}/api/interactions/click", json=interaction)
         print(f"Recorded interaction for user {interaction['userID']} on listing {interaction['listingID']}: {response.status_code}")
 
+    # Add user review interactions 
+    review_interactions = []
+    for user_id in range(1, 6):
+        review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+        review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+        for _ in range(2):
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+        for _ in range(3):
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+        for _ in range(4):
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+        for _ in range(5):
+            review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
+
+    for interaction in review_interactions:
+        response = requests.post(f"{base_url}/api/interactions/review", json=interaction)
+        print(f"Recorded review for user {interaction['userID']} on listing {interaction['listingID']}: {response.status_code}")
+
+    # Add user not interesting interactions 
+    not_interesting_interactions = []
+    for user_id in range(1, 6):
+        not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+        not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+        for _ in range(2):
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+        for _ in range(3):
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+        for _ in range(4):
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+        for _ in range(5):
+            not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
+
+    for interaction in not_interesting_interactions:
+        response = requests.post(f"{base_url}/api/interactions/stop_recommending_item", json=interaction)
+        print(f"Recorded not interesting interaction for user {interaction['userID']} on listing {interaction['listingID']}: {response.status_code}")
+
 def add_manual_interactions(base_url):
     # Add user click interactions 
     click_interactions = [
@@ -183,6 +223,7 @@ def main():
     add_users(base_url)
     add_random_interactions(base_url)
     add_manual_interactions(base_url)
+    print("Recommendations After Interactions")
     get_recommendations(base_url, "1")  # Set userID -> [random interaction IDs: 1-5] [manual interaction ID: manual1]
 
 if __name__ == "__main__":
