@@ -1,0 +1,49 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: 
+      - develop
+      - master
+      - resops/sast
+  pull_request:
+    branches: 
+      - develop
+      - master
+      - resops/sast
+
+jobs:
+  analyze:
+    name: CodeQL Analyze
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python', 'typescript' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL tools
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+    - name: Upload CodeQL Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: CodeQL Results
+        path: ${{ github.workspace }}/codeql-results
