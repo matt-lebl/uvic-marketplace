@@ -13,7 +13,7 @@ from sqlmodel import (
     or_,
 )
 from datetime import datetime
-from core.schemas import ListingSchema, UserProfile
+from core.schemas import ListingSchema, UserProfile, ItemStatus
 from fastapi import HTTPException
 
 
@@ -177,6 +177,10 @@ class Listing(ListingBase, table=True):
             raise HTTPException(status_code=403, detail="Permissions error")
         for key, value in kwargs.items():
             setattr(listing, key, value)
+        if kwargs["status"] == ItemStatus.SOLD and kwargs["charityId"]:
+            charity = CharityTable.get_current_charity(session)
+            price = kwargs["price"]
+            OrganizationTable.update_donated(charity.organizations, price, session)
         session.add(listing)
         session.commit()
         session.refresh(listing)
@@ -210,13 +214,13 @@ class Listing(ListingBase, table=True):
         return session.exec(statement).all()
 
     @classmethod
-    def convert_to_db_object(cls, listing_data: dict, seller_id: str):
+    def convert_to_db_object(cls, listing_data: dict, seller_id: str, session: Session):
         listing_data["sellerId"] = seller_id
         listing_data["latitude"] = float(listing_data["location"]["latitude"])
         listing_data["longitude"] = float(listing_data["location"]["longitude"])
         listing_data["images"] = json.dumps(listing_data["images"])
         if listing_data["markedForCharity"]:
-            listing_data["charityId"] = "1"  # TODO implement getting current charity ID
+            listing_data["charityId"] = CharityTable.get_current_charity_id(session)
         del listing_data["markedForCharity"]
         del listing_data["location"]
         return listing_data
@@ -434,6 +438,29 @@ class OrganizationTable(SQLModel, table=True):
     donated: float = Field(default=0.0)
     receiving: bool = Field(default=False)
 
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        organization = cls(**kwargs)
+        session.add(organization)
+        session.commit()
+        session.refresh(organization)
+        return organization
+
+    @classmethod
+    def get_by_id(cls, session: Session, org_id: str):
+        statement = select(cls).where(cls.id == org_id)
+        return session.exec(statement).first()
+
+    @classmethod
+    def update_donated(cls, orgs: list[str], amount: float, session: Session):
+        statement = select(cls).where(and_(cls.id in orgs, cls.receiving))
+        org = session.exec(statement).first()
+        donated = org.donated + amount
+        setattr(org, "donated", donated)
+        session.add(org)
+        session.commit()
+        session.refresh(org)
+
 
 class CharityTable(SQLModel, table=True):
     id: str = Field(default=None, primary_key=True)
@@ -442,4 +469,34 @@ class CharityTable(SQLModel, table=True):
     startDate: datetime
     endDate: datetime
     imageUrl: str | None
-    organizations: list[str]
+    organizations: list[str] = Field(sa_column=Column(ARRAY(String)))
+
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        charity = cls(**kwargs)
+        session.add(charity)
+        session.commit()
+        session.refresh(charity)
+        return charity
+
+    @classmethod
+    def get_by_id(cls, session: Session, charity_id: str):
+        statement = select(cls).where(cls.id == charity_id)
+        return session.exec(statement).first()
+
+    @classmethod
+    def get_all(cls, session: Session):
+        statement = select(cls)
+        return session.exec(statement).all()
+
+    @classmethod
+    def get_current_charity_id(cls, session: Session):
+        now = datetime.now()
+        statement = select(cls.id).where(and_(cls.startDate <= now, cls.endDate >= now))
+        return session.exec(statement).first()
+
+    @classmethod
+    def get_current_charity(cls, session: Session):
+        now = datetime.now()
+        statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
+        return session.exec(statement).first()
