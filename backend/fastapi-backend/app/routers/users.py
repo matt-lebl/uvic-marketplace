@@ -7,6 +7,7 @@ from core.schemas import (
     NewUserReq,
     UpdateUser,
     User,
+    UserBaseModel
 )
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
@@ -91,15 +92,13 @@ async def login(loginRequest: LoginRequest):
 
     if loginResponse.status_code == 200:
         try:
-
             if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
-                del loginResponse["totp_secret"]
                 return convert_to_type(loginResponse.json(), UserBaseModel)
             else:
-                raise HTTPException(status_code=401, detail="TOTP validation failed")
+                raise HTTPException(status_code=401, detail="Invalid TOTP code")
         except Exception as e:
             print(e)
-            raise HTTPException(status_code=401, detail="TOTP validation failed")
+            raise HTTPException(status_code=401, detail="Invalid TOTP code")
     else:
         # TODO: Check what the data layer sends back and send the correct error message.
         raise HTTPException(status_code=401, detail="Invalid credentials")
