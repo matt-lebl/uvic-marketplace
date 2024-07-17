@@ -25,7 +25,7 @@ const Router = () => {
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname
-      if (currentPath !== '/login' && currentPath !== '/register') {
+      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/validate-email') {
         navigate('/login')
       }
     }
