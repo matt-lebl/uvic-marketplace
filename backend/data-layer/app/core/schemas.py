@@ -146,6 +146,7 @@ class UserSchema(BaseModel):
     profileUrl: str | None = Field(None, example='https://example.com/image.png')
     email: str = Field(..., example='A23434B090934')
     ignoreCharityListings: bool | None = Field(None, example=False)
+    totp_secret: str
 
 
 class Search(BaseModel):
