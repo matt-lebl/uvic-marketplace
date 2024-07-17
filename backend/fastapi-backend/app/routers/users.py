@@ -86,13 +86,13 @@ async def login(loginRequest: LoginRequest):
 
     try:
         loginResponse = await send_request_to_data_layer(path, "POST", email_password)
-        print(loginResponse)
+        print(loginResponse.json())
     except Exception as e:
         print(e)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
-        if authHandler.check_totp(loginRequest.totp_code, loginResponse["totp_secret"]):
+        if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
             return convert_to_type(loginResponse.json(), UserBaseModel)
     else:
         # TODO: Check what the data layer sends back and send the correct error message.
