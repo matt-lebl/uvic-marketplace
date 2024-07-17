@@ -12,6 +12,7 @@
 **/.settings
 **/.toolstarget
 **/.vs
+**/.env
 **/.vscode
 **/.next
 **/.cache
