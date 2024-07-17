@@ -38,8 +38,9 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
   const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
   const [sorting, setSorting] = useState<Sort>(searchRequest.sort ?? Sort.RELEVANCE)
 
+
   const doSearch = async () => {
-    const res = await onSearch(searchRequest)
+    let res = await onSearch(searchRequest)
     setListings(res?.items ?? [] as ListingSummary[])
     setTotalListingsCount(res?.totalItems ?? 0)
   }
@@ -51,6 +52,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
 
   // Change page handler
   const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
+    console.log(newPage)
     setCurrentPage(newPage)
     searchRequest.page = newPage
     setSearchRequest(searchRequest)
@@ -90,7 +92,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
       }}
     >
       <Typography variant="h4" alignSelf={'flex-start'}>
-        Listings Found (Unfinished. These are mocked values.)
+        Listings Found
       </Typography>
       <SelectInput label='Sort' defaultVal={sorting} onChange={handleChangeSorting} options={Object.values(Sort)} />
       <Box
@@ -116,6 +118,7 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
         </Grid>
       </Box>
       <Pagination
+        test-id="pagination"
         count={totalPages}
         page={currentPage}
         onChange={handleChangePage}

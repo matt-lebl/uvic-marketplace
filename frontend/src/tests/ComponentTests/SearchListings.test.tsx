@@ -1,8 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { DataProvider } from '../../DataContext';
-import { ListingSummary, Sort } from '../../interfaces';
+import { ListingSummary, SearchRequest, Sort } from '../../interfaces';
 import SearchListings from '../../pages/Components/SearchListings';
+import { promises } from 'dns';
 
 // Mock Data
 const mockListings: ListingSummary[] = [
@@ -58,29 +59,31 @@ const mockListings: ListingSummary[] = [
     },
 ];
 
-
+const mockOnSearch = jest.fn();
+jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useNavigate: () => jest.fn(),
+}));
 
 describe('SearchListings Component', () => {
-    const mockOnSearch = jest.fn().mockImplementation((...args) => {
-        return {
-            totalItems: 5,
-            items: mockListings,
-        };
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
-
-    // beforeEach(() => {
-    //     jest.clearAllMocks();
-    // });
 
     test('renders SearchListings component', async () => {
         render(
             <DataProvider>
-                <SearchListings onSearch={mockOnSearch} />
+                <SearchListings onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
+                    return {
+                        totalItems: 5,
+                        items: mockListings,
+                    }
+                })} />
             </DataProvider>
         );
 
         expect(screen.getByText(/Listings Found/i)).toBeInTheDocument();
-        await waitFor(() => expect(mockOnSearch).toHaveBeenCalled());
+        await waitFor(() => expect(mockOnSearch).toBeCalledTimes(1));
         mockListings.forEach((listing) => {
             expect(screen.getByText(listing.title)).toBeInTheDocument();
         });
@@ -89,27 +92,70 @@ describe('SearchListings Component', () => {
     // test('handles pagination', async () => {
     //     render(
     //         <DataProvider>
-    //             <SearchListings onSearch={mockOnSearch} />
+    //             <SearchListings onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
+    //                 return {
+    //                     totalItems: 5,
+    //                     items: mockListings,
+    //                 }
+    //             })} />
     //         </DataProvider>
     //     );
 
+    //     const blankSearchRequestInitial: SearchRequest = {
+    //         query: '',
+    //         minPrice: undefined,
+    //         maxPrice: undefined,
+    //         status: undefined,
+    //         searchType: undefined,
+    //         latitude: 0,
+    //         longitude: 0,
+    //         sort: Sort.RELEVANCE,
+    //         page: 1,
+    //         limit: 20,
+    //     }
+
+    //     const blankSearchRequestFinal: SearchRequest = {
+    //         query: '',
+    //         minPrice: undefined,
+    //         maxPrice: undefined,
+    //         status: undefined,
+    //         searchType: undefined,
+    //         latitude: 0,
+    //         longitude: 0,
+    //         sort: Sort.RELEVANCE,
+    //         page: 2,
+    //         limit: 20,
+    //     }
+
     //     await waitFor(() => expect(mockOnSearch).toHaveBeenCalled());
     //     const nextPageButton = screen.getByRole('button', { name: /next/i });
+    //     expect(nextPageButton).toBeInTheDocument();
     //     fireEvent.click(nextPageButton);
-    //     await waitFor(() => expect(mockOnSearch).toHaveBeenCalledTimes(2));
+    //     await waitFor(() => {
+    //         expect(mockOnSearch).toHaveBeenCalledTimes(2);
+    //         expect(mockOnSearch).toBeCalledWith(blankSearchRequestInitial);
+    //         expect(mockOnSearch).lastCalledWith(blankSearchRequestFinal);
+    //     });
     // });
 
     // test('handles sorting change', async () => {
     //     render(
     //         <DataProvider>
-    //             <SearchListings onSearch={mockOnSearch} />
+    //             <SearchListings onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
+    //                 return {
+    //                     totalItems: 5,
+    //                     items: mockListings,
+    //                 }
+    //             })} />
     //         </DataProvider>
     //     );
 
     //     await waitFor(() => expect(mockOnSearch).toHaveBeenCalled());
-    //     const selectInput = screen.getByTestId('select-input');
-    //     fireEvent.change(selectInput, { target: { value: Sort.RELEVANCE } });
-
+    //     const selectInput = screen.getByTestId('Sort-simple-select');
+    //     expect(selectInput).toBeInTheDocument();
+    //     fireEvent.mouseDown(selectInput.firstElementChild!);
+    //     expect(screen.getByText(Sort.DISTANCE_DESC)).toBeInTheDocument();
+    //     fireEvent.click(screen.getByText(Sort.DISTANCE_DESC));
     //     await waitFor(() => expect(mockOnSearch).toHaveBeenCalledTimes(2));
     // });
 });
