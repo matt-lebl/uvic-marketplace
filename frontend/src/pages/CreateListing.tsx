@@ -1,8 +1,15 @@
-import React, { FormEvent, useState, ChangeEvent } from 'react'
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react'
 import './App.css'
-import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
+import {
+  Typography,
+  Box,
+  Paper,
+  TextField,
+  Button,
+  InputAdornment,
+} from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
-import { ListingEntity } from '../interfaces'
+import { ListingEntity, ListingResponse } from '../interfaces'
 import { APIPost } from '../APIlink'
 
 async function apiSubmit(listing: Partial<ListingEntity>) {
@@ -20,8 +27,26 @@ function CreateListing() {
   const [price, setPrice] = useState<number>(0)
   const [imageNames, setImageNames] = useState<Array<string>>([])
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
-  const [latitude, setLatitude] = useState<number>(0)
-  const [longitude, setLongitude] = useState<number>(0)
+  const [latitude, setLatitude] = useState<number | null>(null)
+  const [longitude, setLongitude] = useState<number | null>(null)
+  const [titleError, setTitleError] = useState<boolean>(false)
+  const [priceError, setPriceError] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        },
+        (error) => {
+          console.error('Error retrieving location:', error)
+        }
+      )
+    } else {
+      console.error('Geolocation is not supported by this browser.')
+    }
+  }, [])
 
   const handlePhotoUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files as FileList
@@ -45,6 +70,18 @@ function CreateListing() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
+
+    setTitleError(!title)
+    setPriceError(!price)
+
+    if (!title || !price) {
+      return
+    }
+
+    if (latitude === null || longitude === null) {
+      alert('Location is not available.')
+      return
+    }
 
     const submitListing = {
       title,
@@ -86,13 +123,15 @@ function CreateListing() {
                 m: '20px 0px 10px 0px',
               }}
             >
-              <InputBase
+              <TextField
                 id="Listing-Title"
-                placeholder="Listing Title"
-                fullWidth={true}
-                multiline={true}
+                label="Listing Title"
+                fullWidth
+                multiline
                 sx={{ fontWeight: 700 }}
                 onChange={(e) => setTitle(e.target.value)}
+                error={titleError}
+                helperText={titleError ? 'Title is required' : ''}
               />
             </Paper>
             <Paper
@@ -104,22 +143,28 @@ function CreateListing() {
                 m: '20px 0px 10px 0px',
               }}
             >
-              <InputBase
+              <TextField
                 id="Listing-Price"
-                placeholder="Price"
-                fullWidth={true}
-                multiline={true}
+                label="Price"
+                fullWidth
+                multiline
                 sx={{ fontWeight: 700 }}
                 onChange={(e) => setPrice(Number(e.target.value))}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+                error={priceError}
+                helperText={priceError ? 'Price is required' : ''}
               />
             </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
-              <InputBase
+              <TextField
                 id="Listing-Description"
-                placeholder="Listing Description"
-                fullWidth={true}
-                multiline={true}
-                sx={{ pb: '100px' }}
+                label="Listing Description"
+                fullWidth
+                multiline
                 onChange={(e) => setDesc(e.target.value)}
               />
             </Paper>
@@ -142,42 +187,6 @@ function CreateListing() {
                   Remove All
                 </Button>
               </Box>
-            </Paper>
-            <Paper
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                p: '20px',
-                m: '20px 0px 10px 0px',
-              }}
-            >
-              <InputBase
-                id="Listing-Latitude"
-                placeholder="Latitude"
-                fullWidth={true}
-                multiline={true}
-                sx={{ fontWeight: 700 }}
-                onChange={(e) => setLatitude(Number(e.target.value))}
-              />
-            </Paper>
-            <Paper
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                p: '20px',
-                m: '20px 0px 10px 0px',
-              }}
-            >
-              <InputBase
-                id="Listing-Longitude"
-                placeholder="Longitude"
-                fullWidth={true}
-                multiline={true}
-                sx={{ fontWeight: 700 }}
-                onChange={(e) => setLongitude(Number(e.target.value))}
-              />
             </Paper>
             <Box display={'flex'} flexDirection={'row-reverse'}>
               <Button variant="contained" type="submit">
