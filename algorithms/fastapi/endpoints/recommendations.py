@@ -1,13 +1,14 @@
-from fastapi import APIRouter, Query, Header, HTTPException
-from typing import List
+from fastapi import APIRouter, Header, HTTPException
+from typing import List, Union
 from util.schemas import ListingSummary, ErrorMessage
 
 router = APIRouter()
 
 @router.get("/recommendations", response_model=List[ListingSummary], responses={400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}})
-async def recommendations(page: int = Query(1),
-                          limit: int = Query(20),
-                          authorization: str = Header(...)):
+async def recommendations(*,
+                          page: int = 1,
+                          limit: int = 20,
+                          authUserID: Union[str, None] = None):
     # SQL query logic here to fetch recommendations, I think sqlalchemy can be used to query the database
    # return []
 

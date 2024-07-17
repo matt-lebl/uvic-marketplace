@@ -8,6 +8,8 @@ services:
       NODE_ENV: production
     ports:
       - "8080:8080"
+    env_file:
+      - frontend/.env
   backend-data-layer:
     build:
       context: backend/data-layer
@@ -29,6 +31,7 @@ services:
       - "8000:8000"
     environment:
       FB_URL: "http://backend-fastapi-backend:8001"
+      FA_URL: "http://algorithms:80"
     depends_on:
       backend-fastapi-backend:
         condition: service_started

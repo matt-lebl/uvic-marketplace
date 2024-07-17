@@ -4,11 +4,12 @@ import { Formik } from 'formik'
 import { APIGet, APIPost } from '../../APIlink'
 import { LoginRequest, UserProfile } from '../../interfaces'
 import Login from '../Login'
+import { Form } from 'react-router-dom'
 
 export default function LoginForm() {
   return (
     <Formik
-      initialValues={{ email: '', password: '' }}
+      initialValues={{ email: '', password: '', totp_code: '' }}
       validate={(values) => {
         const errors: Record<string, string> = {}
         if (!values.email) {
@@ -21,6 +22,11 @@ export default function LoginForm() {
         if (!values.password) {
           errors.password = 'Required'
         }
+        if (!values.totp_code) {
+          errors.totp_code = 'Required'
+        } else if (!/^[0-9]{6}$/i.test(values.totp_code)) {
+          errors.totp_code = 'Invalid TOTP code'
+        }
         return errors
       }}
       onSubmit={(values, { setSubmitting }) => {
@@ -32,7 +38,7 @@ export default function LoginForm() {
           const loginRequest: LoginRequest = {
             email: values.email,
             password: values.password,
-            totp_code: '',
+            totp_code: values.totp_code,
           }
           try {
             response = await APIPost(loginURL, loginRequest)
@@ -94,6 +100,21 @@ export default function LoginForm() {
             />
             <FormHelperText style={{ color: 'red' }}>
               {errors.password}
+            </FormHelperText>
+          </FormControl>
+          <FormControl fullWidth>
+            <TextField
+              type="text"
+              name="totp_code"
+              onChange={handleChange}
+              onBlur={handleBlur}
+              value={values.totp_code}
+              label="TOTP Code"
+              margin="normal"
+              error={Boolean(errors.totp_code) && touched.totp_code}
+            />
+            <FormHelperText style={{ color: 'red' }}>
+              {errors.totp_code}
             </FormHelperText>
           </FormControl>
           <div>

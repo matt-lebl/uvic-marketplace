@@ -161,7 +161,7 @@ async def test_search_response():
             json=listing_data,
             headers={"authorization": "Bearer testtoken"}
         )
-        assert post_response.status_code == 201 # insure that POST was successful 
+        assert post_response.status_code == 201 # ensure that POST was successful 
 
         query_params = {
             "query": "Calculus Book",
@@ -196,8 +196,7 @@ async def test_search_invalid_request():
     async with httpx.AsyncClient(base_url=BASE_URL) as client:
         # Arrange - Create incomplete query
         query_params = {
-            # Missing required 'query' parameter
-            "latitude": 34.23551,
+            # Missing required 'latitude' parameter
             "longitude": -104.54451
         }
         
