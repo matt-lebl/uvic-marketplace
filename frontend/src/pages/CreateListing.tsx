@@ -9,7 +9,7 @@ import {
   InputAdornment,
 } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
-import { ListingEntity, ListingResponse } from '../interfaces'
+import { ListingEntity } from '../interfaces'
 import { APIPost } from '../APIlink'
 
 async function apiSubmit(listing: Partial<ListingEntity>) {
@@ -29,6 +29,7 @@ function CreateListing() {
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
   const [latitude, setLatitude] = useState<number | null>(null)
   const [longitude, setLongitude] = useState<number | null>(null)
+  const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
 
@@ -40,10 +41,12 @@ function CreateListing() {
           setLongitude(position.coords.longitude)
         },
         (error) => {
+          setGeolocationError('Location is not available')
           console.error('Error retrieving location:', error)
         }
       )
     } else {
+      setGeolocationError('Geolocation is not supported by this browser.')
       console.error('Geolocation is not supported by this browser.')
     }
   }, [])
@@ -159,12 +162,16 @@ function CreateListing() {
                 helperText={priceError ? 'Price is required' : ''}
               />
             </Paper>
+            {geolocationError && (
+              <Typography color="error">{geolocationError}</Typography>
+            )}
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
               <TextField
                 id="Listing-Description"
                 label="Listing Description"
                 fullWidth
                 multiline
+                sx={{ pb: '100px' }}
                 onChange={(e) => setDesc(e.target.value)}
               />
             </Paper>
