@@ -3,11 +3,13 @@ import { Typography, Box, Paper } from '@mui/material'
 import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
 
-interface Props {
-  data?: ListingEntity
+interface SellerCardProps {
+  data: ListingEntity
 }
 
-const SellerCard: React.FC<Props> = ({ data }) => {
+const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
+  const { seller_profile } = data
+
   return (
     <div className="Seller-Card">
       <Box>
@@ -22,59 +24,18 @@ const SellerCard: React.FC<Props> = ({ data }) => {
           <ProfileIcon
             id="listing-pfp"
             name="listing-pfp"
-            imageSrc="../tests/Test_Resources/TestProfileImage.jpg"
+            imageSrc={seller_profile.profilePictureUrl}
           />
           <Paper sx={{ flexGrow: 1, ml: '30px' }}>
             <Typography sx={{ m: '30px' }}>Contact Information</Typography>
-            <Typography sx={{ m: '30px' }}>Payment Preference</Typography>
+            <Typography sx={{ m: '30px' }}>
+              {seller_profile.username} ({seller_profile.name})
+            </Typography>
+            <Typography sx={{ m: '30px' }}>
+              Bio: {seller_profile.bio}
+            </Typography>
           </Paper>
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'cloumn' }}></Box>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: '80px',
-            m: '0 50px 10px 50px',
-          }}
-        >
-          <Typography>Map Placeholder</Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px',
-            m: '10px 50px 10px 50px',
-          }}
-        >
-          <Typography sx={{ fontWeight: 800 }}>Listing Title</Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px',
-            m: '10px 50px 10px 50px',
-          }}
-        >
-          <Typography>Status, Date Created...</Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px 0 200px 20px',
-            m: '0 50px 10px 50px',
-          }}
-        >
-          <Typography>Listing Description</Typography>
-        </Paper>
       </Box>
     </div>
   )
