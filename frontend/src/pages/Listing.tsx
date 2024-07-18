@@ -7,16 +7,22 @@ import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 
-function Listing() {
+interface ListingProps {
+  listingData?: ListingEntity
+}
+
+const Listing: React.FC<ListingProps> = ({
+  listingData: initialListingData,
+}) => {
   const { listingID } = useParams()
   const [listingData, setListingData] = useState<ListingEntity | undefined>(
-    undefined
+    initialListingData
   )
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(!initialListingData)
 
   useEffect(() => {
     async function fetchListing() {
-      if (!listingID) return
+      if (!listingID || initialListingData) return
 
       const listingURL: string = `/api/listing/${listingID}`
 
@@ -33,7 +39,7 @@ function Listing() {
     }
 
     fetchListing()
-  }, [listingID])
+  }, [listingID, initialListingData])
 
   if (loading) {
     return <div>Loading...</div>
@@ -54,9 +60,7 @@ function Listing() {
               backgroundColor: '#ffffff',
             }}
           >
-            <Typography sx={{ fontWeight: '700' }}>
-              Photo Gallery
-            </Typography>
+            <Typography sx={{ fontWeight: '700' }}>Photo Gallery</Typography>
             <PhotoGallery images={listingData.images} />
           </Paper>
           <Paper
@@ -72,6 +76,11 @@ function Listing() {
           </Paper>
         </Box>
       </header>
+      <Box sx={{ mt: 2, ml: 2 }}>
+        <Typography variant="h4">{listingData.title}</Typography>
+        <Typography variant="body1">{listingData.description}</Typography>
+        <Typography variant="h6">${listingData.price}</Typography>
+      </Box>
     </div>
   )
 }

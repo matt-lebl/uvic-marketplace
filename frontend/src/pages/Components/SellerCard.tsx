@@ -8,16 +8,7 @@ interface SellerCardProps {
 }
 
 const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
-  const {
-    seller_profile,
-    title,
-    description,
-    status,
-    dateCreated,
-    location,
-    images,
-    distance,
-  } = data
+  const { seller_profile } = data
 
   return (
     <div className="Seller-Card">
@@ -40,58 +31,11 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
             <Typography sx={{ m: '30px' }}>
               {seller_profile.username} ({seller_profile.name})
             </Typography>
-            <Typography sx={{ m: '30px' }}>Payment Preference</Typography>
+            <Typography sx={{ m: '30px' }}>
+              Bio: {seller_profile.bio}
+            </Typography>
           </Paper>
         </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}></Box>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            p: '80px',
-            m: '0 50px 10px 50px',
-          }}
-        >
-          <Typography>Map Placeholder</Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px',
-            m: '10px 50px 10px 50px',
-          }}
-        >
-          <Typography sx={{ fontWeight: 800 }}>{title}</Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px',
-            m: '10px 50px 10px 50px',
-          }}
-        >
-          <Typography>Status: {status}</Typography>
-          <Typography sx={{ ml: '20px' }}>
-            Date Created: {new Date(dateCreated).toLocaleDateString()}
-          </Typography>
-        </Paper>
-        <Paper
-          sx={{
-            flexGrow: 1,
-            display: 'flex',
-            alignItems: 'center',
-            p: '20px 0 200px 20px',
-            m: '0 50px 10px 50px',
-          }}
-        >
-          <Typography>{description}</Typography>
-        </Paper>
       </Box>
     </div>
   )
