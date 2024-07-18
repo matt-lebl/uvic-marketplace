@@ -70,6 +70,13 @@ export default function Header() {
           >
             <Button
               variant="text"
+              onClick={() => navigate('/events')}
+              color="inherit"
+            >
+              Events
+            </Button>
+            <Button
+              variant="text"
               onClick={() => navigate('/listing/1234')}
               color="inherit"
             >
