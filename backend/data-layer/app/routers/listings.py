@@ -2,7 +2,7 @@ import uuid
 from core.sql_models import *
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
-from core.schemas import NewListing, ListingSchema
+from core.schemas import NewListing, ListingSchema, UpdateListing
 from datetime import datetime
 import logging
 
@@ -17,7 +17,7 @@ def create_listing(
     seller_id: str, listing: NewListing, session: Session = Depends(get_session)
 ):
     listing_data = listing.model_dump()["listing"]
-    listing_data = Listing.convert_to_db_object(listing_data, seller_id)
+    listing_data = Listing.convert_to_db_object(listing_data, seller_id, session)
     listing_data["listingID"] = str(uuid.uuid4())
     listing_data["dateCreated"] = datetime.now()
     listing_data["dateModified"] = listing_data["dateCreated"]
@@ -29,15 +29,20 @@ def create_listing(
 
 
 @router.patch("/{listingID}/{seller_id}", response_model=ListingSchema)
-def update_listing(listingID: str, seller_id: str, listing: NewListing,
-                   session: Session = Depends(get_session)):
+def update_listing(
+    listingID: str,
+    seller_id: str,
+    listing: UpdateListing,
+    session: Session = Depends(get_session),
+):
     listing_data = Listing.convert_to_db_object(
-        listing.model_dump()["listing"], seller_id
+        listing.listing.model_dump(), seller_id, session
     )
+    status = listing.status
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()
     updated_listing = Listing.update(
-        seller_id=seller_id, session=session, **listing_data
+        seller_id=seller_id, session=session, status=status, **listing_data
     )
     logger.info(f"Updated listing{updated_listing}")
     updated_listing = updated_listing.convert_to_schema(session)

@@ -168,7 +168,9 @@ class Listing(ListingBase, table=True):
         return listing
 
     @classmethod
-    def update(cls, seller_id: str, listingID: str, session: Session, **kwargs):
+    def update(
+        cls, seller_id: str, listingID: str, status: str, session: Session, **kwargs
+    ):
         statement = select(cls).where(cls.listingID == listingID)
         listing = session.exec(statement).first()
         if not listing:
@@ -177,7 +179,7 @@ class Listing(ListingBase, table=True):
             raise HTTPException(status_code=403, detail="Permissions error")
         for key, value in kwargs.items():
             setattr(listing, key, value)
-        if kwargs["status"] == ItemStatus.SOLD and kwargs["charityId"]:
+        if status == ItemStatus.SOLD and kwargs["charityId"]:
             charity = CharityTable.get_current_charity(session)
             price = kwargs["price"]
             OrganizationTable.update_donated(charity.organizations, price, session)
