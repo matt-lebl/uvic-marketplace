@@ -4,6 +4,7 @@ from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
     NewUser,
+    NewUserReq,
     UpdateUser,
     User,
 )
@@ -23,7 +24,7 @@ email_validator = EmailValidator()
 
 ## Auth Not Required
 @userRouter.post("/")
-async def create_user(user: NewUser):
+async def create_user(user: NewUserReq):
     path = "user/"
 
     user = user.model_dump()
@@ -48,7 +49,7 @@ async def get_user(id: str, authUserID: str):
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
     if response.status_code == 200:
-        return convert_to_type(response.json(), UserBaseModel)
+        return convert_to_type(response.json(), User)
     print("Getting user failed")
     return response.json()
 
@@ -58,7 +59,7 @@ async def edit_user(user: UpdateUser, authUserID: str):
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
     if response.status_code == 200:
-        return convert_to_type(response.json(), UserBaseModel)
+        return convert_to_type(response.json(), User)
     return response.json()
 
 
@@ -80,18 +81,18 @@ async def delete_user(authUserID: str):
 @userRouter.post("/login")
 async def login(loginRequest: LoginRequest):
     path = "user/login"
-    email_password = {"email": loginRequest.email, "password": loginRequest.password}
-
     try:
-        loginResponse = await send_request_to_data_layer(path, "POST", email_password)
+        loginResponse = await send_request_to_data_layer(
+            path, "POST", loginRequest.model_dump()
+        )
         print(loginResponse.json())
     except Exception as e:
         print(e)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
-        #if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
-        return convert_to_type(loginResponse.json(), UserBaseModel)
+        # if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
+        return convert_to_type(loginResponse.json(), User)
     else:
         # TODO: Check what the data layer sends back and send the correct error message.
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -106,8 +107,9 @@ async def validate_email(validation_code: str, email: str):
     if not EmailValidator.validate_email_domain(decrypted_email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
-    response = await send_request_to_data_layer(f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}",
-                                                "POST")
+    response = await send_request_to_data_layer(
+        f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}", "POST"
+    )
     return response.json()
 
 

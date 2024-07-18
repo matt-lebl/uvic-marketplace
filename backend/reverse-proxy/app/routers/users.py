@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Response
-from core.schemas import NewUser, LoginRequest, User
+from core.schemas import NewUser, LoginRequest, NewUserReq, User
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -13,7 +13,7 @@ usersRouter = APIRouter(
 ## These endpoints can be interacted with without a valid JWT token
 @usersRouter.post("/")
 async def create_user(
-        user: NewUser,
+    user: NewUserReq,
 ):
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
     return response_backend.json()
@@ -45,11 +45,15 @@ async def logout(response: Response):
 
 @usersRouter.get("/validate-email/{validation_code}/{email}")
 async def validate_email(validation_code: str, email: str):
-    response = await send_request_to_backend(f"user/validate-email/{validation_code}/{email}", "POST")
+    response = await send_request_to_backend(
+        f"user/validate-email/{validation_code}/{email}", "POST"
+    )
     return response.json()
 
 
 @usersRouter.get("/send-validation-link/{email}")
 async def send_validation_link(email: str):
-    response = await send_request_to_backend(f"user/send-validation-link/{email}", "GET")
+    response = await send_request_to_backend(
+        f"user/send-validation-link/{email}", "GET"
+    )
     return response.json()
