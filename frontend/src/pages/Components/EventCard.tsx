@@ -1,43 +1,46 @@
 import * as React from 'react'
 import { Box, Typography, Paper } from '@mui/material'
 import { APIGet } from '../../APIlink'
+import { CharityEntity } from '../../interfaces'
+import { useEffect, useState } from 'react'
 
 interface Props {
     eventId: string
 }
 
-async function getCharityByID(eventId : string) {
-    let response: any // this needs to be a Charity Entity
-
-    const charityURL: string = '/api/charity/' + eventId
-
-    setTimeout(async () => {
-        try {
-            response = await APIGet(charityURL)
-
-            if (response) {
-                console.log('Response Title' + response.title)
-                console.log('Response' + response)
-            }
-        } catch (error) {
-            console.log('Request Error' + error)
-        }
-    }, 1000)
-
-    return response
+const nullresponse: CharityEntity = {
+    id: '',
+    name: 'Event not found',
+    description: 'no description', // need a date/time obj
+    startDate: 0,
+    endDate: 0,
+    imageUrl: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
+    organizations: [],
+    funds: 0,
+    listingsCount: 0
 }
 
+const EventCard: React.FC<Props> = ({ eventId }) => {
 
-const EventCard: React.FC<Props> = (eventId) => {
-    const image = {
-        img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-        title: 'Breakfast',
+    const [eventData, setEventData] = useState<CharityEntity>(nullresponse)
+
+    const eventUrl = '/api/charity/' + eventId
+
+    const fetchEventData = async () => {
+        try {
+            const response: CharityEntity = await APIGet(eventUrl)
+            setEventData(response)
+        } catch(error){
+            console.log(error)
+        }
     }
 
-
+    useEffect(() => {
+        fetchEventData()
+    }, [])
 
     return (
-        <div className='PUT EVENT ID HERE'>
+        <div className={'EventCard#' + eventId}>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -50,17 +53,17 @@ const EventCard: React.FC<Props> = (eventId) => {
                 padding: '20px 3% 3% 3%',
                 m: 2
             }}>
-                <Typography variant='h2' sx={{ alignSelf: 'start', m: '0px 0 10px 0' }}>Event Name</Typography>
+                <Typography variant='h2' sx={{ alignSelf: 'start', m: '0px 0 10px 0' }}>{eventData?.name}</Typography>
                 <Paper sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, p: '10px 0 10px 10px', m: '10px 0 20px 0' }}>
-                    <Typography sx={{ mr: '40px' }}>Funding Info</Typography>
-                    <Typography>Start/End Date</Typography>
+                    <Typography sx={{ mr: '40px' }}>Funding: ${eventData?.funds}</Typography>
+                    <Typography>Started: {eventData?.startDate}  Ending: {eventData?.endDate}</Typography>
                 </Paper>
                 <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                     <Box sx={{ m: '0px 10% 0 0', width: '45%', height: '100%' }}>
-                        <img src={image.img} />
+                        <img src={eventData?.imageUrl} />
                     </Box>
                     <Paper elevation={4} sx={{ minHeight: '100%', width: '45%', p: 2 }}>
-                        <Typography >Description</Typography>
+                        <Typography >{eventData?.description}</Typography>
                         <Typography >Orgs involved</Typography>
                     </Paper>
                 </Box>
