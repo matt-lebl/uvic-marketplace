@@ -1,6 +1,6 @@
 import * as React from 'react'
 import EventCard from './Components/EventCard'
-import { Box, Grid} from '@mui/material'
+import { Box, Grid, Typography} from '@mui/material'
 
 export default function Events() {
 
@@ -8,7 +8,8 @@ export default function Events() {
 
     return (
         <div className='EventsPage'>
-            <Box display='flex' alignItems='center' justifyContent='center' width='100%' >
+            <Box display='flex' alignItems='center' justifyContent='center' width='100%' flexDirection='column'>
+                <Typography variant='h4' alignSelf='start' m='20px 0 0 10%'>Charity Events</Typography>
                 <Grid container spacing={1} sx={{ display: 'flex', width: '80%', alignItems: 'center', justifyContent: 'center' }}>
                     <Grid item md={12}>
                         <EventCard eventId='123' />
