@@ -79,6 +79,13 @@ class NewListing(BaseModel):
 
     listing: NewListingBaseModel = Field(None, description="TODO", example="TODO")
 
+class UpdateListing(NewListing):
+    """
+    The UpdateListing schema is used when updating a listing.
+    """
+
+    status: str = Field(None, description="TODO", example="TODO")
+
 
 class ListingSummary(BaseModel):
     listingID: str = Field(..., example='A23F29039B23')

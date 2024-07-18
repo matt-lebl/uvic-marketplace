@@ -263,6 +263,12 @@ class NewListing(BaseModel):
     images: list[Image] | None = None
     markedForCharity: bool | None = Field(None, example=False)
 
+class NewListingWithWrapper(BaseModel):
+    listing: NewListing
+
+class UpdateListing(NewListingWithWrapper):
+    status: str = Field(None, description="TODO", example="TODO")
+
 
 class MessageThread(BaseModel):
     listing_id: str | None = Field(
