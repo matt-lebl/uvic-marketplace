@@ -1,46 +1,14 @@
 import * as React from 'react'
 import { Box, Typography, Paper } from '@mui/material'
-import { APIGet } from '../../APIlink'
 import { CharityEntity } from '../../interfaces'
-import { useEffect, useState } from 'react'
 
 interface Props {
-    eventId: string
+    eventData: CharityEntity
 }
 
-const nullresponse: CharityEntity = {
-    id: '',
-    name: 'Event not found',
-    description: 'no description', // need a date/time obj
-    startDate: 0,
-    endDate: 0,
-    imageUrl: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    organizations: [],
-    funds: 0,
-    listingsCount: 0
-}
-
-const EventCard: React.FC<Props> = ({ eventId }) => {
-
-    const [eventData, setEventData] = useState<CharityEntity>(nullresponse)
-
-    const eventUrl = '/api/charity/' + eventId
-
-    const fetchEventData = async () => {
-        try {
-            const response: CharityEntity = await APIGet(eventUrl)
-            setEventData(response)
-        } catch(error){
-            console.log(error)
-        }
-    }
-
-    useEffect(() => {
-        fetchEventData()
-    }, [])
-
+const EventCard: React.FC<Props> = ({ eventData }) => {
     return (
-        <div className={'EventCard#' + eventId}>
+        <div className={'EventCard#' + eventData.id}>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
