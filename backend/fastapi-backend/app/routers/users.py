@@ -7,7 +7,8 @@ from core.schemas import (
     NewUserReq,
     UpdateUser,
     User,
-)
+    NewUserReq,
+    )
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
 from services.auth import AuthHandler, EmailValidator

@@ -1,10 +1,12 @@
 import uuid
-from core.sql_models import *
+from core.sql_models import Listing
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
 from core.schemas import NewListing, ListingSchema, UpdateListing
 from datetime import datetime
 import logging
+
+from sqlmodel import Session
 
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -35,9 +37,7 @@ def update_listing(
     listing: UpdateListing,
     session: Session = Depends(get_session),
 ):
-    listing_data = Listing.convert_to_db_object(
-        listing.listing.model_dump(), seller_id, session
-    )
+    listing_data = Listing.convert_to_db_object(listing.listing.model_dump(), seller_id, session)
     status = listing.status
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now()

@@ -1,5 +1,9 @@
 from fastapi import APIRouter, HTTPException, Response
+<<<<<<< Updated upstream
 from core.schemas import NewUser, LoginRequest, NewUserReq, User
+=======
+from core.schemas import NewUserReq, LoginRequest, User, NewUser
+>>>>>>> Stashed changes
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -15,6 +19,7 @@ usersRouter = APIRouter(
 async def create_user(
     user: NewUserReq,
 ):
+    print(user.model_dump())
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
     return response_backend.json()
 
