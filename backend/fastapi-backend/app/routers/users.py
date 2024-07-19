@@ -91,10 +91,11 @@ async def login(loginRequest: LoginRequest):
 
     if loginResponse.status_code == 200:
         try:
-            if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
-                return convert_to_type(loginResponse.json(), User)
-            else:
-                raise HTTPException(status_code=401, detail="Invalid TOTP code")
+            return convert_to_type(loginResponse.json(), User)
+            # if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
+            #     return convert_to_type(loginResponse.json(), User)
+            # else:
+            #     raise HTTPException(status_code=401, detail="Invalid TOTP code")
         except Exception as e:
             print(e)
             raise HTTPException(status_code=401, detail="Invalid TOTP code")
