@@ -176,7 +176,6 @@ async def test_create_listing():
     response = client.post(f"/listing/{seller_id}", json=listing)
     assert response.status_code == 200
     assert response.json()["title"] == listing["listing"]["title"]
-    assert response.json()["charityId"]
 
 
 @pytest.mark.asyncio

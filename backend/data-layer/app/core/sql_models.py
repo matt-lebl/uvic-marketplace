@@ -179,10 +179,11 @@ class Listing(ListingBase, table=True):
             raise HTTPException(status_code=403, detail="Permissions error")
         for key, value in kwargs.items():
             setattr(listing, key, value)
-        if status == ItemStatus.SOLD and kwargs["charityId"]:
-            charity = CharityTable.get_current_charity(session)
-            price = kwargs["price"]
-            OrganizationTable.update_donated(charity.organizations, price, session)
+        if "status" in kwargs.keys():
+            if kwargs["status"] == ItemStatus.SOLD and kwargs["charityId"]:
+                charity = CharityTable.get_current_charity(session)
+                price = kwargs["price"]
+                OrganizationTable.update_donated(charity.organizations, price, session)
         session.add(listing)
         session.commit()
         session.refresh(listing)

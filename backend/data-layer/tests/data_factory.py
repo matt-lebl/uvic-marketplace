@@ -49,6 +49,7 @@ class DataFactory:
                 "price": price,
                 "description": description,
                 "images": image_urls,
+                "status": "AVAILABLE",
                 "location": {"latitude": latitude, "longitude": longitude},
                 "markedForCharity": True
             }
