@@ -1,6 +1,9 @@
 import requests
 import random
 import json
+import uuid
+
+user_ids = [str(uuid.uuid4()) for _ in range(5)]
 
 def add_listings(base_url):
     items = [
@@ -125,10 +128,8 @@ def add_listings(base_url):
         print(f"Added listing {i + 1}: {response.status_code}")
 
 def add_users(base_url):
-    # Assuming you have a list of user IDs to add
-    user_ids = ["1", "2", "3", "4", "5", "manual1"]
     for user_id in user_ids:
-        response = requests.post(f"{base_url}/api/interactions/add_user?user_id={user_id}")
+        response = requests.post(f"{base_url}/api/user?user_id={user_id}")
         print(f"Added user {user_id}: {response.status_code}")
 
 def add_random_interactions(base_url):
@@ -158,7 +159,7 @@ def add_random_interactions(base_url):
 
     # Add user review interactions 
     review_interactions = []
-    for user_id in range(1, 6):
+    for user_id in user_ids:
         review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
         review_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100)), "stars": random.randint(1, 5)})
 
@@ -182,7 +183,7 @@ def add_random_interactions(base_url):
 
     # Add user not interesting interactions 
     not_interesting_interactions = []
-    for user_id in range(1, 6):
+    for user_id in user_ids:
         not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
         not_interesting_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
 
@@ -207,13 +208,13 @@ def add_random_interactions(base_url):
 def add_manual_interactions(base_url):
     # Add user click interactions 
     click_interactions = [
-        {"userID": "1", "listingID": "1"},
-        {"userID": "1", "listingID": "2"},
-        {"userID": "1", "listingID": "3"},
-        {"userID": "1", "listingID": "4"},
-        {"userID": "1", "listingID": "5"},
-        {"userID": "1", "listingID": "6"},
-        {"userID": "1", "listingID": "7"},
+        {"userID": user_ids[0], "listingID": "1"},
+        {"userID": user_ids[0], "listingID": "2"},
+        {"userID": user_ids[0], "listingID": "3"},
+        {"userID": user_ids[0], "listingID": "4"},
+        {"userID": user_ids[0], "listingID": "5"},
+        {"userID": user_ids[0], "listingID": "6"},
+        {"userID": user_ids[0], "listingID": "7"},
     ]
 
     for interaction in click_interactions:
@@ -222,7 +223,7 @@ def add_manual_interactions(base_url):
 
 def get_recommendations(base_url, user_id):
     # Fetch recommendations for a user
-    response = requests.get(f"{base_url}/api/recommendations", headers={"Authorization": f"Bearer {user_id}"})
+    response = requests.get(f"{base_url}/api/recommendations?authUserID={user_id}", headers={"Authorization": f"Bearer {user_id}"})
 
     if response.status_code == 200:
         recommendations = response.json()
@@ -232,14 +233,14 @@ def get_recommendations(base_url, user_id):
         print(f"Failed to get recommendations: {response.status_code}")
 
 def main():
-    base_url = "http://localhost:8000"
+    base_url = "http://localhost:8004"
     add_listings(base_url)
     add_users(base_url)
     add_random_interactions(base_url)
     add_manual_interactions(base_url)
 
     print("Recommendations After Interactions")
-    get_recommendations(base_url, "1")  # Set userID -> [random interaction IDs: 1-5] [manual interaction ID: manual1]
+    get_recommendations(base_url, user_ids[0])  # Set userID -> [random interaction IDs: 1-5] [manual interaction ID: manual1]
 
 if __name__ == "__main__":
     main()

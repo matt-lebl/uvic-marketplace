@@ -24,10 +24,8 @@ def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
         # Calculate the average number of interactions per listing
         avg_interactions_per_listing = {}
         for index, listing_id in enumerate(listing_ids):
-
             # query DB
-            listing_id_int = int(listing_id)
-            avg_interaction_count = db.query(func.avg(DB_Interaction.interaction_count)).filter(cast(DB_Interaction.listing_id, Integer) == listing_id_int).scalar()
+            avg_interaction_count = db.query(func.avg(DB_Interaction.interaction_count)).filter(DB_Interaction.listing_id == listing_id).scalar()
 
             # Check if avg_interaction_count is not None before using it
             if avg_interaction_count is not None:
@@ -35,7 +33,7 @@ def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
             else:
                 avg_interaction_count = 0.0
 
-            avg_interactions_per_listing[listing_id_int] = avg_interaction_count
+            avg_interactions_per_listing[listing_id] = avg_interaction_count
 
         # Select the top x listings based on the number of interactions
         x = 10
