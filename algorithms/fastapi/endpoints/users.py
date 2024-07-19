@@ -2,6 +2,7 @@ from fastapi import APIRouter, Body, Header
 from typing import Dict, Optional
 from util.schemas import UserResponse, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
+from db.models import DB_User
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -13,14 +14,21 @@ async def create_user(data: Dict = Body(...), authorization: Optional[str] = Hea
     
     print(data)
     user_data = data['user']
+    user_id = user_data['userID']
+
+    # Check if the user already exists
+    existing_user = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists")
 
     # Add the user to Elasticsearch
-    response = es.index(index="users_index", id=user_data['userID'], body=user_data)
+    response = es.index(index="users_index", id=user_id, body=user_data)
     print(f'Added/updated ES database: {response}')
+
+    # Add new user to Postgres
+    new_user = DB_User(user_id=user_id)
+    db.add(new_user)
+    db.commit()
+    add_cold_start_interactions(user_id, db) # Call cold start function #TODO - move this to util
     
-    response = {"user": user_data}
-
-    print("this is the response: ")
-    print(response)
-
-    return response
+    return {"message": "User added successfully", "userID": user_id}

@@ -12,6 +12,9 @@ from core.schemas import (
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
 from services.auth import AuthHandler, EmailValidator
+from services.data_sync_kafka_producer import DataSyncKafkaProducer
+
+dsKafkaProducer = DataSyncKafkaProducer(disable=False)
 
 userRouter = APIRouter(
     prefix="/api/user",
@@ -42,6 +45,7 @@ async def create_user(user: NewUser):
     response = response.json()
     response["totp_secret"] = totp_secret
     response["totp_uri"] = uri
+    dsKafkaProducer.push_new_user(response)
     return response
 
 

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from db.models import DB_Interaction
 from db.deps import get_db
 from sqlalchemy.exc import SQLAlchemyError
+from util.cold_start import add_cold_start_interactions
 
 router = APIRouter()
 
@@ -31,3 +32,18 @@ def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
         db.rollback()
 
     return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
+
+# Endpoint to handle cold start for new users
+@router.post("/cold_start")
+async def cold_start(user_id: str, db: Session = Depends(get_db)):
+    """
+    API endpoint to handle cold start problem for new users by adding interactions.
+    """
+    try:
+        result = add_cold_start_interactions(user_id, db)
+        return result
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to handle cold start: {str(e)}")
+        
