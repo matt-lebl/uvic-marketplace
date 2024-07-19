@@ -1,4 +1,4 @@
-from confluent_kafka import Consumer, KafkaException
+from confluent_kafka import Consumer, KafkaException, KafkaError
 import os
 import json
 from consumers.interactions import record_click
@@ -28,6 +28,8 @@ def consume_topics(topics):
             if msg is None:
                 continue
             if msg.error():
+                if msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                    continue
                 print(f"Consumer error: {msg.error()}")
                 continue
 
