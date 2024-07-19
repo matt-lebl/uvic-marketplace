@@ -15,6 +15,8 @@ COPY ./util ./util
 
 ENV PYTHONPATH=/code
 
-# Run the application
-# -u flag is used to force the stdout to be unbuffered, fixes the issue of logs not being printed
-CMD ["python","-u", "kafka_consumer.py"]
+# Make the entrypoint script executable
+RUN chmod 755 ./entrypoint.sh
+
+# Run the application.
+CMD ./entrypoint.sh
