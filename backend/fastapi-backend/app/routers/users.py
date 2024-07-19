@@ -106,14 +106,14 @@ async def login(loginRequest: LoginRequest):
 # Logout need not be implemented, it is implemented in RP
 @userRouter.post("/validate-email/{validation_code}/{email}")
 async def validate_email(validation_code: str, email: str):
-    decrypted_email = authHandler.decrypt_secret(email)
-    decrypted_validation_code = authHandler.decrypt_secret(validation_code)
+    # decrypted_email = authHandler.decrypt_secret(email)
+    # decrypted_validation_code = authHandler.decrypt_secret(validation_code)
 
-    if not EmailValidator.validate_email_domain(decrypted_email):
+    if not EmailValidator.validate_email_domain(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
     response = await send_request_to_data_layer(
-        f"/user/validate-email/{decrypted_validation_code}/{decrypted_email}", "POST"
+        f"/user/validate-email/{validation_code}/{email}", "POST"
     )
     return response.json()
 
