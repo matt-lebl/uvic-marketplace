@@ -6,7 +6,7 @@ import { APIGet } from '../APIlink'
 import { CharityEntity } from '../interfaces'
 
 const nullresponse: CharityEntity = {
-    id: '',
+    id: '1',
     name: 'Event not found',
     description: 'no description', // need a date/time obj
     startDate: 0,
@@ -20,7 +20,7 @@ const nullresponse: CharityEntity = {
 export default function Events() {
 
     const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>(nullresponse)
-    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([nullresponse, nullresponse, nullresponse])
+    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([])
 
     const fetchMainEvent = async() => {
         try{
