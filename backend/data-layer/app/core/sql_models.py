@@ -28,7 +28,7 @@ class UserBase(SQLModel):
     totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
-    email_validated: bool = Field(default=False)
+    email_validated: bool = Field(default=True)
     validation_code: str
     ignoreCharityListings: bool | None
 
