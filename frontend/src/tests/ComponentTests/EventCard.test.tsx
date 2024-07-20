@@ -24,11 +24,30 @@ describe('EventCard component', () => {
 
     expect(screen.getByText('Funding: $10000')).toBeInTheDocument();
 
-    expect(screen.getByText(eventDataMock.startDate)).toBeInTheDocument();
-    expect(screen.getByText(eventDataMock.endDate)).toBeInTheDocument();
+    const startText = screen.getByText((content) => {
+      const regex = /2024-07-15/;
+      const hasText = regex.test(content);
 
-    expect(screen.getByAltText(eventDataMock.imageUrl)).toBeInTheDocument();
-    
+      return hasText;
+    });
+
+    expect(startText).toBeInTheDocument();
+
+    const endText = screen.getByText((content) => {
+      const regex = /2024-07-20/;
+      const hasText = regex.test(content);
+
+      return hasText;
+    });
+
+    expect(endText).toBeInTheDocument();
+
+    const imageElements = screen.getAllByRole('img');
+    expect(imageElements.length).toBe(1);
+
+    const firstImage = imageElements[0];
+    expect(firstImage).toHaveAttribute('src', 'sample_image_url');
+
     expect(screen.getByText(eventDataMock.description)).toBeInTheDocument();
   });
 });

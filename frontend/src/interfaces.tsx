@@ -199,12 +199,14 @@ export interface CharityEntity {
   startDate: any, // need a date/time obj
   endDate: any,
   imageUrl: string,
-  organizations: {
+  organizations: OrgEntity[],
+  funds:number,
+  listingsCount:number
+}
+
+export interface OrgEntity {
     name: string,
     logoUrl: string,
     donated: number,
-    received: number
-  }[],
-  funds:number,
-  listingsCount:number
+    received: boolean
 }
