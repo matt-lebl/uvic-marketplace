@@ -8,11 +8,18 @@ import { CharityEntity } from '../interfaces'
 const nullresponse: CharityEntity = {
     id: '1',
     name: 'Event not found',
-    description: 'no description', // need a date/time obj
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', // need a date/time obj
     startDate: 0,
     endDate: 0,
     imageUrl: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-    organizations: [],
+    organizations: [
+        {
+            name: 'org1',
+            logoUrl: '',
+            donated: 5,
+            received: 0
+        }
+    ],
     funds: 0,
     listingsCount: 0
 }
@@ -20,7 +27,7 @@ const nullresponse: CharityEntity = {
 export default function Events() {
 
     const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>(nullresponse)
-    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([])
+    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([nullresponse, nullresponse, nullresponse])
 
     const fetchMainEvent = async() => {
         try{
