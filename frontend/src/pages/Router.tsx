@@ -12,6 +12,7 @@ import Header from './Components/Header'
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
 import ValidateEmail from './ValidateEmail'
+import Events from './Events'
 import Footer from './Components/Footer'
 
 const Router = () => {
@@ -25,7 +26,7 @@ const Router = () => {
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname
-      if (currentPath !== '/login' && currentPath !== '/register') {
+      if (currentPath !== '/login' && currentPath !== '/register' && !currentPath.startsWith('/validate-email')) {
         navigate('/login')
       }
     }
@@ -48,6 +49,7 @@ const Router = () => {
             <Route path="messaging" element={<Messaging />} />
             <Route path="new-listing" element={<CreateListing />} />
             <Route path="edit-listing" element={<EditListing />} />
+            <Route path="events" element={<Events />} />
           </>
         )}
       </Route>

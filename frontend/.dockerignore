@@ -6,13 +6,13 @@
 
 **/.classpath
 **/.dockerignore
-**/.env
 **/.git
 **/.gitignore
 **/.project
 **/.settings
 **/.toolstarget
 **/.vs
+**/.env
 **/.vscode
 **/.next
 **/.cache

@@ -22,6 +22,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", # TODO: Remove localhost from production environment
                    "https://localhost:8080",
+                   "http://localhost",
+                   "https://localhost",
                    "http://market.lebl.ca",
                    "https://market.lebl.ca"],
     allow_credentials=True,

@@ -45,7 +45,7 @@ def create_listing(data: dict, db: Session):
             print(f"Updated DB listing id: {existing_listing.listing_id}, ES listing id: {existing_listing.elasticsearch_id}")
         else:
             # Add a new record
-            db_listing = DB_Listing(listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
+            db_listing = DB_Listing(listing_id=listing_data['listingID'], listing_name=listing_data['title'], elasticsearch_id=listing_data['listingID'])
             db.add(db_listing)
             db.flush()  # Use flush to get the id before commit
             print(f"Added DB listing id: {db_listing.listing_id}, ES listing id: {db_listing.elasticsearch_id}")

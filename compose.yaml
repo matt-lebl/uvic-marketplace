@@ -8,6 +8,8 @@ services:
       NODE_ENV: production
     ports:
       - "8080:8080"
+    env_file:
+      - frontend/.env
   backend-data-layer:
     build:
       context: backend/data-layer
@@ -59,7 +61,7 @@ services:
         condition: service_started
     environment:
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-      KAFKA_TOPICS: create-listing delete-listing update-listing view-listing create-user edit-user delete-user
+      KAFKA_TOPICS: create-listing delete-listing update-listing view-listing create-user edit-user delete-user create-review edit-review delete-review
       POSTGRES_SCHEME: postgresql://
       POSTGRES_USER: algorithms
       POSTGRES_PASSWORD: algorithms

@@ -64,9 +64,9 @@ class EmailValidator:
     def send_validation_email(self, receiver_email: str, unique_id: str):
         try:
             subject = "Email Validation"
-            encrypted_email = self.encrypter.encrypt_secret(receiver_email)
-            encrypted_unique_id = self.encrypter.encrypt_secret(unique_id)
-            body = f"{API_URL}/validate-email/?code={encrypted_unique_id}&email={encrypted_email}"
+            # encrypted_email = self.encrypter.encrypt_secret(receiver_email)
+            # encrypted_unique_id = self.encrypter.encrypt_secret(unique_id)
+            body = f"{API_URL}/validate-email/?code={unique_id}&email={receiver_email}"
 
             message = MIMEMultipart()
             message["From"] = self.email

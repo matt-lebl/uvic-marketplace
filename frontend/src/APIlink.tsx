@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosInstance } from 'axios'
 
-export const baseUrl = process.env.REACT_APP_BASEURL ?? 'http://market.lebl.ca'
+export const baseUrl = process.env.REACT_APP_BASEURL ?? 'https://market.lebl.ca'
 
 var instance = axios.create({ baseURL: baseUrl, withCredentials: true })
 export default class APIError extends Error {
