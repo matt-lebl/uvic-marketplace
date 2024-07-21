@@ -191,3 +191,22 @@ export interface UpdateUser {
   bio: string
   profilePictureUrl: string
 }
+
+export interface CharityEntity {
+  id: string,
+  name: string,
+  description: string,
+  startDate: any, // need a date/time obj
+  endDate: any,
+  imageUrl: string,
+  organizations: OrgEntity[],
+  funds:number,
+  listingsCount:number
+}
+
+export interface OrgEntity {
+    name: string,
+    logoUrl: string,
+    donated: number,
+    received: boolean
+}
