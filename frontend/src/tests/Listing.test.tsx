@@ -1,21 +1,45 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 import Listing from '../pages/Listing'
+import { ListingEntity } from '../interfaces'
 
-test('renders listing page', () => {
-  const { container } = render(<Listing />)
+const mockListing: ListingEntity = {
+  title: 'Test Listing',
+  description: 'This is a test listing',
+  listingID: '123',
+  price: 100,
+  images: [{ url: 'https://example.com/image1.jpg' }],
+  seller_profile: {
+    userID: '456',
+    username: 'testuser',
+    name: 'Test User',
+    bio: 'This is a test bio',
+    profilePictureUrl: 'https://example.com/profile.jpg',
+  },
+  location: { latitude: 48.4719, longitude: -123.3301 },
+  status: 'open',
+  dateCreated: '2021-01-01',
+  dateModified: '2021-01-02',
+  reviews: [],
+  distance: 5,
+}
 
-  expect(container.firstChild).toHaveClass('Listing')
-})
+describe('Listing Component', () => {
+  test('renders Listing component', () => {
+    render(<Listing listingData={mockListing} />)
+    const listingTitleElements = screen.getAllByText(/Test Listing/i)
+    expect(listingTitleElements.length).toBe(2)
+    expect(screen.getByText(/This is a test listing/i)).toBeInTheDocument()
+  })
 
-test('renders photogallery', () => {
-  const { container } = render(<Listing />)
+  test('displays listing price', () => {
+    render(<Listing listingData={mockListing} />)
+    expect(screen.getByText(/100/i)).toBeInTheDocument()
+  })
 
-  expect(container.getElementsByClassName('Photo-Gallery').length).toBe(1)
-})
-
-test('renders seller card', () => {
-  const { container } = render(<Listing />)
-
-  expect(container.getElementsByClassName('Seller-Card').length).toBe(1)
+  test('displays seller information', () => {
+    render(<Listing listingData={mockListing} />)
+    expect(screen.getByText(/Test User/i)).toBeInTheDocument()
+  })
 })

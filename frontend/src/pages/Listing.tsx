@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import './App.css'
 import { Typography, Box, Paper } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
@@ -7,31 +7,47 @@ import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 
-function listingRequest(listingID: string | undefined) {
-  let response: ListingEntity | undefined
-
-  const listingURL: string = '/api/listing/' + listingID
-
-  setTimeout(async () => {
-    try {
-      response = await APIGet(listingURL)
-
-      if (response) {
-        console.log('Response Title' + response.title)
-        console.log('Response' + response)
-      }
-    } catch (error) {
-      console.log('Request Error' + error)
-    }
-  }, 1000)
-
-  return response
+interface ListingProps {
+  listingData?: ListingEntity
 }
 
-function Listing() {
+const Listing: React.FC<ListingProps> = ({
+  listingData: initialListingData,
+}) => {
   const { listingID } = useParams()
+  const [listingData, setListingData] = useState<ListingEntity | undefined>(
+    initialListingData
+  )
+  const [loading, setLoading] = useState(!initialListingData)
 
-  const listingData = listingRequest(listingID)
+  useEffect(() => {
+    async function fetchListing() {
+      if (!listingID || initialListingData) return
+
+      const listingURL: string = `/api/listing/${listingID}`
+
+      try {
+        const response = (await APIGet(listingURL)) as ListingEntity
+        if (response) {
+          setListingData(response)
+        }
+      } catch (error) {
+        console.log('Request Error', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchListing()
+  }, [listingID, initialListingData])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (!listingData) {
+    return <div>Listing not found</div>
+  }
 
   return (
     <div className="Listing">
@@ -39,20 +55,17 @@ function Listing() {
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Paper
             sx={{
-              padding: '20px 20px 20px 20px',
+              padding: '20px',
               height: '85vh',
               backgroundColor: '#ffffff',
             }}
           >
-            <Typography sx={{ fontWeight: '700' }}>
-              Photo Gallery{listingID}
-            </Typography>
-            <PhotoGallery />
+            <Typography sx={{ fontWeight: '700' }}>Photo Gallery</Typography>
+            <PhotoGallery images={listingData.images} />
           </Paper>
           <Paper
             sx={{
               minWidth: '40vw',
-              hieght: 200,
               ml: 5,
               backgroundColor: '#656565',
               height: '85vh',
@@ -63,6 +76,11 @@ function Listing() {
           </Paper>
         </Box>
       </header>
+      <Box sx={{ mt: 2, ml: 2 }}>
+        <Typography variant="h4">{listingData.title}</Typography>
+        <Typography variant="body1">{listingData.description}</Typography>
+        <Typography variant="h6">${listingData.price}</Typography>
+      </Box>
     </div>
   )
 }

@@ -69,8 +69,7 @@ class DataSyncKafkaProducer:
     # Reviews
     # POST /api/listing/review/
     def push_new_review(self, review: NewReview):
-        # TODO
-        pass
+        self.push_message("create-review", json.dumps(review, default=str))
 
     # PATCH /api/listing/review/{id}
     def push_updated_review(self, review: NewReview):
@@ -84,10 +83,14 @@ class DataSyncKafkaProducer:
 
     # Users
     # POST /api/user/
-    # TODO {userID: str}
-    def push_new_user(self, user: NewUser):
-        # TODO
-        pass
+    def push_new_user(self, user: dict):
+        user_dict = {
+            'username': user['username'],
+            'userID': user['userID'],
+            'name': user['name'],
+            'bio': user['bio']
+        }
+        self.push_message("create-user", json.dumps({'user': user_dict}))
 
     # PATCH /api/user/{id}
     def push_updated_user(self, user: NewUser):

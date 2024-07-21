@@ -13,6 +13,7 @@ import CreateListing from './CreateListing'
 import EditListing from './EditListing'
 import Search from './Search'
 import ValidateEmail from './ValidateEmail'
+import Events from './Events'
 import Footer from './Components/Footer'
 
 const Router = () => {
@@ -26,7 +27,7 @@ const Router = () => {
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname
-      if (currentPath !== '/login' && currentPath !== '/register' && currentPath !== '/validate-email') {
+      if (currentPath !== '/login' && currentPath !== '/register' && !currentPath.startsWith('/validate-email')) {
         navigate('/login')
       }
     }
@@ -50,6 +51,7 @@ const Router = () => {
             <Route path="new-listing" element={<CreateListing />} />
             <Route path="edit-listing" element={<EditListing />} />
             <Route path="search" element={<Search />} />
+            <Route path="events" element={<Events />} />
           </>
         )}
       </Route>

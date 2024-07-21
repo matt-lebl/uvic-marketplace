@@ -1,6 +1,14 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from core.schemas import Listing, ListingWithWrapper, Location, NewListing, NewReview
+from core.schemas import (
+    Listing,
+    ListingWithWrapper,
+    Location,
+    NewListing,
+    NewListingWithWrapper,
+    NewReview,
+    UpdateListing,
+)
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
@@ -25,7 +33,7 @@ async def get_listing(id: str, authUserID: str):
 
 
 @listingsRouter.post("/")
-async def create_listing(listing: NewListing, authUserID: str):
+async def create_listing(listing: NewListingWithWrapper, authUserID: str):
     path = "listing/" + authUserID
     response = await send_request_to_data_layer(path, "POST", listing.model_dump())
 
@@ -36,7 +44,7 @@ async def create_listing(listing: NewListing, authUserID: str):
 
 
 @listingsRouter.patch("/{id}")
-async def update_listing(id: str, listing: NewListing, authUserID: str):
+async def update_listing(id: str, listing: UpdateListing, authUserID: str):
     dsKafkaProducer.push_updated_listing(id, listing)
     path = "listing/" + id + "/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", listing.model_dump())

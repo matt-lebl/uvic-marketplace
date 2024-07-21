@@ -1,36 +1,57 @@
-import React, { FormEvent } from 'react'
+import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react'
 import './App.css'
-import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
+import {
+  Typography,
+  Box,
+  Paper,
+  TextField,
+  Button,
+  InputAdornment,
+} from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
-import { useState } from 'react'
-import { ChangeEvent } from 'react'
-import { ListingEntity, ListingResponse } from '../interfaces'
+import { ListingEntity } from '../interfaces'
 import { APIPost } from '../APIlink'
 
-function apiSubmit(listing: ListingEntity) {
-  let response: ListingResponse | undefined
-
-  setTimeout(async () => {
-    try {
-      response = await APIPost('/api/listing', listing)
-    } catch (error) {}
-    if (response) {
-      console.log('Response: ' + response)
-    }
-  })
+async function apiSubmit(listing: Partial<ListingEntity>) {
+  try {
+    const response = await APIPost('/api/listing', { listing })
+    console.log('Response:', response)
+  } catch (error) {
+    console.log('Request Error:', error)
+  }
 }
 
 function CreateListing() {
   const [title, setTitle] = useState<string>('')
-
   const [desc, setDesc] = useState<string>('')
-
   const [price, setPrice] = useState<number>(0)
-
   const [imageNames, setImageNames] = useState<Array<string>>([])
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
+  const [latitude, setLatitude] = useState<number | null>(null)
+  const [longitude, setLongitude] = useState<number | null>(null)
+  const [geolocationError, setGeolocationError] = useState<string | null>(null)
+  const [titleError, setTitleError] = useState<boolean>(false)
+  const [priceError, setPriceError] = useState<boolean>(false)
 
-  const handlPhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude)
+          setLongitude(position.coords.longitude)
+        },
+        (error) => {
+          setGeolocationError('Location is not available')
+          console.error('Error retrieving location:', error)
+        }
+      )
+    } else {
+      setGeolocationError('Geolocation is not supported by this browser.')
+      console.error('Geolocation is not supported by this browser.')
+    }
+  }, [])
+
+  const handlePhotoUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files as FileList
 
     if (files.length + imageURLs.length > 8) {
@@ -38,14 +59,8 @@ function CreateListing() {
       return
     }
 
-    let names = Array<string>(files.length)
-    let urls = Array<string>(files.length)
-
-    for (let i = 0; i < files.length; i++) {
-      names[i] = files[i].name
-      urls[i] = URL.createObjectURL(files[i])
-      console.log(urls[i])
-    }
+    const names = Array.from(files).map((file) => file.name)
+    const urls = Array.from(files).map((file) => URL.createObjectURL(file))
 
     setImageNames(imageNames.concat(names))
     setImageURLs(imageURLs.concat(urls))
@@ -56,43 +71,28 @@ function CreateListing() {
     setImageURLs([])
   }
 
-  const titleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
-  }
-
-  const descChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setDesc(event.target.value)
-  }
-
-  const priceChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setPrice(+event.target.value)
-  }
-
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    console.log(title)
-    console.log(desc)
-    console.log(imageNames[0])
 
-    let submitListing: ListingEntity = {
-      title: title,
+    setTitleError(!title)
+    setPriceError(!price)
+
+    if (!title || !price) {
+      return
+    }
+
+    if (latitude === null || longitude === null) {
+      alert('Location is not available.')
+      return
+    }
+
+    const submitListing = {
+      title,
       description: desc,
-      listingID: '1234',
-      price: price,
-      images: imageURLs.map((urltext) => ({ url: urltext })),
-      seller_profile: {
-        userID: '1345',
-        username: 'bartholomew',
-        name: 'bart',
-        bio: 'stairs',
-        profilePictureUrl: 'example.com',
-      },
-      location: { latitude: 0, longitude: 0 },
-      status: 'open',
-      dateCreated: '1/2/3030',
-      dateModified: '2/3/3030',
-      reviews: [],
-      distance: 2,
+      price,
+      location: { latitude, longitude },
+      images: imageURLs.map((url) => ({ url })),
+      markedForCharity: false,
     }
 
     apiSubmit(submitListing)
@@ -109,7 +109,6 @@ function CreateListing() {
           <Paper
             sx={{
               width: '85vw',
-              hieght: 200,
               backgroundColor: '#656565',
               maxHeight: '85vh',
               overflow: 'auto',
@@ -117,7 +116,7 @@ function CreateListing() {
             }}
           >
             <Typography variant="h2">New Listing</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'cloumn' }}></Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}></Box>
             <Paper
               sx={{
                 flexGrow: 1,
@@ -127,13 +126,15 @@ function CreateListing() {
                 m: '20px 0px 10px 0px',
               }}
             >
-              <InputBase
+              <TextField
                 id="Listing-Title"
-                placeholder="Listing Title"
-                fullWidth={true}
-                multiline={true}
+                label="Listing Title"
+                fullWidth
+                multiline
                 sx={{ fontWeight: 700 }}
-                onChange={titleChange}
+                onChange={(e) => setTitle(e.target.value)}
+                error={titleError}
+                helperText={titleError ? 'Title is required' : ''}
               />
             </Paper>
             <Paper
@@ -145,40 +146,46 @@ function CreateListing() {
                 m: '20px 0px 10px 0px',
               }}
             >
-              <InputBase
+              <TextField
                 id="Listing-Price"
-                placeholder="Price"
-                fullWidth={true}
-                multiline={true}
+                label="Price"
+                fullWidth
+                multiline
                 sx={{ fontWeight: 700 }}
-                onChange={priceChange}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">$</InputAdornment>
+                  ),
+                }}
+                error={priceError}
+                helperText={priceError ? 'Price is required' : ''}
               />
             </Paper>
+            {geolocationError && (
+              <Typography color="error">{geolocationError}</Typography>
+            )}
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
-              <InputBase
+              <TextField
                 id="Listing-Description"
-                placeholder="Listing Description"
-                fullWidth={true}
-                multiline={true}
+                label="Listing Description"
+                fullWidth
+                multiline
                 sx={{ pb: '100px' }}
-                onChange={descChange}
+                onChange={(e) => setDesc(e.target.value)}
               />
             </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
               <Box>
                 <Typography>Photos (max 8)</Typography>
-
                 <PhotoPreviewList imageNames={imageNames} />
-
                 <input
                   id="photoInput"
                   type="file"
                   multiple={true}
-                  max={8}
                   accept="image/*"
-                  onChange={handlPhotoUpload}
-                ></input>
-
+                  onChange={handlePhotoUpload}
+                />
                 <Button
                   variant="contained"
                   sx={{ ml: '20px' }}

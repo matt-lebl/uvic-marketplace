@@ -1,9 +1,11 @@
-from confluent_kafka import Consumer, KafkaException
+from confluent_kafka import Consumer, KafkaException, KafkaError
 import os
 import json
-from consumers.interactions import record_click 
+from consumers.interactions import record_click
 from consumers.listings import create_listing, delete_listing
 from consumers.users import add_user, edit_user, delete_user
+from consumers.reviews import add_review, edit_review, delete_review
+from util.cold_start import add_cold_start_interactions
 from db.deps import get_db
 
 # Kafka Consumer configuration
@@ -26,6 +28,8 @@ def consume_topics(topics):
             if msg is None:
                 continue
             if msg.error():
+                if msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                    continue
                 print(f"Consumer error: {msg.error()}")
                 continue
 
@@ -55,8 +59,18 @@ def consume_topics(topics):
                     handle_edit_user(message_json, db_session)
                 elif msg.topic() == "delete-user":
                     handle_delete_user(message_json, db_session)
+                elif msg.topic() == "create-review":
+                    handle_create_review(message_json, db_session)
+                elif msg.topic() == "edit-review":
+                    handle_edit_review(message_json, db_session)
+                elif msg.topic() == "delete-review":
+                    handle_delete_review(message_json, db_session)
+            except KafkaException as e:
+                    print(f"Error processing kafka message: {e}")
             finally:
                 db_session.close()
+    except KeyboardInterrupt:
+        print("Kafka consumer interrupted by user")
     finally:
         consumer.close()
 
@@ -79,6 +93,7 @@ def handle_view_listing(data, db_session):
 def handle_create_user(data, db_session):
     print(f"Handle create user with data: {data}")
     add_user(data, db_session)
+    add_cold_start_interactions(data['user']['userID'], db_session)
 
 def handle_edit_user(data, db_session):
     print(f"Handle edit user with data: {data}")
@@ -87,6 +102,18 @@ def handle_edit_user(data, db_session):
 def handle_delete_user(data, db_session):
     print(f"Handle delete user with data: {data}")
     delete_user(data, db_session)
+
+def handle_create_review(data, db_session):
+    print(f"Handle create review with data: {data}")
+    add_review(data, db_session)
+
+def handle_edit_review(data, db_session):
+    print(f"Handle edit review with data: {data}")
+    edit_review(data, db_session)
+
+def handle_delete_review(data, db_session):
+    print(f"Handle delete review with data: {data}")
+    delete_review(data, db_session)
 
 if __name__ == "__main__":
     try:

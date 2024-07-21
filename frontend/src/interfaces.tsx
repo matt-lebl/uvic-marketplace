@@ -206,11 +206,11 @@ export enum Sort {
   DISTANCE_ASC = "DISTANCE_ASC",
   DISTANCE_DESC = "DISTANCE_DESC"
 }
-    
-export interface SearchRequest{
+
+export interface SearchRequest {
   query: string
   minPrice?: number
-  maxPrice?:number
+  maxPrice?: number
   status?: ItemStatus
   searchType?: SearchType
   latitude: number
@@ -218,4 +218,22 @@ export interface SearchRequest{
   sort?: Sort
   page?: number
   limit?: number
+}
+export interface CharityEntity {
+  id: string,
+  name: string,
+  description: string,
+  startDate: any, // need a date/time obj
+  endDate: any,
+  imageUrl: string,
+  organizations: OrgEntity[],
+  funds: number,
+  listingsCount: number
+}
+
+export interface OrgEntity {
+  name: string,
+  logoUrl: string,
+  donated: number,
+  received: boolean
 }
