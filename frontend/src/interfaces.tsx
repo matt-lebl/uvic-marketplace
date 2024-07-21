@@ -42,16 +42,7 @@ export interface ListingEntity {
   status: string
   dateCreated: string
   dateModified: string
-  reviews: {
-    listing_review_id: string
-    reviewerName: string
-    stars: number
-    comment: string
-    userID: string
-    listingID: string
-    dateCreated: string
-    dateModified: string
-  }[]
+  reviews: Review[]
   images: {
     url: string
   }[]
