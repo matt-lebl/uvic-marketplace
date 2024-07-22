@@ -50,7 +50,7 @@ export interface ListingEntity {
 }
 
 export interface NewReview {
-  listing_rating_id: string
+  listing_rating_id?: string
   stars: number
   comment: string
   listingID: string
@@ -191,13 +191,13 @@ export interface CharityEntity {
   endDate: any,
   imageUrl: string,
   organizations: OrgEntity[],
-  funds:number,
-  listingsCount:number
+  funds: number,
+  listingsCount: number
 }
 
 export interface OrgEntity {
-    name: string,
-    logoUrl: string,
-    donated: number,
-    received: boolean
+  name: string,
+  logoUrl: string,
+  donated: number,
+  received: boolean
 }
