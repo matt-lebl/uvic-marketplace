@@ -26,7 +26,6 @@ def create_listing(
     new_listing = Listing.create(session=session, **listing_data)
     logger.info(f"New Listing Created{new_listing}")
     new_listing = new_listing.convert_to_schema(session)
-    print(new_listing)
     return new_listing
 
 

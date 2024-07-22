@@ -1,9 +1,5 @@
-from fastapi import APIRouter, HTTPException, Response
-<<<<<<< Updated upstream
+from fastapi import APIRouter, Response
 from core.schemas import NewUser, LoginRequest, NewUserReq, User
-=======
-from core.schemas import NewUserReq, LoginRequest, User, NewUser
->>>>>>> Stashed changes
 from core.auth import sign_jwt
 from services.backend_connect import send_request_to_backend
 

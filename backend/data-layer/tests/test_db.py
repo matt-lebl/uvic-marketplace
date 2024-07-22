@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from fastapi.testclient import TestClient
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
@@ -403,54 +404,129 @@ async def test_delete_review():
     response2 = client.delete(f"/review/{review_id}/{userID}")
     assert response2.status_code == 200
 
-# Deprecated
-# @pytest.mark.asyncio
-# async def test_get_all_listings():
-#     user = data_factory.generate_user()
-#     user_response = client.post("/user/", json=user)
-#     userID = user_response.json()["userID"]
-#     listing = data_factory.generate_listing()
-#     client.post(f"/listing/{userID}", json=listing)
-#
-#     response = client.get("/listing/")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
+
+@pytest.mark.asyncio
+async def test_create_charity():
+    organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                     data_factory.generate_organization(True)]
+
+    charity_data = data_factory.generate_charity_request(organizations)
+    response = client.post("/charities/", json=charity_data)
+    assert response.status_code == 200
+    assert len(response.json()["organizations"]) == 3
 
 
-# Deprecated
+@pytest.mark.asyncio
+async def test_get_current_charity():
+    response = client.post("/charities/clear")
+    assert response.status_code == 200
 
-# @pytest.mark.asyncio
-# async def test_get_all_messages():
-#     user1 = data_factory.generate_user()
-#     user1_response = client.post("/user/", json=user1)
-#     user2 = data_factory.generate_user()
-#     user2_response = client.post("/user/", json=user2)
-#     user1ID = user1_response.json()["userID"]
-#     listing = data_factory.generate_listing()
-#     listing_response = client.post(f"/listing/{user1ID}", json=listing)
-#     message = data_factory.generate_message(listing_response.json()["listingID"], user1_response.json()["userID"],
-#                                             user2_response.json()["userID"])
-#     client.post("/messages/", json=message)
-#
-#     response = client.get("/messages/")
-#     assert response.status_code == 200
-#     assert len(response.json()) > 0
+    organizations1 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+    organizations2 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+    organizations3 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+
+    charity_data1 = data_factory.generate_charity_request(organizations1)
+    charity_data2 = data_factory.generate_charity_request(organizations2)
+    charity_data3 = data_factory.generate_charity_request(organizations3)
+
+    charity_data2["startDate"] = (datetime.now() - timedelta(days=2)).isoformat()
+    charity_data2["endDate"] = (datetime.now() - timedelta(days=1)).isoformat()
+
+    charity_data3["startDate"] = (datetime.now() + timedelta(days=1)).isoformat()
+    charity_data3["endDate"] = (datetime.now() + timedelta(days=2)).isoformat()
+
+    response = client.post("/charities/", json=charity_data1)
+    cur_id = response.json()["id"]
+    assert response.status_code == 200
+    response = client.post("/charities/", json=charity_data2)
+    assert response.status_code == 200
+    response = client.post("/charities/", json=charity_data3)
+    assert response.status_code == 200
+
+    response = client.get("/charities/current")
+    assert response.status_code == 200
+    assert response.json()["id"] == cur_id
 
 
-# @pytest.mark.asyncio
-# async def test_get_message():
-#     user1 = data_factory.generate_user()
-#     user1_response = client.post("/user/", json=user1)
-#     user2 = data_factory.generate_user()
-#     user2_response = client.post("/user/", json=user2)
-#     user1ID = user1_response.json()["userID"]
-#     listing = data_factory.generate_listing()
-#     listing_response = client.post(f"/listing/{user1ID}", json=listing)
-#     message = data_factory.generate_message(listing_response.json()["listingID"], user1_response.json()["userID"],
-#                                             user2_response.json()["userID"])
-#     create_response = client.post("/messages/", json=message)
-#     message_id = create_response.json()["message_id"]
-#
-#     response = client.get(f"/messages/{message_id}")
-#     assert response.status_code == 200
-#     assert response.json()["message_id"] == message_id
+@pytest.mark.asyncio
+async def test_clear_charities():
+    organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                     data_factory.generate_organization(True)]
+
+    charity_data = data_factory.generate_charity_request(organizations)
+    response = client.post("/charities/", json=charity_data)
+    assert response.status_code == 200
+    assert len(response.json()["organizations"]) == 3
+
+    response = client.post("/charities/clear")
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_add_funds_to_charity():
+    response = client.post("/charities/clear")
+    assert response.status_code == 200
+
+    organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                     data_factory.generate_organization(True)]
+
+    charity_data = data_factory.generate_charity_request(organizations)
+    response = client.post("/charities/", json=charity_data)
+    assert response.status_code == 200
+    assert len(response.json()["organizations"]) == 3
+
+    user = data_factory.generate_user()
+    user_response = client.post("/user/", json=user)
+
+    seller_id = user_response.json()["userID"]
+    listing = data_factory.generate_listing(True)
+    price = listing["listing"]["price"]
+    create_response = client.post(f"/listing/{seller_id}", json=listing)
+
+    listingID = create_response.json()["listingID"]
+    listing["status"] = 'SOLD'
+    response = client.patch(f"/listing/{listingID}/{seller_id}", json=listing)
+
+    assert response.status_code == 200
+    assert response.json()["dateModified"] != response.json()["dateCreated"]
+
+    charity_response = client.get("/charities/current")
+    assert charity_response.status_code == 200
+    assert charity_response.json()["funds"] == price
+
+
+@pytest.mark.asyncio
+async def test_get_all_charities():
+    response = client.post("/charities/clear")
+    assert response.status_code == 200
+
+    organizations1 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+    organizations2 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+    organizations3 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                      data_factory.generate_organization(True)]
+
+    charity_data1 = data_factory.generate_charity_request(organizations1)
+    charity_data2 = data_factory.generate_charity_request(organizations2)
+    charity_data3 = data_factory.generate_charity_request(organizations3)
+
+    charity_data2["startDate"] = (datetime.now() - timedelta(days=2)).isoformat()
+    charity_data2["endDate"] = (datetime.now() - timedelta(days=1)).isoformat()
+
+    charity_data3["startDate"] = (datetime.now() + timedelta(days=1)).isoformat()
+    charity_data3["endDate"] = (datetime.now() + timedelta(days=2)).isoformat()
+
+    response = client.post("/charities/", json=charity_data1)
+    assert response.status_code == 200
+    response = client.post("/charities/", json=charity_data2)
+    assert response.status_code == 200
+    response = client.post("/charities/", json=charity_data3)
+    assert response.status_code == 200
+
+    response = client.get("/charities/")
+    assert response.status_code == 200
+    assert len(response.json()) == 3
