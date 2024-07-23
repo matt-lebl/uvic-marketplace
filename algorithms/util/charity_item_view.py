@@ -1,10 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func, cast, Integer
-from db.models import DB_User, DB_Listing, DB_Interaction
+from db.models import DB_User
 from db.deps import get_db
-
-router = APIRouter()
 
 def should_view_charity_items(user_id: str, db: Session = Depends(get_db)):
     

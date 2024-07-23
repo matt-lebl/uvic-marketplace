@@ -11,6 +11,8 @@ from util.elasticsearch_wrapper import ElasticsearchWrapper
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+from util.charity_item_view import should_view_charity_items
+
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
 
@@ -44,8 +46,14 @@ async def recommendations(*,
             print(f"Error fetching embedding for listing {listing_id}: {e}")
 
 
+    # Check if the user wants to view charity items
+    view_charity_items = await should_view_charity_items(user_id=authUserID, db=db)
+
+    # Modify the Elasticsearch query based on the user's preference
+    es_query = {"match_all": {}} if view_charity_items else {"bool": {"must_not": {"match": {"markedForCharity": True}}}}
+    
     # Get all embeddings directly from Elasticsearch and compute cosine similarity with the user vector
-    es_response = es.search(index="listings_index", body={"size": 10000, "query": {"match_all": {}}})
+    es_response = es.search(index="listings_index", body={"size": 10000, "query": es_query})
     similarities = []
     for hit in es_response['hits']['hits']:
         listing_id = hit['_id']
