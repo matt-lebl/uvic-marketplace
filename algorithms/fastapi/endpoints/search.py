@@ -73,7 +73,9 @@ async def search(*,
                                         description=doc["_source"].get("description"), 
                                         price=doc["_source"]["price"], 
                                         location=doc["_source"]["location"],
-                                        dateCreated="2024-05-23T15:30:00Z"))
+                                        dateCreated="2024-05-23T15:30:00Z",
+                                        **({"charityID": doc["_source"]["charityID"]} if "charityID" in doc["_source"] else {})
+                                        ))
                 
             print("Listings; {}".format(listings))
             return SearchResponse(items=listings, totalItems=len(listings))
