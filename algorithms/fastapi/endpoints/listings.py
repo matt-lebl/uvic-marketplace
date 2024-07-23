@@ -30,6 +30,10 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
         "lon": listing_data['location']['longitude']
     }
 
+    # Format charityID for Elasticsearch
+    if 'charityID' in listing_data:
+        listing_data['charityID'] = str(listing_data['charityID'])
+
     # Add the listing to Elasticsearch
     response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
     print(f'Added/updated ES database: {response}')
