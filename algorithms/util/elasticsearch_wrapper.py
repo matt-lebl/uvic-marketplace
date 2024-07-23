@@ -64,10 +64,19 @@ class ElasticsearchWrapper:
                                 "url": { "type": "keyword" }
                             }
                         },
+                        "charityID": {"type": "text"},
                         "embedding": { "type": "dense_vector", "dims": 768 }
                     }
                 }
             })
+        else:
+            # This else statement can be removed after it is executed in production one time
+            self._es.indices.put_mapping(index="listings_index",
+                                 body={
+                                     "properties": {
+                                         "charityID": { "type": "text" }
+                                     }
+                                 })
 
         if not self._es.indices.exists(index="interactions_index"):
             self._es.indices.create(index="interactions_index", 
