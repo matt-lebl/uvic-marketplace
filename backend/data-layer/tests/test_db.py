@@ -530,3 +530,25 @@ async def test_get_all_charities():
     response = client.get("/charities/")
     assert response.status_code == 200
     assert len(response.json()) == 3
+
+
+@pytest.mark.asyncio
+async def test_delete_charity():
+    response = client.post("/charities/clear")
+    assert response.status_code == 200
+    organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
+                     data_factory.generate_organization(True)]
+
+    charity_data = data_factory.generate_charity_request(organizations)
+    response = client.post("/charities/", json=charity_data)
+    assert response.status_code == 200
+    assert len(response.json()["organizations"]) == 3
+
+    char_id = response.json()["id"]
+
+    response = client.delete(f"/charities/{char_id}")
+    assert response.status_code == 200
+
+    response = client.get("/charities/")
+    assert response.status_code == 200
+    assert len(response.json()) == 0

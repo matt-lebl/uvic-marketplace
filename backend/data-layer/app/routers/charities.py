@@ -46,3 +46,12 @@ def get_current_charity(session: Session = Depends(get_session)):
 def clear_all(session: Session = Depends(get_session)):
     CharityTable.clear(session)
     return {"message": "cleared successfully"}
+
+
+@router.delete("/{id}")
+def delete_charity(id: str, session: Session = Depends(get_session)):
+    try:
+        return CharityTable.delete(id, session)
+    except Exception as e:
+        logger.error(e)
+        raise HTTPException(status_code=401, detail="Error deleting charity")
