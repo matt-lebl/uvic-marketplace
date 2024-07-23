@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -8,6 +8,7 @@ import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
+import AnnouncementHeader from './AnnouncementHeader'
 
 export default function Header() {
   const handleSearch = (query: string) => {
@@ -124,6 +125,7 @@ export default function Header() {
           </Box>
         </Toolbar>
       </AppBar>
+      <AnnouncementHeader />
     </Box>
   )
 }
