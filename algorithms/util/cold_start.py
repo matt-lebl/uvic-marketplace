@@ -8,18 +8,22 @@ router = APIRouter()
 
 # Function used to address cold start problem for new users
 def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
+    # Confirm user_id is not None
+    if not user_id:
+        raise HTTPException(status_code=400, detail="User ID is required")
+    
     # Add interactions for user based on the average interactions of all existing users in the interactions database.
     try:
         # Get all unique listing IDs
         listings = db.query(DB_Listing.listing_id).all()
         listing_ids = [listing.listing_id for listing in listings]
 
-        # Listing Error Handling
+        # Low number of listings in the database
         if not listing_ids:
-            raise Exception("No listings found in the database. Cannot calculate average interactions.")
+            return {"message": "No Interactions added, no listings found", "userID": user_id}
 
         if len(listing_ids) < 10:
-            raise Exception("There are less than 10 listings in the database. Cannot produce cold start.")
+            return {"message": "No Interactions added, too few listings", "userID": user_id}
 
         # Calculate the average number of interactions per listing
         avg_interactions_per_listing = {}
