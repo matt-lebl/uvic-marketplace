@@ -32,6 +32,7 @@ def upgrade() -> None:
     op.create_table('users',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('user_name', sa.String(), nullable=True),
+    sa.Column('see_charity_items', sa.Boolean(), nullable=True),
     sa.PrimaryKeyConstraint('user_id')
     )
     op.create_index(op.f('ix_users_user_id'), 'users', ['user_id'], unique=True)
