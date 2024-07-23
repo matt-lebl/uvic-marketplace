@@ -8,6 +8,7 @@ class DB_User(Base):
     __tablename__ = 'users'
     user_id = Column(String, primary_key=True, index=True)
     user_name = Column(String, index=True)
+    see_chairity_items = Column(bool, default=True)
 
 class DB_Listing(Base):
     __tablename__ = 'listings'
