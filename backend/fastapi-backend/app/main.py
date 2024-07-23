@@ -14,7 +14,7 @@ from services.env_vars import FB_ENV_VARS
 app = FastAPI()
 app.include_router(listings.listingsRouter)
 app.include_router(users.userRouter)
-app.include_router(charities.charity_router)
+app.include_router(charities.charityRouter)
 
 data_layer_url = config(FB_ENV_VARS.DATA_LAYER_URL, default="http://localhost:8002")
 """

@@ -72,7 +72,7 @@ class User(UserBase, table=True):
         session.delete(user)
         session.commit()
 
-        return {"message": "Listing deleted successfully"}
+        return {"message": "User deleted successfully"}
 
     @classmethod
     def get_by_id(cls, session: Session, userID: str):
@@ -305,7 +305,7 @@ class ListingReview(ListingReviewBase, table=True):
         session.delete(review)
         session.commit()
 
-        return {"message": "Listing deleted successfully"}
+        return {"message": "Review deleted successfully"}
 
     @classmethod
     def get_by_id(cls, session: Session, listing_review_id: str):
@@ -535,4 +535,15 @@ class CharityTable(SQLModel, table=True):
             session.add(current_charity)
             session.commit()
 
+    @classmethod
+    def delete(cls, id: str, session: Session):
+        statement = select(cls).where(cls.id == id)
+        charity = session.exec(statement).first()
 
+        if not charity:
+            raise HTTPException(status_code=404, detail=f"Charity not found: {id}")
+
+        session.delete(charity)
+        session.commit()
+
+        return {"message": "Charity deleted successfully"}
