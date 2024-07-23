@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Index
+from sqlalchemy import Column, Integer, String, ForeignKey, Index, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -8,7 +8,7 @@ class DB_User(Base):
     __tablename__ = 'users'
     user_id = Column(String, primary_key=True, index=True)
     user_name = Column(String, index=True)
-    see_chairity_items = Column(bool, default=True)
+    see_chairity_items = Column(Boolean, default=True)
 
 class DB_Listing(Base):
     __tablename__ = 'listings'
