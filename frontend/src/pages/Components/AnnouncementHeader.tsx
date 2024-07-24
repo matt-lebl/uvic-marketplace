@@ -4,25 +4,6 @@ import { CharityEntity } from '../../interfaces'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
-const mockCharity: CharityEntity = {
-  id: '1',
-  name: 'Mock Charity Event',
-  description: 'This is a mock charity event for testing purposes.',
-  startDate: new Date(),
-  endDate: new Date(),
-  imageUrl: 'mock-image-url',
-  organizations: [
-    {
-      name: 'Mock Organization',
-      logoUrl: 'mock-logo-url',
-      donated: 1000,
-      received: true,
-    },
-  ],
-  funds: 5000,
-  listingsCount: 10,
-}
-
 const AnnouncementHeader: React.FC = () => {
   const [charity, setCharity] = useState<CharityEntity | null>(null)
 
@@ -32,7 +13,6 @@ const AnnouncementHeader: React.FC = () => {
         const data = await APIGet<CharityEntity>('/api/charities/current')
         setCharity(data)
       } catch (error) {
-        setCharity(mockCharity)
         console.error('Failed to fetch current charity', error)
       }
     }
