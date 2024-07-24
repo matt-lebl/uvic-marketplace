@@ -16,6 +16,7 @@ from sqlmodel import (
 from datetime import datetime
 from core.schemas import ListingSchema, UserProfile, ItemStatus
 from fastapi import HTTPException
+from core.config import PST_TZ
 
 
 class UserBase(SQLModel):
@@ -511,13 +512,13 @@ class CharityTable(SQLModel, table=True):
 
     @classmethod
     def get_current_charity_id(cls, session: Session):
-        now = datetime.now()
+        now = datetime.now(PST_TZ)
         statement = select(cls.id).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
     @classmethod
     def get_current_charity(cls, session: Session):
-        now = datetime.now()
+        now = datetime.now(PST_TZ)
         statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
