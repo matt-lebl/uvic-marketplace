@@ -66,6 +66,6 @@ describe('Events page tests', () => {
         });
     
         expect(screen.getByText('Charity Events')).toBeInTheDocument();
-        expect(screen.getByText('Event not found')).toBeInTheDocument();
+        expect(screen.getAllByText('Event not found')).toBeInTheDocument();
     });
 })
