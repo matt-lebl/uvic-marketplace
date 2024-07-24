@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   FormControl,
   TextField,
@@ -7,11 +7,10 @@ import {
   Typography,
 } from '@mui/material'
 import { Button } from '@mui/material'
-import { Formik, FormikHelpers } from 'formik'
+import { Formik, FormikHelpers, FormikErrors } from 'formik'
 import { APIGet, APIPost } from '../../APIlink'
 import { NewUserReq, NewUser } from '../../interfaces'
 import QRCode from 'qrcode.react'
-import { Margin } from '@mui/icons-material'
 
 interface FormValues {
   firstName: string
@@ -32,7 +31,7 @@ const initialValues: FormValues = {
 }
 
 const validate = (values: FormValues) => {
-  const errors: Record<string, string> = {}
+  const errors: FormikErrors<FormValues> = {}
   if (!values.firstName) {
     errors.firstName = 'Required'
   }
@@ -113,7 +112,7 @@ export default function RegisterForm() {
       }
     } catch (error) {
       alert({
-        error: 'An error occured when sending validation email ' + error,
+        error: 'An error occurred when sending validation email ' + error,
       })
     }
   }
@@ -134,6 +133,9 @@ export default function RegisterForm() {
             handleBlur,
             handleSubmit,
             isSubmitting,
+            setFieldTouched,
+            setFieldValue,
+            validateField,
             status,
           }) => (
             <form onSubmit={handleSubmit} data-testid="register-form">
@@ -142,28 +144,48 @@ export default function RegisterForm() {
                   <TextField
                     type="text"
                     name="firstName"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setFieldValue('firstName', e.target.value)
+                      setFieldTouched('firstName', true, false)
+                      validateField('firstName')
+                    }}
+                    onBlur={(e) => {
+                      handleBlur(e)
+                      setFieldTouched('firstName', true, false)
+                    }}
                     value={values.firstName}
                     label="First Name"
-                    error={Boolean(errors.firstName) && touched.firstName}
+                    error={
+                      Boolean(errors.firstName) && Boolean(touched.firstName)
+                    }
                   />
                   <FormHelperText style={{ color: 'red' }}>
-                    {errors.firstName}
+                    {touched.firstName && errors.firstName}
                   </FormHelperText>
                 </FormControl>
                 <FormControl margin="normal" fullWidth sx={{ ml: 1 }}>
                   <TextField
                     type="text"
                     name="lastName"
-                    onChange={handleChange}
-                    onBlur={handleBlur}
+                    onChange={(e) => {
+                      handleChange(e)
+                      setFieldValue('lastName', e.target.value)
+                      setFieldTouched('lastName', true, false)
+                      validateField('lastName')
+                    }}
+                    onBlur={(e) => {
+                      handleBlur(e)
+                      setFieldTouched('lastName', true, false)
+                    }}
                     value={values.lastName}
                     label="Last Name"
-                    error={Boolean(errors.lastName) && touched.lastName}
+                    error={
+                      Boolean(errors.lastName) && Boolean(touched.lastName)
+                    }
                   />
                   <FormHelperText style={{ color: 'red' }}>
-                    {errors.lastName}
+                    {touched.lastName && errors.lastName}
                   </FormHelperText>
                 </FormControl>
               </Box>
@@ -171,62 +193,95 @@ export default function RegisterForm() {
                 <TextField
                   type="text"
                   name="username"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e)
+                    setFieldValue('username', e.target.value)
+                    setFieldTouched('username', true, false)
+                    validateField('username')
+                  }}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                    setFieldTouched('username', true, false)
+                  }}
                   value={values.username}
                   label="Username"
                   margin="normal"
-                  error={Boolean(errors.username) && touched.username}
+                  error={Boolean(errors.username) && Boolean(touched.username)}
                 />
                 <FormHelperText style={{ color: 'red' }}>
-                  {errors.username}
+                  {touched.username && errors.username}
                 </FormHelperText>
               </FormControl>
               <FormControl fullWidth>
                 <TextField
                   type="email"
                   name="email"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e)
+                    setFieldValue('email', e.target.value)
+                    setFieldTouched('email', true, false)
+                    validateField('email')
+                  }}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                    setFieldTouched('email', true, false)
+                  }}
                   value={values.email}
                   label="Email"
                   margin="normal"
-                  error={Boolean(errors.email) && touched.email}
+                  error={Boolean(errors.email) && Boolean(touched.email)}
                 />
                 <FormHelperText style={{ color: 'red' }}>
-                  {errors.email}
+                  {touched.email && errors.email}
                 </FormHelperText>
               </FormControl>
               <FormControl fullWidth>
                 <TextField
                   type="password"
                   name="password"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e)
+                    setFieldValue('password', e.target.value)
+                    setFieldTouched('password', true, false)
+                    validateField('password')
+                  }}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                    setFieldTouched('password', true, false)
+                  }}
                   value={values.password}
                   label="Password"
                   margin="normal"
-                  error={Boolean(errors.password) && touched.password}
+                  error={Boolean(errors.password) && Boolean(touched.password)}
                 />
                 <FormHelperText style={{ color: 'red' }}>
-                  {errors.password}
+                  {touched.password && errors.password}
                 </FormHelperText>
               </FormControl>
               <FormControl fullWidth>
                 <TextField
                   type="password"
                   name="confirmPassword"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                  onChange={(e) => {
+                    handleChange(e)
+                    setFieldValue('confirmPassword', e.target.value)
+                    setFieldTouched('confirmPassword', true, false)
+                    validateField('confirmPassword')
+                  }}
+                  onBlur={(e) => {
+                    handleBlur(e)
+                    setFieldTouched('confirmPassword', true, false)
+                  }}
                   value={values.confirmPassword}
                   label="Confirm Password"
                   margin="normal"
                   error={
-                    Boolean(errors.confirmPassword) && touched.confirmPassword
+                    Boolean(errors.confirmPassword) &&
+                    Boolean(touched.confirmPassword)
                   }
                 />
                 <FormHelperText style={{ color: 'red' }}>
-                  {errors.confirmPassword}
+                  {touched.confirmPassword && errors.confirmPassword}
                 </FormHelperText>
               </FormControl>
               {status && status.error && (
