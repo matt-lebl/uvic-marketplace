@@ -9,17 +9,9 @@ import {
   InputAdornment,
 } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
-import { ListingEntity } from '../interfaces'
+import { ListingEntity, ListingResponse } from '../interfaces'
 import { APIPost } from '../APIlink'
-
-async function apiSubmit(listing: Partial<ListingEntity>) {
-  try {
-    const response = await APIPost('/api/listing', { listing })
-    console.log('Response:', response)
-  } catch (error) {
-    console.log('Request Error:', error)
-  }
-}
+import { useNavigate } from 'react-router-dom'
 
 function CreateListing() {
   const [title, setTitle] = useState<string>('')
@@ -32,6 +24,8 @@ function CreateListing() {
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -50,6 +44,19 @@ function CreateListing() {
       console.error('Geolocation is not supported by this browser.')
     }
   }, [])
+
+  const apiSubmit = async (listing: Partial<ListingEntity>) => {
+    try {
+      const response: ListingResponse | undefined = await APIPost(
+        '/api/listing',
+        { listing }
+      )
+      console.log('Response:', response)
+      if (response) navigate(`/listing/${response.listing.listingID}`)
+    } catch (error) {
+      console.log('Request Error:', error)
+    }
+  }
 
   const handlePhotoUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files as FileList
