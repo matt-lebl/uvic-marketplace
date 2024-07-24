@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Index, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import ARRAY 
 
 Base = declarative_base()
 
@@ -9,7 +10,7 @@ class DB_User(Base):
     user_id = Column(String, primary_key=True, index=True)
     user_name = Column(String, index=True)
     see_charity_items = Column(Boolean, default=True)
-    blacklisted_items = Column(String)
+    blacklisted_items = Column(ARRAY(String))  # Define as an array of strings
 
 class DB_Listing(Base):
     __tablename__ = 'listings'

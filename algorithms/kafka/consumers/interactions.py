@@ -39,8 +39,18 @@ def stop_suggesting_item_type(data: dict, db: Session):
     if listing_id is None:
         raise KafkaException(status_code=401, detail="No listingID in request")
 
-    # add listing_id to blacklisted_items
-    db.query(DB_User).filter(DB_User.user_id == user_id).update({DB_User.blacklisted_items: DB_User.blacklisted_items + [listing_id]})
+    # Fetch the user
+    user = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+
+    if user:
+        # Ensure blacklisted_items is not None
+        if user.blacklisted_items is None:
+            user.blacklisted_items = []
+
+        # Append listing_id if not already in the list
+        if listing_id not in user.blacklisted_items:
+            user.blacklisted_items.append(listing_id)
+            db.commit()
 
     # decrease item interaction score
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
