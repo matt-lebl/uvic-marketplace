@@ -1,12 +1,59 @@
 import React from 'react'
 import { useState } from 'react'
-import { Box, Typography, Grid, Pagination } from '@mui/material'
+import { Box, Typography, Grid, Pagination, Button } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary } from '../../interfaces'
+import { APIGet } from '../../APIlink'
 
-// Mock list of recommended listings with explicit type
-const recommendedListings: ListingSummary[] = []
+let recommendedListings: ListingSummary[] = [
+  // {
+  //   listingID: '1',
+  //   title: 'Test Listing',
+  //   description: 'This is a test listing',
+  //   sellerID: '1',
+  //   sellerName: 'Test Seller',
+  //   charityID: '1',
+  //   price: 10,
+  //   dateCreated: '2021-10-10',
+  //   imageUrl: 'https://via.placeholder.com/150',
+  // },
+  // {
+  //   listingID: '2',
+  //   title: 'Test Listing 2',
+  //   description: 'This is a test listing 2',
+  //   sellerID: '2',
+  //   sellerName: 'Test Seller 2',
+  //   charityID: '2',
+  //   price: 20,
+  //   dateCreated: '2021-10-11',
+  //   imageUrl: 'https://via.placeholder.com/150',
+  // },
+  // {
+  //   listingID: '3',
+  //   title: 'Test Listing 3',
+  //   description: 'This is a test listing 3',
+  //   sellerID: '3',
+  //   sellerName: 'Test Seller 3',
+  //   charityID: '3',
+  //   price: 30,
+  //   dateCreated: '2021-10-12',
+  //   imageUrl: 'https://via.placeholder.com/150',
+  // }
+]
+
+const retrieveRecommendedListings = async () => {
+  try {
+    const response: undefined | ListingSummary[] = await APIGet(
+      '/api/recommendations'
+    )
+    if (response) {
+      recommendedListings = response
+    }
+  } catch (error) {
+    console.error('Error fetching recommended listings:', error)
+  }
+}
 
 // TODO: Implement hooks for fetching recommended listings, and dynamically render them
 export default function RecommendedListings() {
@@ -28,6 +75,9 @@ export default function RecommendedListings() {
 
   // Calculate total pages
   const totalPages = Math.ceil(recommendedListings.length / itemsPerPage)
+
+  // Fetch recommended listings
+  retrieveRecommendedListings()
 
   return (
     <Box
@@ -58,6 +108,11 @@ export default function RecommendedListings() {
           paddingBottom: 3,
         }}
       >
+        {recommendedListings.length === 0 ? (
+        <Typography variant="h6" align="center" mt={3}>
+          Nothing found here, check back later!
+        </Typography>
+        ) : (
         <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
           {currentListings.map((listing, index) => (
             <Grid item sx={{ width: '100%' }} key={index}>
@@ -65,13 +120,16 @@ export default function RecommendedListings() {
             </Grid>
           ))}
         </Grid>
+        )}
       </Box>
-      <Pagination
+      {recommendedListings.length != 0 ? 
+        <Pagination
         count={totalPages}
         page={currentPage}
         onChange={handleChangePage}
         sx={{ marginTop: 2 }}
-      />
+        />
+      : null}
     </Box>
   )
 }
