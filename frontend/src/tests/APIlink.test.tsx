@@ -375,7 +375,7 @@ describe('GET', () => {
         price: 50,
         dateCreated: '2024-05-23T15:30:00Z',
         imageUrl: 'image URL for first Image',
-        charityID: '1'
+        charityID: '1',
       },
     ]
 

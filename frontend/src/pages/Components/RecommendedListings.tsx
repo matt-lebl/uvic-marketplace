@@ -33,9 +33,7 @@ export default function RecommendedListings() {
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
-        const res = await APIGet<ListingSummary[]>(
-          `/api/recommendations`
-        )
+        const res = await APIGet<ListingSummary[]>(`/api/recommendations`)
         if (res) {
           recommendedListings = res
         }
@@ -49,7 +47,10 @@ export default function RecommendedListings() {
   const handleRemoveRecommendation = async (listingID: string) => {
     // Remove the recommendation from the list
     try {
-      const response = await APIPost(`/api/recommendations/stop/${listingID}`, {})
+      const response = await APIPost(
+        `/api/recommendations/stop/${listingID}`,
+        {}
+      )
       if (response) {
         window.location.reload()
       }
@@ -88,30 +89,37 @@ export default function RecommendedListings() {
         }}
       >
         {recommendedListings.length === 0 ? (
-        <Typography variant="h6" align="center" mt={3}>
-          Nothing found here, check back later!
-        </Typography>
+          <Typography variant="h6" align="center" mt={3}>
+            Nothing found here, check back later!
+          </Typography>
         ) : (
-        <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-          {currentListings.map((listing, index) => (
-            <Grid item sx={{ width: '100%' }} key={index}>
-              <ListingCard {...listing} />
-              <Typography variant="body2" fontSize={13} align="right" mt={1} sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleRemoveRecommendation(listing.listingID)}>
+          <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+            {currentListings.map((listing, index) => (
+              <Grid item sx={{ width: '100%' }} key={index}>
+                <ListingCard {...listing} />
+                <Typography
+                  variant="body2"
+                  fontSize={13}
+                  align="right"
+                  mt={1}
+                  sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={() => handleRemoveRecommendation(listing.listingID)}
+                >
                   Remove recommendation
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
         )}
       </Box>
-      {recommendedListings.length != 0 ? 
+      {recommendedListings.length != 0 ? (
         <Pagination
-        count={totalPages}
-        page={currentPage}
-        onChange={handleChangePage}
-        sx={{ marginTop: 2 }}
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+          sx={{ marginTop: 2 }}
         />
-      : null}
+      ) : null}
     </Box>
   )
 }

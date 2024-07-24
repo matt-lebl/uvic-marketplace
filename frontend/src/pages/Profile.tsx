@@ -50,7 +50,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-02',
     imageUrl:
       'https://images.unsplash.com/photo-1611967164521-abae8fba4668?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNvdWNofGVufDB8fDB8fHww',
-      charityID: '1',
+    charityID: '1',
   },
   {
     listingID: '3',
