@@ -1,59 +1,12 @@
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Box, Typography, Grid, Pagination, Button } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary } from '../../interfaces'
-import { APIGet } from '../../APIlink'
+import { APIGet, APIPost } from '../../APIlink'
 
-let recommendedListings: ListingSummary[] = [
-  // {
-  //   listingID: '1',
-  //   title: 'Test Listing',
-  //   description: 'This is a test listing',
-  //   sellerID: '1',
-  //   sellerName: 'Test Seller',
-  //   charityID: '1',
-  //   price: 10,
-  //   dateCreated: '2021-10-10',
-  //   imageUrl: 'https://via.placeholder.com/150',
-  // },
-  // {
-  //   listingID: '2',
-  //   title: 'Test Listing 2',
-  //   description: 'This is a test listing 2',
-  //   sellerID: '2',
-  //   sellerName: 'Test Seller 2',
-  //   charityID: '2',
-  //   price: 20,
-  //   dateCreated: '2021-10-11',
-  //   imageUrl: 'https://via.placeholder.com/150',
-  // },
-  // {
-  //   listingID: '3',
-  //   title: 'Test Listing 3',
-  //   description: 'This is a test listing 3',
-  //   sellerID: '3',
-  //   sellerName: 'Test Seller 3',
-  //   charityID: '3',
-  //   price: 30,
-  //   dateCreated: '2021-10-12',
-  //   imageUrl: 'https://via.placeholder.com/150',
-  // }
-]
-
-const retrieveRecommendedListings = async () => {
-  try {
-    const response: undefined | ListingSummary[] = await APIGet(
-      '/api/recommendations'
-    )
-    if (response) {
-      recommendedListings = response
-    }
-  } catch (error) {
-    console.error('Error fetching recommended listings:', error)
-  }
-}
+let recommendedListings: ListingSummary[] = []
 
 // TODO: Implement hooks for fetching recommended listings, and dynamically render them
 export default function RecommendedListings() {
@@ -77,7 +30,33 @@ export default function RecommendedListings() {
   const totalPages = Math.ceil(recommendedListings.length / itemsPerPage)
 
   // Fetch recommended listings
-  retrieveRecommendedListings()
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const res = await APIGet<ListingSummary[]>(
+          `/api/recommendations`
+        )
+        if (res) {
+          recommendedListings = res
+        }
+      } catch (error) {
+        console.log('Error fetching recommended listings:', error)
+      }
+    }
+    fetchRecommendations()
+  }, [])
+
+  const handleRemoveRecommendation = async (listingID: string) => {
+    // Remove the recommendation from the list
+    try {
+      const response = await APIPost(`/api/recommendations/stop/${listingID}`, {})
+      if (response) {
+        window.location.reload()
+      }
+    } catch (error) {
+      console.log('Error removing recommendation:', error)
+    }
+  }
 
   return (
     <Box
@@ -117,6 +96,9 @@ export default function RecommendedListings() {
           {currentListings.map((listing, index) => (
             <Grid item sx={{ width: '100%' }} key={index}>
               <ListingCard {...listing} />
+              <Typography variant="body2" fontSize={13} align="right" mt={1} sx={{ textDecoration: 'underline', cursor: 'pointer' }} onClick={() => handleRemoveRecommendation(listing.listingID)}>
+                  Remove recommendation
+              </Typography>
             </Grid>
           ))}
         </Grid>
