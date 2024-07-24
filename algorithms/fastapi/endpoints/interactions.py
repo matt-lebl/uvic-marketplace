@@ -77,7 +77,7 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
     if interaction:
         interaction.interaction_count = -30  # Negative influence
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-5)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-30)
 
     try:
         db.add(interaction)
