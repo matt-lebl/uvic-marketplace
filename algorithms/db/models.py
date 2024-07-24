@@ -9,6 +9,7 @@ class DB_User(Base):
     user_id = Column(String, primary_key=True, index=True)
     user_name = Column(String, index=True)
     see_charity_items = Column(Boolean, default=True)
+    blacklisted_items = Column(String)
 
 class DB_Listing(Base):
     __tablename__ = 'listings'

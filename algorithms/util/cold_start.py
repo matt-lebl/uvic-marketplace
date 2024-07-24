@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, cast, Integer
-from db.models import DB_Listing, DB_Interaction
+from db.models import DB_Listing, DB_Interaction, DB_User
 from db.deps import get_db
 
 router = APIRouter()
@@ -11,6 +11,12 @@ def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
     # Confirm user_id is not None
     if not user_id:
         raise HTTPException(status_code=400, detail="User ID is required")
+    
+    # Check if the user already exists
+    existing_user = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+    if not existing_user:
+        new_user = DB_User(user_id=user_id)
+        db.add(new_user)
     
     # Add interactions for user based on the average interactions of all existing users in the interactions database.
     try:

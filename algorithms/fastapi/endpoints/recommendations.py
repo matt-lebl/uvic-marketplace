@@ -47,13 +47,24 @@ async def recommendations(*,
 
 
     # Check if the user wants to view charity items
-    view_charity_items = await should_view_charity_items(user_id=authUserID, db=db)
+    view_charity_items = should_view_charity_items(user_id=authUserID, db=db)
 
-    # Modify the Elasticsearch query based on the user's preference
+    # Modify the Elasticsearch query based on charity item preference and blacklisted items
     es_query = {"match_all": {}} if view_charity_items else {"bool": {"must_not": {"match": {"markedForCharity": True}}}}
     
     # Get all embeddings directly from Elasticsearch and compute cosine similarity with the user vector
     es_response = es.search(index="listings_index", body={"size": 10000, "query": es_query})
+
+    # Filter out blacklisted items
+    blacklisted_items = db.query(DB_User.blacklisted_items).filter(DB_User.user_id == authUserID).first()
+    if blacklisted_items and blacklisted_items.blacklisted_items:
+        blacklisted_item_ids = blacklisted_items.blacklisted_items
+    else:
+        blacklisted_item_ids = []
+
+    es_response['hits']['hits'] = [hit for hit in es_response['hits']['hits'] if hit['_id'] not in blacklisted_item_ids]
+    
+    # Compute cosine similarity between user vector and listing embeddings    
     similarities = []
     for hit in es_response['hits']['hits']:
         listing_id = hit['_id']
