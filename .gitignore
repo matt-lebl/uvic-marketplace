@@ -33,3 +33,9 @@ postgres_data/*
 
 **/client_secret.json
 **/token.json
+
+# Cypress
+node_modules/
+cypress/screenshots/
+cypress/videos/
+cypress/logs/
