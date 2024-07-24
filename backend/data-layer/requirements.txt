@@ -46,3 +46,4 @@ pyotp==2.9.0
 argon2-cffi-bindings==21.2.0
 argon2-cffi==23.1.0
 python-decouple==3.7
+pytz==2024.1
