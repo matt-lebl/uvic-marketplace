@@ -5,29 +5,12 @@ import { useState, useEffect } from 'react'
 import { APIGet } from '../APIlink'
 import { CharityEntity, OrgEntity } from '../interfaces'
 
-const nullorg: OrgEntity = {
-    name: 'Organization Name',
-    logoUrl: 'https://plus.unsplash.com/premium_vector-1719413717708-4205e5cbe61c?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    donated: 5,
-    received: true
-}
 
-const nullresponse: CharityEntity = {
-    id: '1',
-    name: 'Event not found',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', // need a date/time obj
-    startDate: '01/08/24',
-    endDate: '01/09/24',
-    imageUrl: 'https://plus.unsplash.com/premium_vector-1682298589041-29ca4c47bebb?q=80&w=2124&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%',
-    organizations: [nullorg, nullorg, nullorg, nullorg, nullorg, nullorg],
-    funds: 5000,
-    listingsCount: 0
-}
 
 export default function Events() {
 
-    const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>(nullresponse)
-    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([nullresponse, nullresponse, nullresponse])
+    const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>()
+    const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>()
 
     const fetchMainEvent = async () => {
         try {
@@ -54,6 +37,12 @@ export default function Events() {
     useEffect(() => {
         fetchAllEvents()
     })
+
+    if (!curCharityEvent || !charityEvents){
+        return(
+            <Typography>No Events Found</Typography>
+        )
+    }
 
     return (
         <div className='EventsPage'>
