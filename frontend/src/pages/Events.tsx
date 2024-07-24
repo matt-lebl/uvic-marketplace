@@ -63,8 +63,8 @@ export default function Events() {
                     <Grid item md={12}>
                         <EventCard eventData={curCharityEvent} />
                     </Grid>
-                    {charityEvents.map((eventData) => (
-                        <Grid item md={6} key={eventData.id} >
+                    {charityEvents.map((eventData, key) => (
+                        <Grid item md={6} key={eventData.id + key} >
                             <EventCard eventData={eventData} />
                         </Grid>
                     ))}

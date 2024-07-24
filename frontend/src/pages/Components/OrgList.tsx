@@ -11,8 +11,8 @@ const OrgList: React.FC<Props> = ({ orgData, eventID }) => {
     return (
         <div className={'OrgList#' + eventID}>
             <List>
-                {orgData.map((orgdata) => (
-                    <ListItem key={orgdata.name} sx={{p:'0'}}>
+                {orgData.map((orgdata, key) => (
+                    <ListItem key={orgdata.name + key} sx={{p:'0'}}>
                         <Box display='flex' flexDirection='row'>
                             <Box width='80px'>
                                 <img src={orgdata.logoUrl} />
