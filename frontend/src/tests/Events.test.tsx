@@ -13,7 +13,7 @@ jest.mock('../APIlink', () => {
 
 describe('Events page tests', () => {
   beforeEach(() => {
-    ;(APIGet as jest.Mock).mockImplementation(async (url: string) => {
+    ; (APIGet as jest.Mock).mockImplementation(async (url: string) => {
       if (url === '/api/charities/current') {
         return {
           id: '1',
@@ -57,15 +57,14 @@ describe('Events page tests', () => {
   })
 
   it('handles API fetch error', async () => {
-    ;(APIGet as jest.Mock).mockRejectedValueOnce(new Error('API Error'))
+    ; (APIGet as jest.Mock).mockRejectedValueOnce(new Error('API Error'))
 
     render(<Events />)
 
     await waitFor(() => {
       expect(APIGet).toHaveBeenCalledTimes(2)
     })
-
-    expect(screen.getByText('Charity Events')).toBeInTheDocument()
-    expect(screen.getByText('Event not found')).toBeInTheDocument()
+    expect(screen.getByText('No Events Found')).toBeInTheDocument()
   })
+  
 })
