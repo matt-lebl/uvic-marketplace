@@ -16,6 +16,7 @@ const mockListings: ListingSummary[] = [
         price: 100,
         dateCreated: '2024-01-01',
         imageUrl: 'https://example.com/image1.jpg',
+        charityID: 'charity-1',
     },
     {
         listingID: 'listing-2',
@@ -26,6 +27,7 @@ const mockListings: ListingSummary[] = [
         price: 200,
         dateCreated: '2024-01-02',
         imageUrl: 'https://example.com/image2.jpg',
+        charityID: 'charity-2',
     },
     {
         listingID: 'listing-3',
@@ -36,6 +38,7 @@ const mockListings: ListingSummary[] = [
         price: 300,
         dateCreated: '2024-01-03',
         imageUrl: 'https://example.com/image3.jpg',
+        charityID: 'charity-3',
     },
     {
         listingID: 'listing-4',
@@ -46,6 +49,7 @@ const mockListings: ListingSummary[] = [
         price: 400,
         dateCreated: '2024-01-04',
         imageUrl: 'https://example.com/image4.jpg',
+        charityID: 'charity-4',
     },
     {
         listingID: 'listing-5',
@@ -56,6 +60,7 @@ const mockListings: ListingSummary[] = [
         price: 500,
         dateCreated: '2024-01-05',
         imageUrl: 'https://example.com/image5.jpg',
+        charityID: 'charity-5',
     },
 ];
 
@@ -73,7 +78,7 @@ describe('SearchListings Component', () => {
     test('renders SearchListings component', async () => {
         render(
             <DataProvider>
-                <SearchListings onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
+                <SearchListings initalItems={[] as ListingSummary[]} initialTotalItems={0} onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
                     return {
                         totalItems: 5,
                         items: mockListings,

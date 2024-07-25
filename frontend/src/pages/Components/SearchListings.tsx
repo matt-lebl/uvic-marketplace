@@ -7,13 +7,15 @@ import { ListingSummary, SearchRequest, Sort } from '../../interfaces'
 import { AddData, DataContext, GetData } from '../../DataContext'
 import SelectInput from './SelectInput'
 
-const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "0"); // ?? "0" only exists to prevent type errors. It should never be reached.
+const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
 interface props {
+  initalItems: ListingSummary[] | undefined;
+  initialTotalItems: number | undefined;
   onSearch: (searchRequest: SearchRequest) => Promise<{ totalItems: number, items: ListingSummary[] }>;
 }
 
-const SearchListings: React.FC<props> = ({ onSearch }) => {
+const SearchListings: React.FC<props> = ({ initalItems, initialTotalItems, onSearch }) => {
   const searchRequestID = "searchRequest"
   const context = useContext(DataContext);
 
@@ -30,12 +32,11 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
     limit: BASESEARCHLIMIT,
   }
 
-
   const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? blankSearchRequest)
   const [currentPage, setCurrentPage] = useState<number>(searchRequest.page ?? 1)
   const [itemsPerPage, setItemsPerPage] = useState<number>(searchRequest.limit ?? BASESEARCHLIMIT);
-  const [listings, setListings] = useState<ListingSummary[]>([] as ListingSummary[])
-  const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
+  const [listings, setListings] = useState<ListingSummary[]>(initalItems ?? [] as ListingSummary[])
+  const [totalListingsCount, setTotalListingsCount] = useState<number>(initialTotalItems ?? 0)
   const [sorting, setSorting] = useState<Sort>(searchRequest.sort ?? Sort.RELEVANCE)
 
 
@@ -45,7 +46,11 @@ const SearchListings: React.FC<props> = ({ onSearch }) => {
     setTotalListingsCount(res?.totalItems ?? 0)
   }
 
-  setTimeout(async () => { doSearch() }, 1000);
+  // setTimeout(async () => {
+
+  //   console.log("searchRequest", searchRequest)
+  //   doSearch()
+  // }, 1000);
 
   // Calculate the current listings to display
 

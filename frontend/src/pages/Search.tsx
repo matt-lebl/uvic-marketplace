@@ -1,12 +1,21 @@
 import './App.css'
 import { Box } from '@mui/material'
-import { SearchRequest, ListingSummary, SearchResultsResponse } from '../interfaces'
+import { SearchRequest, ListingSummary, SearchResultsResponse, Sort } from '../interfaces'
 import SearchListings from './Components/SearchListings'
 import { APIGet } from '../APIlink'
+import { DataContext, GetData } from '../DataContext'
+import { useContext, useEffect, useState } from 'react'
 
-
+const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
 function Search() {
+  const searchRequestID = "searchRequest"
+  console.log("Search Page");
+  const context = useContext(DataContext);
+
+  const [listings, setListings] = useState<ListingSummary[]>([] as ListingSummary[])
+  const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
+
 
   const searchFunc = async (searchRequest: SearchRequest): Promise<{ totalItems: number, items: ListingSummary[] }> => {
     // Add your logic here
@@ -25,6 +34,28 @@ function Search() {
     finally { return results }
 
   }
+  useEffect(() => {
+    setTimeout(async () => {
+      console.log("searchRequest")
+
+      const blankSearchRequest: SearchRequest = {
+        query: '',
+        minPrice: undefined,
+        maxPrice: undefined,
+        status: undefined,
+        searchType: undefined,
+        latitude: 0,
+        longitude: 0,
+        sort: Sort.RELEVANCE,
+        page: 1,
+        limit: BASESEARCHLIMIT,
+      }
+
+      const res = await searchFunc(GetData(context, searchRequestID) ?? blankSearchRequest);
+      setListings(res?.items ?? [] as ListingSummary[])
+      setTotalListingsCount(res?.totalItems ?? 0)
+    }, 1000);
+  });
 
   return (
     <div className="Home">
@@ -39,7 +70,7 @@ function Search() {
             width: '90%',
           }}
         >
-          <SearchListings onSearch={searchFunc} />
+          <SearchListings initalItems={listings} initialTotalItems={totalListingsCount} onSearch={searchFunc} />
         </Box>
       </header>
     </div>
