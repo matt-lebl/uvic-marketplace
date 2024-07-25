@@ -38,6 +38,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-01',
     imageUrl:
       'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y291Y2h8ZW58MHx8MHx8fDA%3D',
+    charityID: '1',
   },
   {
     listingID: '2',
@@ -49,6 +50,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-02',
     imageUrl:
       'https://images.unsplash.com/photo-1611967164521-abae8fba4668?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNvdWNofGVufDB8fDB8fHww',
+    charityID: '1',
   },
   {
     listingID: '3',
@@ -60,6 +62,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-01',
     imageUrl:
       'https://images.unsplash.com/photo-1511401139252-f158d3209c17?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGNvdWNofGVufDB8fDB8fHww',
+    charityID: '1',
   },
   {
     listingID: '4',
@@ -71,6 +74,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-02',
     imageUrl:
       'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGNvdWNofGVufDB8fDB8fHww',
+    charityID: '1',
   },
   {
     listingID: '5',
@@ -82,6 +86,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-01',
     imageUrl:
       'https://images.unsplash.com/photo-1590251024078-8a6d9f90b02d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGNvdWNofGVufDB8fDB8fHww',
+    charityID: '1',
   },
   {
     listingID: '6',
@@ -93,6 +98,7 @@ const mockListings: ListingSummary[] = [
     dateCreated: '2023-01-02',
     imageUrl:
       'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fGNvdWNofGVufDB8fDB8fHww',
+    charityID: '1',
   },
 ]
 

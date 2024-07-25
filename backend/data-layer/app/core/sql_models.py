@@ -11,6 +11,7 @@ from sqlmodel import (
     ARRAY,
     String,
     or_,
+    delete
 )
 from datetime import datetime
 from core.schemas import ListingSchema, UserProfile, ItemStatus
@@ -71,7 +72,7 @@ class User(UserBase, table=True):
         session.delete(user)
         session.commit()
 
-        return {"message": "Listing deleted successfully"}
+        return {"message": "User deleted successfully"}
 
     @classmethod
     def get_by_id(cls, session: Session, userID: str):
@@ -143,7 +144,7 @@ class ListingBase(SQLModel):
     title: str
     description: str | None = None
     price: float | None = None
-    status: str | None = Field(default="AVAILABLE", index=True)
+    status: ItemStatus | None = Field(default=ItemStatus.AVAILABLE, index=True)
     dateCreated: datetime | None = Field(index=True)
     dateModified: datetime | None = None
     images: str | None
@@ -169,7 +170,7 @@ class Listing(ListingBase, table=True):
 
     @classmethod
     def update(
-        cls, seller_id: str, listingID: str, status: str, session: Session, **kwargs
+            cls, seller_id: str, listingID: str, status: str, session: Session, **kwargs
     ):
         statement = select(cls).where(cls.listingID == listingID)
         listing = session.exec(statement).first()
@@ -179,10 +180,8 @@ class Listing(ListingBase, table=True):
             raise HTTPException(status_code=403, detail="Permissions error")
         for key, value in kwargs.items():
             setattr(listing, key, value)
-        if status == ItemStatus.SOLD and kwargs["charityId"]:
-            charity = CharityTable.get_current_charity(session)
-            price = kwargs["price"]
-            OrganizationTable.update_donated(charity.organizations, price, session)
+        if status == "SOLD" and listing.charityId:
+            CharityTable.update_current_funds(listing.price, session)
         session.add(listing)
         session.commit()
         session.refresh(listing)
@@ -306,7 +305,7 @@ class ListingReview(ListingReviewBase, table=True):
         session.delete(review)
         session.commit()
 
-        return {"message": "Listing deleted successfully"}
+        return {"message": "Review deleted successfully"}
 
     @classmethod
     def get_by_id(cls, session: Session, listing_review_id: str):
@@ -449,19 +448,21 @@ class OrganizationTable(SQLModel, table=True):
         return organization
 
     @classmethod
+    def create_from_list(cls, orgs: list[dict], session: Session):
+        for org_dict in orgs:
+            org = cls(**org_dict)
+            session.add(org)
+        session.commit()
+
+    @classmethod
+    def get_from_list(cls, orgs: list[str], session: Session):
+        statement = select(cls).where(cls.id.in_(orgs))
+        return session.exec(statement).all()
+
+    @classmethod
     def get_by_id(cls, session: Session, org_id: str):
         statement = select(cls).where(cls.id == org_id)
         return session.exec(statement).first()
-
-    @classmethod
-    def update_donated(cls, orgs: list[str], amount: float, session: Session):
-        statement = select(cls).where(and_(cls.id in orgs, cls.receiving))
-        org = session.exec(statement).first()
-        donated = org.donated + amount
-        setattr(org, "donated", donated)
-        session.add(org)
-        session.commit()
-        session.refresh(org)
 
 
 class CharityTable(SQLModel, table=True):
@@ -472,6 +473,23 @@ class CharityTable(SQLModel, table=True):
     endDate: datetime
     imageUrl: str | None
     organizations: list[str] = Field(sa_column=Column(ARRAY(String)))
+    funds: float = Field(default=0.0)
+
+    def convert_to_schema(self, session: Session):
+        data = self.model_dump()
+        data["organizations"] = OrganizationTable.get_from_list(self.organizations, session)
+        return data
+
+    @classmethod
+    def add_orgs_to_db(cls, charity_data: dict, uuids: list[str], session):
+        org_list = []
+        organizations = charity_data["organizations"]
+        for i in range(len(organizations)):
+            organizations[i]["id"] = uuids[i]
+            org_list.append(organizations[i])
+            charity_data["organizations"][i] = uuids[i]
+        OrganizationTable.create_from_list(org_list, session)
+        return charity_data
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -502,3 +520,30 @@ class CharityTable(SQLModel, table=True):
         now = datetime.now()
         statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
+
+    @classmethod
+    def clear(cls, session: Session):
+        statement = delete(cls)
+        session.exec(statement)
+        session.commit()
+
+    @classmethod
+    def update_current_funds(cls, funds: float, session: Session):
+        current_charity = cls.get_current_charity(session)
+        if current_charity:
+            current_charity.funds += funds
+            session.add(current_charity)
+            session.commit()
+
+    @classmethod
+    def delete(cls, id: str, session: Session):
+        statement = select(cls).where(cls.id == id)
+        charity = session.exec(statement).first()
+
+        if not charity:
+            raise HTTPException(status_code=404, detail=f"Charity not found: {id}")
+
+        session.delete(charity)
+        session.commit()
+
+        return {"message": "Charity deleted successfully"}

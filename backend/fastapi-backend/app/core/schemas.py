@@ -212,10 +212,10 @@ class Charity(BaseModel):
 class CharityRequest(BaseModel):
     name: str | None = Field(None, description='Name of the charity')
     description: str | None = Field(None, description='Description of the charity')
-    startDate: datetime | None = Field(
+    startDate: str | None = Field(
         None, description='Start date of the charity event'
     )
-    endDate: datetime | None = Field(
+    endDate: str | None = Field(
         None, description='End date of the charity event'
     )
     imageUrl: str | None = Field(None, description="URL of the charity's image")

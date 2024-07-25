@@ -5,9 +5,11 @@ import { useState, useEffect } from 'react'
 import { APIGet } from '../APIlink'
 import { CharityEntity, OrgEntity } from '../interfaces'
 
-
-
 export default function Events() {
+  const [curCharityEvent, setCurCharityEvent] =
+    useState<CharityEntity>()
+  const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([])
+
 
     const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>()
     const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>()
@@ -19,24 +21,27 @@ export default function Events() {
         } catch (error) {
             console.log(error)
         }
+
     }
+  }
 
-    const fetchAllEvents = async () => {
-        try {
-            const response: Array<CharityEntity> = await APIGet('/api/charities')
-            setCharityEvents(response)
-        } catch (error) {
-            console.log(error)
-        }
+  const fetchAllEvents = async () => {
+    try {
+      const response: Array<CharityEntity> = await APIGet('/api/charities')
+      setCharityEvents(response)
+    } catch (error) {
+      console.log(error)
     }
+  }
 
-    useEffect(() => {
-        fetchMainEvent()
-    })
+  useEffect(() => {
+    fetchMainEvent()
+  })
 
-    useEffect(() => {
-        fetchAllEvents()
-    })
+  useEffect(() => {
+    fetchAllEvents()
+  })
+
 
     if (!curCharityEvent || !charityEvents){
         return(
@@ -62,3 +67,4 @@ export default function Events() {
         </div>
     )
 }
+
