@@ -64,6 +64,7 @@ describe('Events page tests', () => {
     await waitFor(() => {
       expect(APIGet).toHaveBeenCalledTimes(2)
     })
+    expect(screen.getByText('No Events Found')).toBeInTheDocument()
   })
   
 })
