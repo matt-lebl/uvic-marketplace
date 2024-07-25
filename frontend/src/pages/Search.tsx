@@ -55,7 +55,7 @@ function Search() {
       setListings(res?.items ?? [] as ListingSummary[])
       setTotalListingsCount(res?.totalItems ?? 0)
     }, 1000);
-  });
+  }, []);
 
   return (
     <div className="Home">
