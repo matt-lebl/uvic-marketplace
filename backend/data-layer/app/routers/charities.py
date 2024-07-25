@@ -42,7 +42,7 @@ def get_current_charity(session: Session = Depends(get_session)):
     return charity.convert_to_schema(session)
 
 
-@router.post("/clear")
+@router.post("/clear/")
 def clear_all(session: Session = Depends(get_session)):
     CharityTable.clear(session)
     return {"message": "cleared successfully"}
