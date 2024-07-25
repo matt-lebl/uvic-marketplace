@@ -32,7 +32,7 @@ async def get_listing(id: str, authUserID: str):
     return convert_to_type(response.json(), Listing)
 
 
-@listingsRouter.post("/")
+@listingsRouter.post("")
 async def create_listing(listing: NewListingWithWrapper, authUserID: str):
     path = "listing/" + authUserID
     response = await send_request_to_data_layer(path, "POST", listing.model_dump())

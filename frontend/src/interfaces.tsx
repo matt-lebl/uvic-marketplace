@@ -126,6 +126,7 @@ export interface ListingSummary {
   price: number
   dateCreated: string
   imageUrl: string
+  charityID: string
 }
 
 export interface SearchResultsResponse {
@@ -193,20 +194,20 @@ export interface UpdateUser {
 }
 
 export interface CharityEntity {
-  id: string,
-  name: string,
-  description: string,
-  startDate: any, // need a date/time obj
-  endDate: any,
-  imageUrl: string,
-  organizations: OrgEntity[],
-  funds:number,
-  listingsCount:number
+  id: string
+  name: string
+  description: string
+  startDate: any // need a date/time obj
+  endDate: any
+  imageUrl: string
+  organizations: OrgEntity[]
+  funds: number
+  listingsCount: number
 }
 
 export interface OrgEntity {
-    name: string,
-    logoUrl: string,
-    donated: number,
-    received: boolean
+  name: string
+  logoUrl: string
+  donated: number
+  received: boolean
 }

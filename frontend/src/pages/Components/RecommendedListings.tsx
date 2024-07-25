@@ -1,12 +1,12 @@
 import React from 'react'
-import { useState } from 'react'
-import { Box, Typography, Grid, Pagination } from '@mui/material'
+import { useState, useEffect } from 'react'
+import { Box, Typography, Grid, Pagination, Button } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary } from '../../interfaces'
+import { APIGet, APIPost } from '../../APIlink'
 
-// Mock list of recommended listings with explicit type
-const recommendedListings: ListingSummary[] = []
+let recommendedListings: ListingSummary[] = []
 
 // TODO: Implement hooks for fetching recommended listings, and dynamically render them
 export default function RecommendedListings() {
@@ -28,6 +28,36 @@ export default function RecommendedListings() {
 
   // Calculate total pages
   const totalPages = Math.ceil(recommendedListings.length / itemsPerPage)
+
+  // Fetch recommended listings
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const res = await APIGet<ListingSummary[]>(`/api/recommendations`)
+        if (res) {
+          recommendedListings = res
+        }
+      } catch (error) {
+        console.log('Error fetching recommended listings:', error)
+      }
+    }
+    fetchRecommendations()
+  }, [])
+
+  const handleRemoveRecommendation = async (listingID: string) => {
+    // Remove the recommendation from the list
+    try {
+      const response = await APIPost(
+        `/api/recommendations/stop/${listingID}`,
+        {}
+      )
+      if (response) {
+        window.location.reload()
+      }
+    } catch (error) {
+      console.log('Error removing recommendation:', error)
+    }
+  }
 
   return (
     <Box
@@ -58,20 +88,38 @@ export default function RecommendedListings() {
           paddingBottom: 3,
         }}
       >
-        <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-          {currentListings.map((listing, index) => (
-            <Grid item sx={{ width: '100%' }} key={index}>
-              <ListingCard {...listing} />
-            </Grid>
-          ))}
-        </Grid>
+        {recommendedListings.length === 0 ? (
+          <Typography variant="h6" align="center" mt={3}>
+            Nothing found here, check back later!
+          </Typography>
+        ) : (
+          <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+            {currentListings.map((listing, index) => (
+              <Grid item sx={{ width: '100%' }} key={index}>
+                <ListingCard {...listing} />
+                <Typography
+                  variant="body2"
+                  fontSize={13}
+                  align="right"
+                  mt={1}
+                  sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={() => handleRemoveRecommendation(listing.listingID)}
+                >
+                  Remove recommendation
+                </Typography>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Box>
-      <Pagination
-        count={totalPages}
-        page={currentPage}
-        onChange={handleChangePage}
-        sx={{ marginTop: 2 }}
-      />
+      {recommendedListings.length != 0 ? (
+        <Pagination
+          count={totalPages}
+          page={currentPage}
+          onChange={handleChangePage}
+          sx={{ marginTop: 2 }}
+        />
+      ) : null}
     </Box>
   )
 }

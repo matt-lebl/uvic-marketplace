@@ -24,7 +24,7 @@ export default function Header() {
         position="static"
         sx={{
           flexGrow: 1,
-          height: '8vh',
+          height: '70px',
           justifyContent: 'center',
         }}
       >
@@ -37,7 +37,8 @@ export default function Header() {
               '&:hover': {
                 backgroundColor: 'transparent',
               },
-              paddingX: 5,
+              paddingX: 0,
+              mr: 2
             }}
           >
             <Typography variant="h1" component="div">
@@ -74,13 +75,6 @@ export default function Header() {
               color="inherit"
             >
               Events
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => navigate('/listing/1234')}
-              color="inherit"
-            >
-              Browse
             </Button>
             <Button
               variant="text"

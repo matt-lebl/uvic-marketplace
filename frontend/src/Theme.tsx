@@ -14,7 +14,7 @@ const MarketplaceTheme = createTheme({
   typography: {
     fontFamily: 'Montserrat',
     h1: {
-      fontSize: 30,
+      fontSize: '2vw',
       fontWeight: 700,
     },
     h2: {

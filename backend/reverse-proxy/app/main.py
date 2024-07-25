@@ -53,7 +53,7 @@ TODO:
 #     return sign_jwt("1")
 
 async def forward_request(path: str, method: str, token: str, params: dict | None = None, data: dict | None = None):
-    if path in ALGORITHMS_PATHS:
+    if path.split("/")[0] in ALGORITHMS_PATHS:
         response = await send_request_to_algorithms_with_user_id(path, method, token, params, data)
     else:
         response = await send_request_to_backend_with_user_id(path, method, token, data)
