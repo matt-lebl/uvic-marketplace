@@ -33,7 +33,7 @@ const Header: React.FC = () => {
         position="static"
         sx={{
           flexGrow: 1,
-          height: '8vh',
+          height: '70px',
           justifyContent: 'center',
         }}
       >
@@ -46,7 +46,8 @@ const Header: React.FC = () => {
               '&:hover': {
                 backgroundColor: 'transparent',
               },
-              paddingX: 5,
+              paddingX: 0,
+              mr: 2
             }}
           >
             <Typography variant="h1" component="div">
@@ -84,13 +85,6 @@ const Header: React.FC = () => {
               color="inherit"
             >
               Events
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => navigate('/listing/1234')}
-              color="inherit"
-            >
-              Browse
             </Button>
             <Button
               variant="text"

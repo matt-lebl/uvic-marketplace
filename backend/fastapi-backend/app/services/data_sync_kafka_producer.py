@@ -24,7 +24,7 @@ class DataSyncKafkaProducer:
             return
 
         self.conf = {
-            "bootstrap.servers": config(FB_ENV_VARS.KAFKA_BOOTSTRAP_SERVERS),
+            "bootstrap.servers": config(FB_ENV_VARS.KAFKA_BOOTSTRAP_SERVERS, default=""),
             "client.id": random_uuid(),
         }
         self.producer = Producer(self.conf)
