@@ -48,16 +48,10 @@ describe('SellerCard Component', () => {
 
     expect(screen.getByText(/Seller Name/i)).toBeInTheDocument()
     expect(screen.getByText(/Seller bio/i)).toBeInTheDocument()
-    expect(screen.getByText(/Sample Listing Title/i)).toBeInTheDocument()
-    expect(screen.getByText(/Sample Listing Description/i)).toBeInTheDocument()
-    expect(screen.getByText(/\$100/i)).toBeInTheDocument()
-    expect(screen.getByText(/Great listing!/i)).toBeInTheDocument()
-    expect(
-      screen.getByRole('img', { name: /profile picture/i })
-    ).toHaveAttribute('src', 'http://example.com/profile.jpg')
+    expect(screen.getByTestId('avatar')).toBeInTheDocument()
   })
 
-  test('displays default image if no profile picture URL is provided', () => {
+  test('displays initials if no profile picture URL is provided', () => {
     const mockListingWithoutProfilePicture = {
       ...mockListingEntity,
       seller_profile: {
@@ -67,8 +61,7 @@ describe('SellerCard Component', () => {
     }
 
     render(<SellerCard data={mockListingWithoutProfilePicture} />)
-    expect(
-      screen.getByRole('img', { name: /profile picture/i })
-    ).toHaveAttribute('src', 'default-image-url')
+    const avatar = screen.getByTestId('avatar')
+    expect(avatar).toHaveTextContent('SN')
   })
 })

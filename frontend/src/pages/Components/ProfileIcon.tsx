@@ -26,8 +26,8 @@ const ProfileIcon: React.FC<Props> = ({ id, name, imageSrc, onClick }) => {
 
   return (
     <ButtonBase id={id} data-testid={id} onClick={handleClick}>
-      <Avatar alt={name} src={imageSrc}>
-        {getInitials(name)}
+      <Avatar alt={name} src={imageSrc} data-testid="avatar">
+        {!imageSrc && getInitials(name)}
       </Avatar>
     </ButtonBase>
   )
