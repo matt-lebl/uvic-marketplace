@@ -418,7 +418,7 @@ async def test_create_charity():
 
 @pytest.mark.asyncio
 async def test_get_current_charity():
-    response = client.post("/charities/clear")
+    response = client.post("/charities/clear/")
     assert response.status_code == 200
 
     organizations1 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
@@ -461,13 +461,13 @@ async def test_clear_charities():
     assert response.status_code == 200
     assert len(response.json()["organizations"]) == 3
 
-    response = client.post("/charities/clear")
+    response = client.post("/charities/clear/")
     assert response.status_code == 200
 
 
 @pytest.mark.asyncio
 async def test_add_funds_to_charity():
-    response = client.post("/charities/clear")
+    response = client.post("/charities/clear/")
     assert response.status_code == 200
 
     organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
@@ -500,7 +500,7 @@ async def test_add_funds_to_charity():
 
 @pytest.mark.asyncio
 async def test_get_all_charities():
-    response = client.post("/charities/clear")
+    response = client.post("/charities/clear/")
     assert response.status_code == 200
 
     organizations1 = [data_factory.generate_organization(False), data_factory.generate_organization(False),
@@ -534,7 +534,7 @@ async def test_get_all_charities():
 
 @pytest.mark.asyncio
 async def test_delete_charity():
-    response = client.post("/charities/clear")
+    response = client.post("/charities/clear/")
     assert response.status_code == 200
     organizations = [data_factory.generate_organization(False), data_factory.generate_organization(False),
                      data_factory.generate_organization(True)]
