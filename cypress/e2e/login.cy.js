@@ -43,4 +43,12 @@ describe("Login", () => {
         "Login failed: Error: Request failed with status code 500"
       );
   });
+  //TODO: implement
+  it('Should logout a user', () => {
+    cy.visit('https://market.lebl.ca/login')
+  })
+  
+  it('Should Delete a User', () => {
+    cy.visit('https://market.lebl.ca/login')
+  })
 });
