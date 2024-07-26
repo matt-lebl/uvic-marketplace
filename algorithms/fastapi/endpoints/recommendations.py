@@ -152,4 +152,4 @@ def stop_suggesting_item_type(*,
         print("Error adding interaction to postgres: ", e)
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to update user's interactions")
-    return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
+    return {"message": "success"}
