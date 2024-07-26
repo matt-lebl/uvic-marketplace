@@ -85,9 +85,14 @@ async def recommendations(*,
         es_listing = es.get(index="listings_index", id=listing.listing_id)
         recommendation["title"] = es_listing['_source']['title']
         recommendation["price"] = es_listing['_source']['price']
-        recommendation["dateCreated"] = es_listing["_source"]["dateCreated"]
-        recommendation["sellerID"] = es_listing['_source']["sellerID"]
-        recommendation["sellerName"] = es_listing['_source']["sellerName"]
+
+        if ("dateCreated" in es_listing["_source"]):
+            recommendation["dateCreated"] = es_listing["_source"]["dateCreated"]
+        else:
+            recommendation["dateCreated"] = "2024-05-23T15:30:00Z"
+        
+        recommendation["sellerID"] = es_listing['_source'].get("sellerID")
+        recommendation["sellerName"] = es_listing['_source'].get("sellerName")
         recommendation["description"] = es_listing['_source'].get("description")
         recommendation["imageUrl"] = es_listing['_source'].get("imageUrl")
 

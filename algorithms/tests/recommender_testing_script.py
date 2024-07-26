@@ -120,8 +120,17 @@ def add_listings(base_url):
                 "location": {
                     "latitude": round(random.uniform(34.0001, 34.9999), 5),
                     "longitude": round(random.uniform(-124.9999, -124.0001), 5)
-                }
-            }
+                },
+                "dateCreated": "2024-07-25 01:24:22.794173",
+                "seller_profile": {
+                    "userID": "A12334B345",
+                    "username": "hubert123",
+                    "name": "Bartholomew Hubert",
+                    "bio": "I love stuff",
+                    "profilePictureUrl": "https://example.com/image.png"
+                },
+
+            } # not including optional fields "images" & "markedForCharity"
         }
 
         response = requests.post(f"{base_url}/api/listing", json=listing_data)
