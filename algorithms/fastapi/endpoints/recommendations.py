@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Header, HTTPException, Depends
 from typing import List, Union
-from util.schemas import ListingSummary, ErrorMessage
-from db.deps import get_db
-from sqlalchemy.orm import Session
-from db.models import DB_User, DB_Listing, DB_Interaction
-
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
-from util.elasticsearch_wrapper import ElasticsearchWrapper
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+
+from db.deps import get_db
+from db.models import DB_User, DB_Listing, DB_Interaction
+from util.schemas import ListingSummary, ErrorMessage
+from util.elasticsearch_wrapper import ElasticsearchWrapper
+from util.charity_item_view import should_view_charity_items
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -43,9 +43,25 @@ async def recommendations(*,
         except Exception as e:
             print(f"Error fetching embedding for listing {listing_id}: {e}")
 
+     # Check if the user wants to view charity items
+    view_charity_items = should_view_charity_items(user_id=authUserID, db=db)
+
+    # Modify the Elasticsearch query based on charity item preference and blacklisted items
+    es_query = {"match_all": {}} if view_charity_items else {"bool": {"must_not": {"match": {"markedForCharity": True}}}}
 
     # Get all embeddings directly from Elasticsearch and compute cosine similarity with the user vector
-    es_response = es.search(index="listings_index", body={"size": 10000, "query": {"match_all": {}}})
+    es_response = es.search(index="listings_index", body={"size": 10000, "query": es_query})
+
+    # Filter out blacklisted items
+    blacklisted_items = db.query(DB_User.blacklisted_items).filter(DB_User.user_id == authUserID).first()
+    if blacklisted_items and blacklisted_items.blacklisted_items:
+        blacklisted_item_ids = blacklisted_items.blacklisted_items
+    else:
+        blacklisted_item_ids = []
+
+    es_response['hits']['hits'] = [hit for hit in es_response['hits']['hits'] if hit['_id'] not in blacklisted_item_ids]
+
+    # Compute cosine similarity between user vector and listing embeddings
     similarities = []
     for hit in es_response['hits']['hits']:
         listing_id = hit['_id']
@@ -69,12 +85,16 @@ async def recommendations(*,
         es_listing = es.get(index="listings_index", id=listing.listing_id)
         recommendation["title"] = es_listing['_source']['title']
         recommendation["price"] = es_listing['_source']['price']
-        recommendation["dateCreated"] = "2024-05-23T15:30:00Z" # TODO: add a way to get correct date
 
-        #recommendation["sellerID"] =
-        #recommendation["sellerName"] = 
-        #recommendation["description"] = es_listing['_source'].get('description', None) # optional
-        #recommendation["imageUrl"] = 
+        if ("dateCreated" in es_listing["_source"]):
+            recommendation["dateCreated"] = es_listing["_source"]["dateCreated"]
+        else:
+            recommendation["dateCreated"] = "2024-05-23T15:30:00Z"
+        
+        recommendation["sellerID"] = es_listing['_source'].get("sellerID")
+        recommendation["sellerName"] = es_listing['_source'].get("sellerName")
+        recommendation["description"] = es_listing['_source'].get("description")
+        recommendation["imageUrl"] = es_listing['_source'].get("imageUrl")
 
         formatted_recommendations.append(recommendation)
 
@@ -83,3 +103,53 @@ async def recommendations(*,
     final_recommendations = formatted_recommendations[:limit]
 
     return final_recommendations
+
+@router.post("/recommendations/stop/{listing_id}")
+def stop_suggesting_item_type(*,
+                            listing_id: str,
+                            authUserID: Union[str, None] = None,
+                            db: Session = Depends(get_db)):
+
+    user_id = authUserID
+    if user_id is None:
+        raise HTTPException(status_code=401, detail="No userID in request")
+    if listing_id is None:
+        raise HTTPException(status_code=401, detail="No listingID in request")
+
+    # Fetch the user
+    user = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+
+    if user:
+        # Ensure blacklisted_items is not None
+        if user.blacklisted_items is None:
+            user.blacklisted_items = []
+
+        # Append listing_id if not already in the list
+        if listing_id not in user.blacklisted_items:
+            user.blacklisted_items.append(listing_id)
+            try:
+                db.flush()
+                db.commit()
+            except SQLAlchemyError as e:
+                print(f"Error updating: {e}")
+                db.rollback()
+                raise HTTPException(status_code=500, detail="Failed to update user's blacklisted items")
+
+
+    # Decrease item interaction score
+    negative_influence = -30
+    interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
+    if interaction:
+        interaction.interaction_count = negative_influence
+    else:
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=negative_influence)
+
+    try:
+        db.add(interaction)
+        db.flush()
+        db.commit()
+    except SQLAlchemyError as e:
+        print("Error adding interaction to postgres: ", e)
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to update user's interactions")
+    return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}

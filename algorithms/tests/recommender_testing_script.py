@@ -120,8 +120,17 @@ def add_listings(base_url):
                 "location": {
                     "latitude": round(random.uniform(34.0001, 34.9999), 5),
                     "longitude": round(random.uniform(-124.9999, -124.0001), 5)
-                }
-            }
+                },
+                "dateCreated": "2024-07-25 01:24:22.794173",
+                "seller_profile": {
+                    "userID": "A12334B345",
+                    "username": "hubert123",
+                    "name": "Bartholomew Hubert",
+                    "bio": "I love stuff",
+                    "profilePictureUrl": "https://example.com/image.png"
+                },
+
+            } # not including optional fields "images" & "markedForCharity"
         }
 
         response = requests.post(f"{base_url}/api/listing", json=listing_data)
@@ -135,7 +144,7 @@ def add_users(base_url):
 def add_random_interactions(base_url):
     # Add user click interactions 
     click_interactions = []
-    for user_id in range(1, 6):
+    for user_id in user_ids:
         click_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
         click_interactions.append({"userID": str(user_id), "listingID": str(random.randint(1, 100))})
         
@@ -241,6 +250,11 @@ def main():
 
     print("Recommendations After Interactions")
     get_recommendations(base_url, user_ids[0])  # Set userID -> [random interaction IDs: 1-5] [manual interaction ID: manual1]
+
+    print("LOOP")
+    interaction = {"userID": "f1afc971-64ba-4f4c-8de5-edd2ac34393f", "listingID": "14"}
+    for i in range(50):
+        requests.post(f"{base_url}/api/interactions/click", json=interaction)
 
 if __name__ == "__main__":
     main()

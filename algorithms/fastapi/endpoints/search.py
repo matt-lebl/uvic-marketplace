@@ -73,7 +73,10 @@ async def search(*,
                                         description=doc["_source"].get("description"), 
                                         price=doc["_source"]["price"], 
                                         location=doc["_source"]["location"],
-                                        dateCreated="2024-05-23T15:30:00Z",
+                                        dateCreated=doc["_source"]["dateCreated"],
+                                        sellerID=doc['_source']["sellerID"],
+                                        sellerName=doc['_source']["sellerName"],
+                                        imageUrl=doc['_source'].get('imageUrl'),
                                         **({"charityID": doc["_source"]["charityID"]} if "charityID" in doc["_source"] else {})
                                         ))
                 

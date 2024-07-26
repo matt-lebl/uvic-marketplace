@@ -65,6 +65,10 @@ class ElasticsearchWrapper:
                             }
                         },
                         "charityID": {"type": "text"},
+                        "sellerID": { "type": "text" },
+                        "sellerName": { "type": "text" },
+                        "imageUrl": { "type": "text" },
+                        "dateCreated": { "type": "date", "format": "yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd HH:mm:ss.SSSSSS" },
                         "embedding": { "type": "dense_vector", "dims": 768 }
                     }
                 }
@@ -74,7 +78,11 @@ class ElasticsearchWrapper:
             self._es.indices.put_mapping(index="listings_index",
                                  body={
                                      "properties": {
-                                         "charityID": { "type": "text" }
+                                         "charityID": { "type": "text" },
+                                         "sellerID": { "type": "text" },
+                                         "sellerName": { "type": "text" },
+                                         "imageUrl": { "type": "text" },
+                                         "dateCreated": { "type": "date", "format": "yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd HH:mm:ss.SSSSSS" }
                                      }
                                  })
 
