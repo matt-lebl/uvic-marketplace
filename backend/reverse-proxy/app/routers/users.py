@@ -47,7 +47,7 @@ async def logout(response: Response):
 @usersRouter.get("/validate-email/{validation_code}/{email}")
 async def validate_email(validation_code: str, email: str):
     response = await send_request_to_backend(
-        f"user/validate-email/{validation_code}/{email}", "POST"
+        f"user/validate-email/{validation_code}", "POST"
     )
     return response.json()
 
@@ -58,3 +58,18 @@ async def send_validation_link(email: str):
         f"user/send-validation-link/{email}", "GET"
     )
     return response.json()
+
+# @usersRouter.get("/send-confirmation-email")
+# async def send_validation_link(email: str):
+#     response = await send_request_to_backend(
+#         f"user/send-validation-link/{email}", "GET"
+#     )
+#     return response.json()
+
+# @usersRouter.post("/confirm-email")
+# async def validate_email(request: dict):
+#     code = request["code"]
+#     response = await send_request_to_backend(
+#         f"user/validate-email/{code}", "POST"
+#     )
+#     return response.json()
