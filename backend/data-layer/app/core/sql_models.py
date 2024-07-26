@@ -11,7 +11,7 @@ from sqlmodel import (
     ARRAY,
     String,
     or_,
-    delete
+    delete, desc
 )
 from datetime import datetime
 from core.schemas import ListingSchema, UserProfile, ItemStatus
@@ -548,3 +548,31 @@ class CharityTable(SQLModel, table=True):
         session.commit()
 
         return {"message": "Charity deleted successfully"}
+
+
+class SearchHistoryTable(SQLModel, table=True):
+    searchID: str = Field(default=None, primary_key=True)
+    userID: str = Field(default=None, foreign_key="user.userID")
+    searchTerm: str
+    timestamp: datetime | None = Field(index=True)
+
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        history_element = cls(**kwargs)
+        session.add(history_element)
+        session.commit()
+        session.refresh(history_element)
+        return history_element
+
+    @classmethod
+    def delete(cls, userID: str, session: Session):
+        statement = delete(cls).where(cls.userID == userID)
+        session.exec(statement)
+        session.commit()
+
+    @classmethod
+    def get_history(cls, userID: str, session: Session):
+        statement = select(cls.searchID, cls.searchTerm).where(cls.userID == userID).order_by(desc(cls.timestamp))
+        result = session.exec(statement)
+        return {"searches": result.all()}
+

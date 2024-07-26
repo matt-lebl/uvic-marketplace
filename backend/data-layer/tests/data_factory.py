@@ -141,3 +141,6 @@ class DataFactory:
             "donated": 0,
             "receiving": receiving
         }
+
+    def generate_search(self):
+        return {"searchTerm": self.fake.text()}
