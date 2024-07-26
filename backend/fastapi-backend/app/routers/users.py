@@ -8,10 +8,10 @@ from core.schemas import (
     UpdateUser,
     User,
     NewUserReq,
-    )
+)
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
-from services.auth import AuthHandler, EmailValidator
+from services.auth import AuthHandler, EmailValidator, UserValidator
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 
 dsKafkaProducer = DataSyncKafkaProducer(disable=False)
@@ -33,8 +33,14 @@ async def create_user(user: NewUserReq):
 
     user = user.model_dump()
 
-    if not EmailValidator.validate_email_domain(user["email"]):
+    if not UserValidator.validate_email(user["email"]):
         raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    if not UserValidator.validate_password(user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+    if not UserValidator.validate_username(user["username"]):
+        raise HTTPException(status_code=401, detail="Invalid username")
 
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
@@ -111,7 +117,6 @@ async def login(loginRequest: LoginRequest):
 # Logout need not be implemented, it is implemented in RP
 @userRouter.post("/validate-email/{validation_code}")
 async def validate_email(validation_code: str):
-
     response = await send_request_to_data_layer(
         f"/user/validate-email/{validation_code}", "POST"
     )

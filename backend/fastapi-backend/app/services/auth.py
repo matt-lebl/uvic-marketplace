@@ -2,7 +2,7 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
+import re
 import pyotp
 from decouple import config
 from cryptography.fernet import Fernet
@@ -64,8 +64,6 @@ class EmailValidator:
     def send_validation_email(self, receiver_email: str, unique_id: str):
         try:
             subject = "Email Validation"
-            # encrypted_email = self.encrypter.encrypt_secret(receiver_email)
-            # encrypted_unique_id = self.encrypter.encrypt_secret(unique_id)
             body = f"{API_URL}/validate-email/?code={unique_id}&email={receiver_email}"
 
             message = MIMEMultipart()
@@ -82,9 +80,25 @@ class EmailValidator:
             print(str(error))
             raise error
 
+
+class UserValidator:
+
     @classmethod
-    def validate_email_domain(cls, email: str) -> bool:
+    def validate_email(cls, email: str):
         valid_domains = ["uvic.ca"]
         check_list = email.split("@")
         check_list = [x for x in check_list if x]
         return len(check_list) == 2 and check_list[-1] in valid_domains
+
+    @classmethod
+    def validate_password(cls, password: str):
+        password_pattern = \
+            r'^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z])(?=.*[!"#$%&\'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,}$'
+        regex = re.compile(password_pattern)
+        return bool(regex.fullmatch(password))
+
+    @classmethod
+    def validate_username(cls, username: str):
+        username_pattern = r'^[a-zA-Z@_\d]{8,20}$'
+        regex = re.compile(username_pattern)
+        return bool(regex.fullmatch(username))
