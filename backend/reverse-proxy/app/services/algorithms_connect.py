@@ -1,5 +1,6 @@
 from urllib.parse import urljoin
 import httpx
+import traceback
 from fastapi import HTTPException
 from core.auth import get_user_id_from_token
 from decouple import config
@@ -16,9 +17,11 @@ async def perform_http_request(method: str, url: str, params: dict | None = None
             response.raise_for_status()
             return response
         except httpx.HTTPError as exc:
+            error_message = "Error in the algorithms request:\n" + str(exc)
+            error_message += "  \n  " + ''.join(traceback.format_exception(type(exc), exc, exc.__traceback__))
             raise HTTPException(
                 status_code=500,
-                detail="Error in the algorithms request: " + str(exc),
+                detail=error_message,
             )
 
 
