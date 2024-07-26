@@ -23,7 +23,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
         >
           <ProfileIcon
             id="listing-pfp"
-            name="listing-pfp"
+            name={seller_profile.name}
             imageSrc={seller_profile.profilePictureUrl}
           />
           <Paper sx={{ flexGrow: 1, ml: '30px' }}>
