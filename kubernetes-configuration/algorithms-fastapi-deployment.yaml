@@ -17,7 +17,7 @@ spec:
           image: ghcr.io/matt-lebl/uvic-marketplace/algorithms-fastapi:9edebad
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8002
+            - containerPort: 80
           env:
             - name: POSTGRES_USER
               valueFrom:
