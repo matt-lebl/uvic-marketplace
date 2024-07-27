@@ -42,7 +42,6 @@ describe('Header', () => {
       </Router>
     )
 
-
     fireEvent.click(getByText('My Listings'))
     expect(history.location.pathname).toBe('/profile')
 

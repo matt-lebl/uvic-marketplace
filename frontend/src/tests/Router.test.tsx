@@ -28,7 +28,7 @@ describe('Testing basic routes', () => {
 
   test('Homepage Navigation when logged in', async () => {
     localStorage.setItem('userID', 'A12334B345')
-    mockAPIGet.mockResolvedValueOnce({userID: "A12334B345"})
+    mockAPIGet.mockResolvedValueOnce({ userID: 'A12334B345' })
     let container: HTMLElement
     await act(async () => {
       container = render(
@@ -39,7 +39,8 @@ describe('Testing basic routes', () => {
     })
     await waitFor(
       () => expect(container.innerHTML).toContain('<div class="Home">'),
-      { timeout: 3000 })
+      { timeout: 3000 }
+    )
   })
 
   test('Homepage Navigation when not logged in', () => {

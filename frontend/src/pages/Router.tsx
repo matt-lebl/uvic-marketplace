@@ -23,7 +23,6 @@ const Router = () => {
   useEffect(() => {
     const userID = localStorage.getItem('userID')
     if (userID) {
-
       const getUser = async () => {
         const response = await APIGet<string>(`/api/user/` + userID)
         if (response) {
@@ -35,7 +34,6 @@ const Router = () => {
         }
       }
       getUser()
-      
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname
