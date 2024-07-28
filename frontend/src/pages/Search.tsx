@@ -3,22 +3,40 @@ import { Box } from '@mui/material'
 import { SearchRequest, ListingSummary, SearchResultsResponse, Sort } from '../interfaces'
 import SearchListings from './Components/SearchListings'
 import { APIGet } from '../APIlink'
-import { DataContext, GetData } from '../DataContext'
+import { AddData, DataContext, GetData } from '../DataContext'
 import { useContext, useEffect, useState } from 'react'
 
 const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
-function Search() {
-  const searchRequestID = "searchRequest"
-  console.log("Search Page");
-  const context = useContext(DataContext);
 
-  const [listings, setListings] = useState<ListingSummary[]>([] as ListingSummary[])
-  const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
+function Search() {
+  const context = useContext(DataContext);
+  const searchRequestID = "searchRequest"
+  const [searchRequest, setSearchRequest] = useState<SearchRequest>({
+    query: '',
+    minPrice: undefined,
+    maxPrice: undefined,
+    status: undefined,
+    searchType: undefined,
+    latitude: 0,
+    longitude: 0,
+    sort: Sort.RELEVANCE,
+    page: 1,
+    limit: BASESEARCHLIMIT,
+  } as SearchRequest)
+
+  useEffect(() => {
+    const storedSearchRequest = GetData(context, searchRequestID);
+    if (storedSearchRequest === null) {
+      AddData(context, searchRequestID, searchRequest);
+    } else if (Object.entries(storedSearchRequest).join(",") !== Object.entries(searchRequest).join(",")) {
+      setSearchRequest(storedSearchRequest);
+    }
+  }, [context, searchRequest, searchRequestID]);
+
 
 
   const searchFunc = async (searchRequest: SearchRequest): Promise<{ totalItems: number, items: ListingSummary[] }> => {
-    // Add your logic here
     var results = {
       totalItems: 0,
       items: [] as ListingSummary[]
@@ -31,31 +49,10 @@ function Search() {
     } catch (e) {
       console.error(e)
     }
-    finally { return results }
-
+    finally {
+      return results;
+    }
   }
-  useEffect(() => {
-    setTimeout(async () => {
-      console.log("searchRequest")
-
-      const blankSearchRequest: SearchRequest = {
-        query: '',
-        minPrice: undefined,
-        maxPrice: undefined,
-        status: undefined,
-        searchType: undefined,
-        latitude: 0,
-        longitude: 0,
-        sort: Sort.RELEVANCE,
-        page: 1,
-        limit: BASESEARCHLIMIT,
-      }
-
-      const res = await searchFunc(GetData(context, searchRequestID) ?? blankSearchRequest);
-      setListings(res?.items ?? [] as ListingSummary[])
-      setTotalListingsCount(res?.totalItems ?? 0)
-    }, 1000);
-  }, []);
 
   return (
     <div className="Home">
@@ -70,7 +67,7 @@ function Search() {
             width: '90%',
           }}
         >
-          <SearchListings initalItems={listings} initialTotalItems={totalListingsCount} onSearch={searchFunc} />
+          <SearchListings onSearch={searchFunc} searchRequest={searchRequest} />
         </Box>
       </header>
     </div>

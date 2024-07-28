@@ -4,85 +4,74 @@ import { Box, Typography, Grid, Pagination } from '@mui/material'
 import ListingCard from './ListingCard'
 import { ChangeEvent } from 'react'
 import { ListingSummary, SearchRequest, Sort } from '../../interfaces'
-import { AddData, DataContext, GetData } from '../../DataContext'
+import { AddData, DataContext } from '../../DataContext'
 import SelectInput from './SelectInput'
 
 const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
+const LISTINGLIMITPERPAGE: string[] = ["1", "10", BASESEARCHLIMIT.toString(), "50"]
+
 
 interface props {
-  initalItems: ListingSummary[] | undefined;
-  initialTotalItems: number | undefined;
   onSearch: (searchRequest: SearchRequest) => Promise<{ totalItems: number, items: ListingSummary[] }>;
+  searchRequest: SearchRequest;
 }
 
-const SearchListings: React.FC<props> = ({ initalItems, initialTotalItems, onSearch }) => {
-  const searchRequestID = "searchRequest"
+const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
   const context = useContext(DataContext);
-
-  const blankSearchRequest: SearchRequest = {
-    query: '',
-    minPrice: undefined,
-    maxPrice: undefined,
-    status: undefined,
-    searchType: undefined,
-    latitude: 0,
-    longitude: 0,
-    sort: Sort.RELEVANCE,
-    page: 1,
-    limit: BASESEARCHLIMIT,
-  }
-
-  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? blankSearchRequest)
+  const searchRequestID = "searchRequest"
+  const [listings, setListings] = useState<ListingSummary[]>([] as ListingSummary[])
+  const [totalListingsCount, setTotalListingsCount] = useState<number>(0)
   const [currentPage, setCurrentPage] = useState<number>(searchRequest.page ?? 1)
-  const [itemsPerPage, setItemsPerPage] = useState<number>(searchRequest.limit ?? BASESEARCHLIMIT);
-  const [listings, setListings] = useState<ListingSummary[]>(initalItems ?? [] as ListingSummary[])
-  const [totalListingsCount, setTotalListingsCount] = useState<number>(initialTotalItems ?? 0)
+  const [itemsPerPage, setItemsPerPage] = useState<string>(searchRequest.limit?.toString() ?? BASESEARCHLIMIT.toString());
+  const [totalPages, setTotalPages] = useState<number>(1)
   const [sorting, setSorting] = useState<Sort>(searchRequest.sort ?? Sort.RELEVANCE)
+  const [loading, setLoading] = useState(true)
 
-
-  const doSearch = async () => {
-    let res = await onSearch(searchRequest)
-    setListings(res?.items ?? [] as ListingSummary[])
-    setTotalListingsCount(res?.totalItems ?? 0)
+  const doSearch = () => {
+    setTimeout(async () => {
+      let res = await onSearch(searchRequest)
+      setListings(res?.items ?? [] as ListingSummary[])
+      setTotalListingsCount(res?.totalItems ?? 0)
+      setTotalPages(Math.ceil((res?.totalItems ?? 0) / parseInt(itemsPerPage)))
+    }, 1000)
+    setLoading(false)
   }
 
-  // setTimeout(async () => {
-
-  //   console.log("searchRequest", searchRequest)
-  //   doSearch()
-  // }, 1000);
-
-  // Calculate the current listings to display
-
+  //changing amount of listings to display
+  const handleChangeListingLimit = (newLimit: string | undefined) => {
+    if (newLimit !== undefined) {
+      setLoading(true)
+      const newPage = Math.max(1, Math.floor((currentPage - 1) * Math.min(parseInt(itemsPerPage), totalListingsCount) / parseInt(newLimit)))
+      setItemsPerPage(newLimit)
+      searchRequest.limit = parseInt(newLimit)
+      handleChangePage(undefined, newPage)
+    }
+  }
 
   // Change page handler
-  const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
-    console.log(newPage)
+  const handleChangePage = (event: ChangeEvent<unknown> | undefined, newPage: number) => {
+    setLoading(true)
     setCurrentPage(newPage)
     searchRequest.page = newPage
-    setSearchRequest(searchRequest)
     AddData(context, searchRequestID, searchRequest)
-    setTimeout(async () => {
-      await doSearch()
-    }, 1000)
   }
 
+  //Changing sorting
   const handleChangeSorting = (sort: string | undefined) => {
     if (sort !== undefined && sort in Sort) {
+      setLoading(true)
       var enumSort = sort as Sort;
       setSorting(enumSort)
       searchRequest.sort = enumSort
       searchRequest.page = 1;
-      setSearchRequest(searchRequest)
       AddData(context, searchRequestID, searchRequest)
-      setTimeout(async () => {
-        await doSearch()
-      }, 1000)
     }
   }
 
-  // Calculate total pages
-  const totalPages = Math.ceil(totalListingsCount / itemsPerPage)
+  //should trigger only the first time the component is rendered, and then whenever the search request is altered. Need to do it this weird complicated way, as other wise it won't detect changes made by searching when on the search page, as the search request won't update on rerender.
+  useEffect(() => {
+    doSearch();
+  }, [searchRequest]);
 
   return (
     <Box
@@ -99,7 +88,20 @@ const SearchListings: React.FC<props> = ({ initalItems, initialTotalItems, onSea
       <Typography variant="h4" alignSelf={'flex-start'}>
         Listings Found
       </Typography>
-      <SelectInput label='Sort' defaultVal={sorting} onChange={handleChangeSorting} options={Object.values(Sort)} />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
+          width: '100%',
+          paddingX: 2,
+          paddingBottom: 3,
+        }}
+      >
+        <SelectInput label='Sort' defaultVal={sorting} onChange={handleChangeSorting} options={Object.values(Sort)} />
+        <SelectInput label='Results Per Page' defaultVal={itemsPerPage} onChange={handleChangeListingLimit} options={LISTINGLIMITPERPAGE} />
+      </Box>
       <Box
         sx={{
           maxHeight: '800px',
@@ -112,15 +114,19 @@ const SearchListings: React.FC<props> = ({ initalItems, initialTotalItems, onSea
           boxShadow: 7,
           paddingX: 2,
           paddingBottom: 3,
-        }}
-      >
-        <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-          {listings.map((listing, index) => (
-            <Grid item sx={{ width: '100%' }} key={index}>
-              <ListingCard {...listing} />
-            </Grid>
-          ))}
-        </Grid>
+        }}>
+        {loading ? <div>Loading...</div> :
+          totalListingsCount === 0 ?
+            <Typography variant="h6" align="center" mt={3}>
+              Nothing found here, check back later!
+            </Typography> :
+            <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+              {listings.map((listing, index) => (
+                <Grid item sx={{ width: '100%' }} key={index}>
+                  <ListingCard {...listing} />
+                </Grid>
+              ))}
+            </Grid>}
       </Box>
       <Pagination
         test-id="pagination"

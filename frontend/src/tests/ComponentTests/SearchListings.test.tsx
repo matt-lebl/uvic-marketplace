@@ -78,7 +78,18 @@ describe('SearchListings Component', () => {
     test('renders SearchListings component', async () => {
         render(
             <DataProvider>
-                <SearchListings initalItems={[] as ListingSummary[]} initialTotalItems={0} onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
+                <SearchListings searchRequest={{
+                    query: '',
+                    minPrice: undefined,
+                    maxPrice: undefined,
+                    status: undefined,
+                    searchType: undefined,
+                    latitude: 0,
+                    longitude: 0,
+                    sort: Sort.RELEVANCE,
+                    page: 1,
+                    limit: 20,
+                } as SearchRequest} onSearch={mockOnSearch.mockImplementation((value: SearchRequest) => {
                     return {
                         totalItems: 5,
                         items: mockListings,
