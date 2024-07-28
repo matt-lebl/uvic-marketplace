@@ -2,7 +2,7 @@
 //Tests here are kinda borked. Due to funky timing, many of them that requre checking requests are failing when they are actually passing, but being checked at the wrong points. I'm not sure how to fix this, but I'm leaving the tests here for now. They are not currently being run in the test suite.
 
 
-// import React from 'react';
+ import React from 'react';
 // import { render, screen, fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
 // import RecommendedListings from '../../pages/Components/RecommendedListings';
 // import { APIGet, APIPost } from '../../APIlink';
@@ -79,7 +79,7 @@
 // const mockAPIGet = APIGet as jest.MockedFunction<typeof APIGet>
 // const mockAPIPost = APIPost as jest.MockedFunction<typeof APIPost>
 
-// describe('RecommendedListings', () => {
+ describe('RecommendedListings', () => {
 //     beforeEach(() => {
 //         mockAPIGet.mockClear();
 //         mockAPIPost.mockClear();
@@ -145,4 +145,4 @@
 //     //     await waitFor(() => expect(APIGet).toHaveBeenCalledTimes(2));
 //     //     expect(APIGet).toHaveBeenCalledWith('/api/recommendations', [['page', 2], ['limit', '20']]);
 //     // });
-// });
+ });
