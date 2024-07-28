@@ -5,7 +5,10 @@ from db.models import DB_Interaction, DB_User
 from db.deps import get_db
 from sqlalchemy.exc import SQLAlchemyError
 from util.cold_start import add_cold_start_interactions
+import logging
 
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/interactions/click")
@@ -28,7 +31,7 @@ def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
         db.add(interaction)
         db.commit()
     except SQLAlchemyError as e:
-        print("Error adding interaction to postgres: ", e)
+        logger.error("Error adding interaction to postgres: ", e)
         db.rollback()
 
     return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
@@ -58,7 +61,7 @@ def record_review(data: Dict = Body(...), db: Session = Depends(get_db)):
         db.add(interaction)
         db.commit()
     except SQLAlchemyError as e:
-        print("Error adding interaction to postgres: ", e)
+        logger.error("Error adding interaction to postgres: ", e)
         db.rollback()
 
     return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
@@ -96,7 +99,7 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
         db.add(interaction)
         db.commit()
     except SQLAlchemyError as e:
-        print("Error adding interaction to postgres: ", e)
+        logger.error("Error adding interaction to postgres: ", e)
         db.rollback()
     return {"userID": user_id, "listingID": listing_id, "interactionCount": interaction.interaction_count}
 

@@ -10,7 +10,10 @@ from db.models import DB_User, DB_Listing, DB_Interaction
 from util.schemas import ListingSummary, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
 from util.charity_item_view import should_view_charity_items
+import logging
 
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
 
@@ -41,7 +44,7 @@ async def recommendations(*,
             listing_embedding = np.array(response['_source']['embedding'])
             user_vector += interaction_count * listing_embedding
         except Exception as e:
-            print(f"Error fetching embedding for listing {listing_id}: {e}")
+            logger.error(f"Error fetching embedding for listing {listing_id}: {e}")
 
      # Check if the user wants to view charity items
     view_charity_items = should_view_charity_items(user_id=authUserID, db=db)
@@ -131,7 +134,7 @@ def stop_suggesting_item_type(*,
                 db.flush()
                 db.commit()
             except SQLAlchemyError as e:
-                print(f"Error updating: {e}")
+                logger.error(f"Error updating: {e}")
                 db.rollback()
                 raise HTTPException(status_code=500, detail="Failed to update user's blacklisted items")
 
@@ -149,7 +152,7 @@ def stop_suggesting_item_type(*,
         db.flush()
         db.commit()
     except SQLAlchemyError as e:
-        print("Error adding interaction to postgres: ", e)
+        logger.error("Error adding interaction to postgres: ", e)
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to update user's interactions")
     return {"message": "success"}

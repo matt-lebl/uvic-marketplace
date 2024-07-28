@@ -5,6 +5,10 @@ from util.elasticsearch_wrapper import ElasticsearchWrapper
 import torch
 import numpy as np
 from util.embedding import generate_embedding, find_closest_matches
+import logging
+
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -64,7 +68,6 @@ async def search(*,
             response = es.search(index="listings_index", body=search_body)
 
             scores = [hit['_score'] for hit in response['hits']['hits']]
-            print(scores)
 
             # Extract documents from the response
             listings = [] 
@@ -79,8 +82,6 @@ async def search(*,
                                         imageUrl=doc['_source'].get('imageUrl'),
                                         **({"charityID": doc["_source"]["charityID"]} if "charityID" in doc["_source"] else {})
                                         ))
-                
-            print("Listings; {}".format(listings))
             return SearchResponse(items=listings, totalItems=len(listings))
 
         else:
@@ -119,6 +120,4 @@ async def search_users(*,
                                   name=doc["_source"]["name"],
                                   bio=doc["_source"].get("bio"),
                                   profileUrl=doc["_source"].get("profileUrl")))
-
-    print("Users: {}".format(users))
     return SearchUserResponse(items=users, totalItems=response['hits']['total']['value'])

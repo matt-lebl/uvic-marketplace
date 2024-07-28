@@ -6,6 +6,10 @@ from util.cold_start import add_cold_start_interactions
 from db.models import DB_User
 from db.deps import get_db
 from sqlalchemy.orm import Session
+import logging
+
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -29,7 +33,7 @@ async def create_user(user_id: str, authorization: Optional[str] = Header(None),
 
     # Add the user to Elasticsearch
     response = es.index(index="users_index", id=user_id, body=user_data)
-    print(f'Added/updated ES database: {response}')
+    logger.info(f'Added/updated ES database: {response}')
 
     # Add new user to Postgres
     new_user = DB_User(user_id=user_id)

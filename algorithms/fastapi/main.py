@@ -1,7 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from endpoints import search, recommendations, listings, interactions, users
+import logging
 
+logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logger = logging.getLogger(__name__)
 app = FastAPI()
 
 @app.middleware("http")
@@ -9,7 +12,7 @@ async def add_exception_handling(request: Request, call_next):
     try:
         response = await call_next(request)
     except Exception as e:
-        print(f"Unhandled algorithms error: {e}")
+        logger.error(f"Unhandled algorithms error: {e}")
         return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
     return response
 
