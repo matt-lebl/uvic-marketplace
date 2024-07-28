@@ -40,6 +40,11 @@ const validate = (values: FormValues) => {
   }
   if (!values.username) {
     errors.username = 'Required'
+  } else if (values.username.length < 6 || values.username.length > 20) {
+    errors.username = 'Username must be between 6 and 20 characters'
+  } else if (!/^[a-zA-Z0-9_@]*$/.test(values.username)) {
+    errors.username =
+      'Username must be alphanumeric, and must not contain special characters other than @ and _'
   }
   if (!values.email) {
     errors.email = 'Required'
@@ -50,6 +55,13 @@ const validate = (values: FormValues) => {
   }
   if (!values.password) {
     errors.password = 'Required'
+  } else if (values.password.length < 8) {
+    errors.password = 'Password must be at least 8 characters'
+  } else if (
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$/.test(values.password)
+  ) {
+    errors.password =
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
   }
   if (!values.confirmPassword) {
     errors.confirmPassword = 'Required'
@@ -111,9 +123,7 @@ export default function RegisterForm() {
         alert('Verification link failed to send.')
       }
     } catch (error) {
-      alert({
-        error: 'An error occurred when sending validation email ' + error,
-      })
+      alert('An error occurred when sending validation email ' + error)
     }
   }
 

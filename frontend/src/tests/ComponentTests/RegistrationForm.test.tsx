@@ -56,10 +56,10 @@ describe('RegisterForm', () => {
         target: { value: 'john.doe@uvic.ca' },
       })
       fireEvent.change(screen.getByLabelText('Password'), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       })
       fireEvent.change(screen.getByLabelText('Confirm Password'), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       })
     })
 
@@ -70,7 +70,7 @@ describe('RegisterForm', () => {
     await waitFor(() => {
       expect(mockAPIPost).toHaveBeenCalledWith('/api/user/', {
         email: 'john.doe@uvic.ca',
-        password: 'password123',
+        password: 'Password123!',
         username: 'johndoe',
         name: 'John Doe',
       })
@@ -97,10 +97,10 @@ describe('RegisterForm', () => {
         target: { value: 'john.doe@uvic.ca' },
       })
       fireEvent.change(screen.getByLabelText('Password'), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       })
       fireEvent.change(screen.getByLabelText('Confirm Password'), {
-        target: { value: 'password123' },
+        target: { value: 'Password123!' },
       })
     })
 
