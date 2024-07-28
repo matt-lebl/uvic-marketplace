@@ -34,12 +34,15 @@ async def create_user(user: NewUserReq):
     user = user.model_dump()
 
     if not UserValidator.validate_email(user["email"]):
+        print("invalid email")
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
     if not UserValidator.validate_password(user["password"]):
+        print("invalid password")
         raise HTTPException(status_code=401, detail="Invalid password")
 
     if not UserValidator.validate_username(user["username"]):
+        print("invalid username")
         raise HTTPException(status_code=401, detail="Invalid username")
 
     totp_secret, uri = AuthHandler.generate_otp(user["email"])

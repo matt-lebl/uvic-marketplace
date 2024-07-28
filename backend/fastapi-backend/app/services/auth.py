@@ -99,6 +99,6 @@ class UserValidator:
 
     @classmethod
     def validate_username(cls, username: str):
-        username_pattern = r'^[a-zA-Z@_\d]{8,20}$'
+        username_pattern = r'^[a-zA-Z@_\d]{6,20}$'
         regex = re.compile(username_pattern)
         return bool(regex.fullmatch(username))
