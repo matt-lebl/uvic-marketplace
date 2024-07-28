@@ -14,15 +14,26 @@ import EditListing from './EditListing'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
 import Footer from './Components/Footer'
+import { APIGet } from '../APIlink'
 
 const Router = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const user = localStorage.getItem('userID')
-    if (user) {
-      setLoggedIn(true)
+    const userID = localStorage.getItem('userID')
+    if (userID) {
+      const getUser = async () => {
+        const response = await APIGet<string>(`/api/user/` + userID)
+        if (response) {
+          setLoggedIn(true)
+        } else {
+          localStorage.clear()
+          setLoggedIn(false)
+          navigate('/login')
+        }
+      }
+      getUser()
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname

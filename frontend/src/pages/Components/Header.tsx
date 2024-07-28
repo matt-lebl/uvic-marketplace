@@ -39,7 +39,7 @@ export default function Header() {
                 backgroundColor: 'transparent',
               },
               paddingX: 0,
-              mr: 2
+              mr: 2,
             }}
           >
             <Typography variant="h1" component="div">
