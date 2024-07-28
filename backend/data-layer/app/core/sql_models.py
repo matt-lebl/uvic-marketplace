@@ -30,7 +30,7 @@ class UserBase(SQLModel):
     totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
-    email_validated: bool = Field(default=True)
+    email_validated: bool = Field(default=False)
     validation_code: str
     ignoreCharityListings: bool | None
 
@@ -118,11 +118,11 @@ class User(UserBase, table=True):
         return session.exec(statement).first()
 
     @classmethod
-    def validate_email(cls, validation_code: str, email: str, session: Session):
-        statement = select(cls).where(and_(cls.email == email, cls.validation_code == validation_code))
+    def validate_email(cls, validation_code: str, session: Session):
+        statement = select(cls).where(cls.validation_code == validation_code)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or validation code")
+            raise HTTPException(status_code=401, detail="Invalid validation code")
         else:
             setattr(user, "email_validated", True)
             session.add(user)

@@ -132,11 +132,12 @@ def get_validation_code(email: str, session: Session = Depends(get_session)):
         logger.error(str(e))
         raise HTTPException(status_code=400, detail="Error retrieving validation code")
 
-@router.post("/validate-email/{validation_code}/{email}")
-def validate_email(validation_code: str, email: str, session: Session = Depends(get_session)):
-    logger.info(f"attempting to validate email for {email}")
+
+@router.post("/validate-email/{validation_code}")
+def validate_email(validation_code: str, session: Session = Depends(get_session)):
+    logger.info(f"attempting to validate email with code {validation_code}")
     try:
-        return User.validate_email(validation_code, email, session)
+        return User.validate_email(validation_code, session)
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error validating email")

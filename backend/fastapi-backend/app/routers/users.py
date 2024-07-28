@@ -8,10 +8,10 @@ from core.schemas import (
     UpdateUser,
     User,
     NewUserReq,
-    )
+)
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
-from services.auth import AuthHandler, EmailValidator
+from services.auth import AuthHandler, EmailValidator, UserValidator
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 
 dsKafkaProducer = DataSyncKafkaProducer(disable=False)
@@ -33,8 +33,14 @@ async def create_user(user: NewUserReq):
 
     user = user.model_dump()
 
-    if not EmailValidator.validate_email_domain(user["email"]):
+    if not UserValidator.validate_email(user["email"]):
         raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    if not UserValidator.validate_password(user["password"]):
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+    if not UserValidator.validate_username(user["username"]):
+        raise HTTPException(status_code=401, detail="Invalid username")
 
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
@@ -96,11 +102,10 @@ async def login(loginRequest: LoginRequest):
 
     if loginResponse.status_code == 200:
         try:
-            return convert_to_type(loginResponse.json(), User)
-            # if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
-            #     return convert_to_type(loginResponse.json(), User)
-            # else:
-            #     raise HTTPException(status_code=401, detail="Invalid TOTP code")
+            if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
+                return convert_to_type(loginResponse.json(), User)
+            else:
+                raise HTTPException(status_code=401, detail="Invalid TOTP code")
         except Exception as e:
             print(e)
             raise HTTPException(status_code=401, detail="Invalid TOTP code")
@@ -110,16 +115,10 @@ async def login(loginRequest: LoginRequest):
 
 
 # Logout need not be implemented, it is implemented in RP
-@userRouter.post("/validate-email/{validation_code}/{email}")
-async def validate_email(validation_code: str, email: str):
-    # decrypted_email = authHandler.decrypt_secret(email)
-    # decrypted_validation_code = authHandler.decrypt_secret(validation_code)
-
-    if not EmailValidator.validate_email_domain(email):
-        raise HTTPException(status_code=401, detail="Invalid email domain")
-
+@userRouter.post("/validate-email/{validation_code}")
+async def validate_email(validation_code: str):
     response = await send_request_to_data_layer(
-        f"/user/validate-email/{validation_code}/{email}", "POST"
+        f"/user/validate-email/{validation_code}", "POST"
     )
     return response.json()
 

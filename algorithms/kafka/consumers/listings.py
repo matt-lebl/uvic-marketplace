@@ -10,7 +10,6 @@ es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
 
 def create_listing(data: dict, db: Session):
-    print(data)
     # Save the listing to Elasticsearch
     listing_data = data['listing']
 
@@ -23,6 +22,13 @@ def create_listing(data: dict, db: Session):
         "lat": listing_data['location']['latitude'],
         "lon": listing_data['location']['longitude']
     }
+
+    # Format seller for Elasticsearch
+    listing_data['sellerID'] = listing_data['seller_profile']['userID']
+    listing_data['sellerName'] = listing_data['seller_profile']['name']
+
+    if 'images' in listing_data and len(listing_data['images']) > 0:
+        listing_data['imageUrl'] = listing_data['images'][0]['url']
 
     # Add the listing to Elasticsearch
     response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)

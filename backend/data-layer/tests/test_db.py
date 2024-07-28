@@ -35,12 +35,11 @@ async def test_create_user():
 async def test_validate_email():
     user = data_factory.generate_user()
     validation_code = user["validation_code"]
-    email = user["email"]
     response = client.post("/user/", json=user)
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
-    response2 = client.post(f"/user/validate-email/{validation_code}/{email}")
+    response2 = client.post(f"/user/validate-email/{validation_code}")
     assert response2.status_code == 200
 
 
@@ -57,7 +56,7 @@ async def test_check_validation():
     assert response.status_code == 200
     assert not response.json()
 
-    response = client.post(f"/user/validate-email/{validation_code}/{email}")
+    response = client.post(f"/user/validate-email/{validation_code}")
     assert response.status_code == 200
 
     response = client.get(f"/user/is-validated/{email}")
@@ -130,7 +129,7 @@ async def test_login():
     create_response = client.post("/user/", json=user)
     assert create_response.status_code == 200
 
-    validate_response = client.post(f"/user/validate-email/{code}/{email}")
+    validate_response = client.post(f"/user/validate-email/{code}")
     assert validate_response.status_code == 200
 
     login_req = DataFactory.generate_login_request(email, p1)
