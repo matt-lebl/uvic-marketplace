@@ -3,21 +3,23 @@ import { APIGet } from '../../APIlink'
 import { CharityEntity } from '../../interfaces'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 
 const AnnouncementHeader: React.FC = () => {
+  const navigate = useNavigate()
+
   const [charity, setCharity] = useState<CharityEntity | null>(null)
 
   useEffect(() => {
-    const fetchCurrentCharity = async () => {
-      try {
-        const data = await APIGet<CharityEntity>('/api/charities/current')
-        setCharity(data)
-      } catch (error) {
-        console.error('Failed to fetch current charity', error)
-      }
-    }
-
-    fetchCurrentCharity()
+    setTimeout(async () => {
+      await APIGet<CharityEntity>('/api/charities/current')
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch current charity')
+          navigate('/error')
+        })
+        .then((data) => setCharity(data ?? null))
+    }, 1000);
   }, [])
 
   if (!charity) return null

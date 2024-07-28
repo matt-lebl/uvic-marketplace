@@ -5,11 +5,13 @@ import SearchListings from './Components/SearchListings'
 import { APIGet } from '../APIlink'
 import { AddData, DataContext, GetData } from '../DataContext'
 import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
 
 
 function Search() {
+  const navigate = useNavigate()
   const context = useContext(DataContext);
   const searchRequestID = "searchRequest"
   const [searchRequest, setSearchRequest] = useState<SearchRequest>({
@@ -42,16 +44,21 @@ function Search() {
       items: [] as ListingSummary[]
     }
     const queryParams: [string, string | number][] = Object.entries(searchRequest).filter(([key, value]) => value !== undefined && value !== null) as [string, string | number][];
-    try {
-      const res = await APIGet<SearchResultsResponse>('/api/search', queryParams)
-      results.totalItems = res.totalItems
-      results.items = res.items
-    } catch (e) {
-      console.error(e)
-    }
-    finally {
-      return results;
-    }
+    setTimeout(async () => {
+      await APIGet<SearchResultsResponse>('/api/search', queryParams)
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch current charity')
+          navigate('/error')
+        })
+        .then((response) => {
+          if (response) {
+            results.totalItems = response.totalItems
+            results.items = response.items
+          }
+        })
+    }, 1000);
+    return results;
   }
 
   return (

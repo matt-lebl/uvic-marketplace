@@ -3,7 +3,7 @@ import './App.css'
 import { Typography, Box, Paper } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 
@@ -11,34 +11,31 @@ interface ListingProps {
   listingData?: ListingEntity
 }
 
-const Listing: React.FC<ListingProps> = ({
-  listingData: initialListingData,
-}) => {
+const Listing: React.FC<ListingProps> = ({ listingData: initialListingData }) => {
+  const navigate = useNavigate()
   const { listingID } = useParams()
-  const [listingData, setListingData] = useState<ListingEntity | undefined>(
-    initialListingData
-  )
+  const [listingData, setListingData] = useState<ListingEntity | undefined>(initialListingData)
   const [loading, setLoading] = useState(!initialListingData)
 
   useEffect(() => {
-    async function fetchListing() {
+    setTimeout(async () => {
       if (!listingID || initialListingData) return
 
       const listingURL: string = `/api/listing/${listingID}`
 
-      try {
-        const response = (await APIGet(listingURL)) as ListingEntity
-        if (response) {
-          setListingData(response)
-        }
-      } catch (error) {
-        console.log('Request Error', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchListing()
+      await APIGet<ListingEntity>(listingURL)
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch current listing')
+          navigate('/error')
+        })
+        .then((response) => {
+          if (response) {
+            setListingData(response)
+          }
+        })
+        .finally(() => setLoading(false))
+    }, 1000);
   }, [listingID, initialListingData])
 
   if (loading) {

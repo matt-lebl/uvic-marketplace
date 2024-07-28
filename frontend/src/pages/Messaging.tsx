@@ -20,8 +20,11 @@ import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
 import { MessageThread, Message, User } from '../interfaces'
 import { APIGet, APIPost } from '../APIlink'
+import { useNavigate } from 'react-router-dom'
 
 const Messaging: React.FC = () => {
+  const navigate = useNavigate()
+
   const [selectedListingId, setSelectedListingId] = useState<string>('')
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>([])
@@ -48,120 +51,138 @@ const Messaging: React.FC = () => {
     }
   }, [selectedListingId, messages[selectedListingId]])
 
-  const fetchMessageThreads = async () => {
-    try {
-      const fetchedThreads = await APIGet<MessageThread[]>(
-        '/api/messages/overview'
-      )
-      setThreads(fetchedThreads)
-      if (fetchedThreads.length > 0) {
-        setSelectedListingId(fetchedThreads[0].listing_id)
-        fetchMessagesForThread(fetchedThreads[0].listing_id)
-      }
-    } catch (error) {
-      console.error('Failed to fetch message threads:', error)
-    }
+  const fetchMessageThreads = () => {
+    setTimeout(async () => {
+      await APIGet<MessageThread[]>('/api/messages/overview')
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch  message threads')
+          navigate('/error')
+        })
+        .then((fetchedThreads) => {
+          if (fetchedThreads) {
+            setThreads(fetchedThreads)
+            if (fetchedThreads.length > 0) {
+              setSelectedListingId(fetchedThreads[0].listing_id)
+              fetchMessagesForThread(fetchedThreads[0].listing_id)
+            }
+          }
+        })
+    }, 1000);
   }
 
-  const fetchMessagesForThread = async (listing_id: string) => {
-    if (!userId) return
-    try {
-      const fetchedMessages = await APIGet<Message[]>(
-        `/api/messages/thread/${listing_id}/${userId}`
-      )
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [listing_id]: fetchedMessages,
-      }))
-    } catch (error) {
-      console.error(`Failed to fetch messages for thread ${listing_id}:`, error)
-    }
+  const fetchMessagesForThread = (listing_id: string) => {
+    setTimeout(async () => {
+      if (!userId) return
+      await APIGet<Message[]>(`/api/messages/thread/${listing_id}/${userId}`)
+        .catch((error) => {
+          debugger;
+          console.error(`Failed to fetch messages for thread ${listing_id}`)
+          navigate('/error')
+        })
+        .then((fetchedMessages) => {
+          if (fetchedMessages) {
+            setMessages((prevMessages) => ({
+              ...prevMessages,
+              [listing_id]: fetchedMessages,
+            }))
+          }
+        })
+    }, 1000);
   }
 
   const handleNewConversation = () => {
     setOpen(true)
   }
 
-  const handleCreateNewConversation = async () => {
+  const handleCreateNewConversation = () => {
     if (!newParticipant || !userId) return
+    setTimeout(async () => {
 
-    try {
-      const user = await APIGet<User>(`/api/user/${newParticipant}`)
-      if (!user) {
-        alert('User not found')
-        return
+      try {
+        const user = await APIGet<User>(`/api/user/${newParticipant}`)
+        if (!user) {
+          alert('User not found')
+          return
+        }
+
+        const initialMessage: Message = {
+          sender_id: userId,
+          receiver_id: user.userID,
+          listing_id: `listing-${threads.length + 1}`,
+          content: `Start of conversation with ${user.name}`,
+          sent_at: Date.now(),
+        }
+
+        await APIPost<Message, Message>('/messages/', initialMessage)
+
+        const newThread: MessageThread = {
+          listing_id: initialMessage.listing_id,
+          other_participant: {
+            user_id: user.userID,
+            name: user.name,
+            profilePicture: user.profileUrl,
+          },
+          last_message: initialMessage,
+        }
+
+        setThreads([newThread, ...threads])
+        setSelectedListingId(newThread.listing_id)
+        setOpen(false)
+        setNewParticipant('')
+
+        setMessages((prevMessages) => ({
+          ...prevMessages,
+          [newThread.listing_id]: [initialMessage],
+        }))
+        scrollToBottom()
+      } catch (error) {
+        debugger;
+        console.error('Failed to create new conversation')
+        navigate('/error')
       }
-
-      const initialMessage: Message = {
-        sender_id: userId,
-        receiver_id: user.userID,
-        listing_id: `listing-${threads.length + 1}`,
-        content: `Start of conversation with ${user.name}`,
-        sent_at: Date.now(),
-      }
-
-      await APIPost<Message, Message>('/messages/', initialMessage)
-
-      const newThread: MessageThread = {
-        listing_id: initialMessage.listing_id,
-        other_participant: {
-          user_id: user.userID,
-          name: user.name,
-          profilePicture: user.profileUrl,
-        },
-        last_message: initialMessage,
-      }
-
-      setThreads([newThread, ...threads])
-      setSelectedListingId(newThread.listing_id)
-      setOpen(false)
-      setNewParticipant('')
-
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [newThread.listing_id]: [initialMessage],
-      }))
-      scrollToBottom()
-    } catch (error) {
-      console.error('Failed to create new conversation:', error)
-    }
+    }, 2000);
   }
 
-  const handleSendMessage = async () => {
-    if (!messageInput || !selectedListingId || !userId) {
-      return
-    }
-    const newMessage: Message = {
-      sender_id: userId,
-      receiver_id: selectedListingId.split('-')[1],
-      listing_id: selectedListingId,
-      content: messageInput,
-      sent_at: Date.now(),
-    }
-    try {
-      await APIPost<Message, Message>(
-        `/api/messages/thread/${selectedListingId}/${userId}`,
-        newMessage
-      )
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [selectedListingId]: [
-          ...(prevMessages[selectedListingId] || []),
-          newMessage,
-        ],
-      }))
-      const updatedThreads = threads.map((thread) =>
-        thread.listing_id === selectedListingId
-          ? { ...thread, last_message: newMessage }
-          : thread
-      )
-      setThreads(updatedThreads)
-      setMessageInput('')
-      sortThreads()
-      scrollToBottom()
-    } catch (error) {
-      console.error('Failed to send message:', error)
-    }
+  const handleSendMessage = () => {
+    setTimeout(async () => {
+      if (!messageInput || !selectedListingId || !userId) {
+        return
+      }
+      const newMessage: Message = {
+        sender_id: userId,
+        receiver_id: selectedListingId.split('-')[1],
+        listing_id: selectedListingId,
+        content: messageInput,
+        sent_at: Date.now(),
+      }
+      try {
+        await APIPost<Message, Message>(
+          `/api/messages/thread/${selectedListingId}/${userId}`,
+          newMessage
+        )
+        setMessages((prevMessages) => ({
+          ...prevMessages,
+          [selectedListingId]: [
+            ...(prevMessages[selectedListingId] || []),
+            newMessage,
+          ],
+        }))
+        const updatedThreads = threads.map((thread) =>
+          thread.listing_id === selectedListingId
+            ? { ...thread, last_message: newMessage }
+            : thread
+        )
+        setThreads(updatedThreads)
+        setMessageInput('')
+        sortThreads()
+        scrollToBottom()
+      } catch (error) {
+        debugger;
+        console.error('Failed to send message')
+        navigate('/error')
+      }
+    }, 1000);
   }
 
   const scrollToBottom = () => {

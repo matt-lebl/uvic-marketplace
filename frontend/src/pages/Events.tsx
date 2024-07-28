@@ -1,39 +1,48 @@
-import * as React from 'react'
 import EventCard from './Components/EventCard'
 import { Box, Grid, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { APIGet } from '../APIlink'
-import { CharityEntity, OrgEntity } from '../interfaces'
+import { CharityEntity } from '../interfaces'
+import { useNavigate } from 'react-router-dom'
 
 export default function Events() {
+  const navigate = useNavigate()
   const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>()
   const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([])
 
-  const fetchMainEvent = async () => {
-    try {
-      const response: CharityEntity = await APIGet('/api/charities/current')
-      setCurCharityEvent(response)
-    } catch (error) {
-      console.log(error)
-    }
+  const fetchMainEvent = () => {
+    setTimeout(async () => {
+      await APIGet<CharityEntity>('/api/charities/current')
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch current charity')
+          navigate('/error')
+        })
+        .then((response) => {
+          if (response) { setCurCharityEvent(response) }
+        })
+    }, 1000);
   }
 
-  const fetchAllEvents = async () => {
-    try {
-      const response: Array<CharityEntity> = await APIGet('/api/charities')
-      setCharityEvents(response)
-    } catch (error) {
-      console.log(error)
-    }
+  const fetchAllEvents = () => {
+    setTimeout(async () => {
+      await APIGet<Array<CharityEntity>>('/api/charities')
+        .catch((error) => {
+          debugger;
+          console.error('Failed to fetch all charities')
+          navigate('/error')
+        })
+        .then((response) => { if (response) { setCharityEvents(response) } })
+    }, 1000);
   }
 
   useEffect(() => {
     fetchMainEvent()
-  })
+  }, [])
 
   useEffect(() => {
     fetchAllEvents()
-  })
+  }, [])
 
   if (!curCharityEvent || !charityEvents) {
     return <Typography>No Events Found</Typography>

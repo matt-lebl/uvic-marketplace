@@ -144,16 +144,19 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     }
   }
 
-  const handleLogout = async () => {
-    try {
-      const logoutResponse = await APIGet<boolean>(`/api/user/logout`)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      alert('Logged out successfully. See you later!')
-      localStorage.clear()
-      window.location.href = '/'
-    }
+  const handleLogout = () => {
+    setTimeout(async () => {
+      await APIGet<boolean>(`/api/user/logout`)
+        .catch((error) => {
+          debugger;
+          console.error('Failed to logout on server')
+        })
+        .finally(() => {
+          alert('Logged out successfully. See you later!')
+          localStorage.clear()
+          window.location.href = '/'
+        })
+    }, 1000);
   }
 
   useEffect(() => {

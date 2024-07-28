@@ -1,10 +1,8 @@
 import { FormControl, TextField, FormHelperText } from '@mui/material'
 import { Button } from '@mui/material'
 import { Formik } from 'formik'
-import { APIGet, APIPost } from '../../APIlink'
+import { APIPost } from '../../APIlink'
 import { LoginRequest, UserProfile } from '../../interfaces'
-import Login from '../Login'
-import { Form } from 'react-router-dom'
 
 export default function LoginForm() {
   return (
@@ -31,34 +29,31 @@ export default function LoginForm() {
       }}
       onSubmit={(values, { setSubmitting }) => {
         const loginURL: string = '/api/user/login'
-        let response: UserProfile | undefined
         setTimeout(async () => {
           setSubmitting(false)
-
           const loginRequest: LoginRequest = {
             email: values.email,
             password: values.password,
             totp_code: values.totp_code,
           }
-          try {
-            response = await APIPost(loginURL, loginRequest)
-
-            if (response) {
-              console.log('Response: ', response) // Remove later
-              alert('Login successful.')
-              localStorage.setItem('userID', response.userID)
-              localStorage.setItem('userID', response.userID)
-              localStorage.setItem('username', response.username)
-              localStorage.setItem('name', response.name)
-              localStorage.setItem('bio', response.bio)
-              localStorage.setItem('profileUrl', response.profilePictureUrl)
-              localStorage.setItem('email', loginRequest.email)
-              window.location.href = '/'
-            }
-          } catch (error) {
-            console.log('Response: ', response) // Remove later
-            alert('Login failed: ' + error)
-          }
+          await APIPost<UserProfile, LoginRequest>(loginURL, loginRequest)
+            .catch((error) => {
+              debugger;
+              console.error('Failed to login')
+              alert('Login failed')
+            })
+            .then((response) => {
+              if (response) {
+                localStorage.setItem('userID', response.userID)
+                localStorage.setItem('userID', response.userID)
+                localStorage.setItem('username', response.username)
+                localStorage.setItem('name', response.name)
+                localStorage.setItem('bio', response.bio)
+                localStorage.setItem('profileUrl', response.profilePictureUrl)
+                localStorage.setItem('email', loginRequest.email)
+                window.location.href = '/'
+              }
+            })
         }, 1000)
       }}
     >

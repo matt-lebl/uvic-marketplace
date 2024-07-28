@@ -5,8 +5,6 @@ import { useEffect, useState } from 'react'
 
 export default function ValidateEmailCompnent() {
   const [searchParams] = useSearchParams()
-  let response = undefined
-
   const email = searchParams.get('email')
   const code = searchParams.get('code')
 
@@ -16,17 +14,15 @@ export default function ValidateEmailCompnent() {
   const [validated, setValidated] = useState(false)
 
   useEffect(() => {
-    const validateEmail = async () => {
-      try {
-        const res = await APIGet<boolean>(
-          `/api/user/validate-email/${code}/${email}`
-        )
-        setValidated(res)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    validateEmail()
+    setTimeout(async () => {
+      await APIGet<boolean>(`/api/user/validate-email/${code}/${email}`)
+        .catch((error) => {
+          debugger;
+          console.error('Failed to validate email')
+          alert('Failed to validate email')
+        })
+        .then((res) => setValidated(res ?? false))
+    }, 1000);
   }, [])
 
   return (

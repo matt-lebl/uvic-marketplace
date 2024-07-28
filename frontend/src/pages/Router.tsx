@@ -14,37 +14,46 @@ import EditListing from './EditListing'
 import Search from './Search'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
-import Footer from './Components/Footer'
-import { APIGet } from '../APIlink'
+import APIError, { APIGet } from '../APIlink'
+import ErrorPage from './ErrorPage'
 
 const Router = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
   const navigate = useNavigate()
 
+  const redirectToLogin = () => {
+    setLoggedIn(false)
+    const currentPath = window.location.pathname
+    if (
+      currentPath !== '/error' &&
+      currentPath !== '/login' &&
+      currentPath !== '/register' &&
+      !currentPath.startsWith('/validate-email')
+    ) {
+      navigate('/login')
+    }
+  }
+
   useEffect(() => {
     const userID = localStorage.getItem('userID')
     if (userID) {
-      const getUser = async () => {
-        const response = await APIGet<string>(`/api/user/` + userID)
-        if (response) {
-          setLoggedIn(true)
-        } else {
-          localStorage.clear()
-          setLoggedIn(false)
-          navigate('/login')
-        }
-      }
-      getUser()
+      setTimeout(async () => {
+        await APIGet<string>(`/api/user/` + userID)
+          .catch((error) => {
+            if (error instanceof APIError && (error.status === 401 || error.status === 403)) {
+              localStorage.clear()
+              redirectToLogin()
+            }
+            else {
+              debugger;
+              console.error('Failed to fetch user')
+              navigate('/error')
+            }
+          })
+          .then((response) => { if (response) { setLoggedIn(true) } })
+      }, 1000)
     } else {
-      setLoggedIn(false)
-      const currentPath = window.location.pathname
-      if (
-        currentPath !== '/login' &&
-        currentPath !== '/register' &&
-        !currentPath.startsWith('/validate-email')
-      ) {
-        navigate('/login')
-      }
+      redirectToLogin()
     }
   }, [navigate])
 
@@ -56,6 +65,7 @@ const Router = () => {
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Registration />} />
             <Route path="validate-email" element={<ValidateEmail />} />
+            <Route path="error" element={<ErrorPage />} />
           </>
         ) : (
           <>
@@ -67,6 +77,7 @@ const Router = () => {
             <Route path="edit-listing" element={<EditListing />} />
             <Route path="search" element={<Search />} />
             <Route path="events" element={<Events />} />
+            <Route path="error" element={<ErrorPage />} />
           </>
         )}
       </Route>

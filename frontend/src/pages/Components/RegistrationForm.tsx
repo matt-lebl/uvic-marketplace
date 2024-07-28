@@ -91,14 +91,16 @@ export default function RegisterForm() {
     }
 
     const loginURL: string = '/api/user/'
-
-    try {
-      const response = await APIPost<NewUser, NewUserReq>(
-        loginURL,
-        newUserRequest
-      )
+    await APIPost<NewUser, NewUserReq>(
+      loginURL,
+      newUserRequest
+    ).catch((error) => {
+      debugger;
+      console.error('Failed to register')
+      setStatus({ error: 'Registration failed ' + error })
+      setSubmitting(false)
+    }).then((response) => {
       if (response) {
-        console.log(response)
         setTotpURI(response.totp_uri)
         setUserEmail(values.email)
         setShowVerifyButton(true)
@@ -107,24 +109,24 @@ export default function RegisterForm() {
         setStatus({ error: 'Response undefined' })
         setSubmitting(false)
       }
-    } catch (error) {
-      setStatus({ error: 'Registration failed ' + error })
-      setSubmitting(false)
-    }
+    })
   }
 
   const handleVerifyEmail = async () => {
-    try {
-      const verifyEmailURL = '/api/user/send-validation-link/' + userEmail
-      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
-      if (verifyEmailResponse) {
-        alert('Verification link sent to your email. Please check your inbox.')
-      } else {
-        alert('Verification link failed to send.')
-      }
-    } catch (error) {
-      alert('An error occurred when sending validation email ' + error)
-    }
+    const verifyEmailURL = '/api/user/send-validation-link/' + userEmail
+    await APIGet<string>(verifyEmailURL)
+      .catch((error) => {
+        debugger;
+        console.error('Failed to send validation email')
+        alert('An error occurred when sending validation email')
+      })
+      .then((verifyEmailResponse) => {
+        if (verifyEmailResponse) {
+          alert('Verification link sent to your email. Please check your inbox.')
+        } else {
+          alert('Verification link failed to send.')
+        }
+      })
   }
 
   return (

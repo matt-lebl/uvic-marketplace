@@ -11,17 +11,14 @@ import {
 import PhotoPreviewList from './Components/PhotoPreviewList'
 import { ListingEntity } from '../interfaces'
 import { APIPost } from '../APIlink'
+import { useNavigate } from 'react-router-dom'
 
-async function apiSubmit(listing: Partial<ListingEntity>) {
-  try {
-    const response = await APIPost('/api/listing', { listing })
-    console.log('Response:', response)
-  } catch (error) {
-    console.log('Request Error:', error)
-  }
-}
+
+
 
 function CreateListing() {
+  const navigate = useNavigate()
+
   const [title, setTitle] = useState<string>('')
   const [desc, setDesc] = useState<string>('')
   const [price, setPrice] = useState<number>(0)
@@ -32,6 +29,17 @@ function CreateListing() {
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
+
+  function apiSubmit(listing: Partial<ListingEntity>) {
+    setTimeout(async () => {
+      await APIPost('/api/listing', { listing })
+        .catch((error) => {
+          debugger;
+          console.error('Failed to submit listing')
+          navigate('/error')
+        })
+    }, 1000);
+  }
 
   useEffect(() => {
     if (navigator.geolocation) {

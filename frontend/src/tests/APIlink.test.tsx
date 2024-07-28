@@ -380,7 +380,7 @@ describe('GET', () => {
     ]
 
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data: testResponse })
-    const res = await APIGet<ListingSummary[]>(testURL, queryParams)
+    const res = await APIGet<ListingSummary[]>(testURL, queryParams) ?? []
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl + testURL + '?page=1&limit=1'
     )
@@ -444,7 +444,7 @@ describe('GET', () => {
     ]
 
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data: testResponse })
-    const res = await APIGet<MessageThread[]>(testURL, queryParams)
+    const res = await APIGet<MessageThread[]>(testURL, queryParams) ?? []
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl + testURL + '?num_items=1&offset=1'
     )
@@ -473,13 +473,13 @@ describe('GET', () => {
     const res = await APIGet<Message[]>(
       testURL + testListingID + testReciverID,
       queryParams
-    )
+    ) ?? []
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl +
-        testURL +
-        testListingID +
-        testReciverID +
-        '?num_items=1&offset=1'
+      testURL +
+      testListingID +
+      testReciverID +
+      '?num_items=1&offset=1'
     )
     expect(res[0]).toSatisfySchemaInApiSpec('Message')
   })
