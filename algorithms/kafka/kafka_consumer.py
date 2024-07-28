@@ -24,51 +24,54 @@ def consume_topics(topics):
 
     try:
         while True:
-            msg = consumer.poll(timeout=1.0)
-            if msg is None:
-                continue
-            if msg.error():
-                if msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+            try:
+                msg = consumer.poll(timeout=1.0)
+                if msg is None:
                     continue
-                print(f"Consumer error: {msg.error()}")
-                continue
+                if msg.error():
+                    if msg.error().code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                        continue
+                    print(f"Consumer error: {msg.error()}")
+                    continue
 
-            message_contents = msg.value().decode('utf-8')
-            print(f"Received Kafka message: {message_contents}")
-            
-            try:
-                message_json = json.loads(message_contents)
-            except ValueError as e:
-                print(f"Error decoding json: {e}")
-                continue
+                message_contents = msg.value().decode('utf-8')
+                print(f"Received Kafka message: {message_contents}")
+                
+                try:
+                    message_json = json.loads(message_contents)
+                except ValueError as e:
+                    print(f"Error decoding json: {e}")
+                    continue
 
-            db_session = next(get_db())  # Get the database session
-            try:
-                # Dispatch to appropriate handlers based on the topic
-                if msg.topic() == "create-listing":
-                    handle_create_listing(message_json, db_session)
-                elif msg.topic() == "delete-listing":
-                    handle_delete_listing(message_json, db_session)
-                elif msg.topic() == "update-listing":
-                    handle_update_listing(message_json, db_session)
-                elif msg.topic() == "view-listing":
-                    handle_view_listing(message_json, db_session)
-                elif msg.topic() == "create-user":
-                    handle_create_user(message_json, db_session)
-                elif msg.topic() == "edit-user":
-                    handle_edit_user(message_json, db_session)
-                elif msg.topic() == "delete-user":
-                    handle_delete_user(message_json, db_session)
-                elif msg.topic() == "create-review":
-                    handle_create_review(message_json, db_session)
-                elif msg.topic() == "edit-review":
-                    handle_edit_review(message_json, db_session)
-                elif msg.topic() == "delete-review":
-                    handle_delete_review(message_json, db_session)
-            except KafkaException as e:
+                db_session = next(get_db())  # Get the database session
+                try:
+                    # Dispatch to appropriate handlers based on the topic
+                    if msg.topic() == "create-listing":
+                        handle_create_listing(message_json, db_session)
+                    elif msg.topic() == "delete-listing":
+                        handle_delete_listing(message_json, db_session)
+                    elif msg.topic() == "update-listing":
+                        handle_update_listing(message_json, db_session)
+                    elif msg.topic() == "view-listing":
+                        handle_view_listing(message_json, db_session)
+                    elif msg.topic() == "create-user":
+                        handle_create_user(message_json, db_session)
+                    elif msg.topic() == "edit-user":
+                        handle_edit_user(message_json, db_session)
+                    elif msg.topic() == "delete-user":
+                        handle_delete_user(message_json, db_session)
+                    elif msg.topic() == "create-review":
+                        handle_create_review(message_json, db_session)
+                    elif msg.topic() == "edit-review":
+                        handle_edit_review(message_json, db_session)
+                    elif msg.topic() == "delete-review":
+                        handle_delete_review(message_json, db_session)
+                except KafkaException as e:
                     print(f"Error processing kafka message: {e}")
-            finally:
-                db_session.close()
+                finally:
+                    db_session.close()
+            except Exception as e:
+                print(f"Error in kafka message: {e}")
     except KeyboardInterrupt:
         print("Kafka consumer interrupted by user")
     finally:

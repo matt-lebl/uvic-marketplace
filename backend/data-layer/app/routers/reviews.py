@@ -1,10 +1,13 @@
 import uuid
-from core.sql_models import *
+from core.sql_models import ListingReview
+from core.config import PST_TZ
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
 from core.schemas import NewReview, ReviewSchema
 from datetime import datetime
 import logging
+
+from sqlmodel import Session
 
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -19,7 +22,7 @@ router = APIRouter(
 def create_review(userID: str, review: NewReview, session: Session = Depends(get_session)):
     review_data = review.model_dump()
     review_data["listing_review_id"] = str(uuid.uuid4())
-    review_data["dateCreated"] = datetime.now()
+    review_data["dateCreated"] = datetime.now(PST_TZ)
     review_data["dateModified"] = review_data["dateCreated"]
     review_data["userID"] = userID
     logger.info(f"review creation {review}")
@@ -45,7 +48,7 @@ def get_review(listing_review_id: str, session: Session = Depends(get_session)):
 def update_review(listing_review_id: str, userID: str, review: NewReview, session: Session = Depends(get_session)):
     review_data = review.model_dump()
     review_data["listing_review_id"] = listing_review_id
-    review_data["dateModified"] = datetime.now()
+    review_data["dateModified"] = datetime.now(PST_TZ)
     review_data["userID"] = userID
     logger.info(f"listing updated: {listing_review_id}")
     updated_review = ListingReview.update(user_id=userID, session=session, **review_data)

@@ -4,7 +4,8 @@ import argon2
 from faker import Faker
 import pyotp
 from cryptography.fernet import Fernet
-from datetime import datetime
+from datetime import datetime, timedelta
+
 
 class DataFactory:
     def __init__(self):
@@ -35,7 +36,7 @@ class DataFactory:
             "ignoreCharityListings": random.choice([True, False])
         }
 
-    def generate_listing(self):
+    def generate_listing(self, for_charity=False):
         title = self.fake.catch_phrase()
         description = self.fake.text()
         price = float(round(random.uniform(10, 1000), 2))
@@ -50,8 +51,28 @@ class DataFactory:
                 "description": description,
                 "images": image_urls,
                 "location": {"latitude": latitude, "longitude": longitude},
-                "markedForCharity": True
+                "markedForCharity": for_charity
             }
+        }
+        return listing
+
+    def generate_listing_patch(self, status="AVAILABLE"):
+        title = self.fake.catch_phrase()
+        description = self.fake.text()
+        price = float(round(random.uniform(10, 1000), 2))
+        image_urls = [{"url": self.fake.image_url()} for _ in range(random.randint(1, 5))]
+        latitude = float(self.fake.latitude())
+        longitude = float(self.fake.longitude())
+
+        listing = {
+            "listing": {
+                "title": title,
+                "price": price,
+                "description": description,
+                "images": image_urls,
+                "location": {"latitude": latitude, "longitude": longitude},
+            },
+            "status": status
         }
         return listing
 
@@ -100,4 +121,23 @@ class DataFactory:
             "email": email,
             "password": password,
             "totp_code": pyotp.TOTP(pyotp.random_base32()).now()
+        }
+
+    def generate_charity_request(self, organizations):
+        startDate = datetime.now()
+        return {
+            "name": self.fake.name(),
+            "description": self.fake.text(),
+            "startDate": startDate.isoformat(),
+            "endDate": (startDate + timedelta(days=1)).isoformat(),
+            "imageUrl": self.fake.image_url(),
+            "organizations": organizations
+        }
+
+    def generate_organization(self, receiving):
+        return {
+            "name": self.fake.name(),
+            "logoUrl": self.fake.image_url(),
+            "donated": 0,
+            "receiving": receiving
         }

@@ -1,10 +1,12 @@
 import uuid
-from core.sql_models import *
+from core.sql_models import User
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
 from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
 import argon2
 import logging
+
+from sqlmodel import Session
 
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -19,7 +21,7 @@ router = APIRouter(
 def create_user(user: NewUserReq, session: Session = Depends(get_session)):
     user_data = user.model_dump()
     user_data["userID"] = str(uuid.uuid4())
-    logger.info(f"new user creation: {user_data["userID"]}, {user_data["password"]}")
+    logger.info(f"new user creation: {user_data["userID"]}")
     try:
         new_user = User.create(session=session, **user_data)
         return new_user
@@ -130,11 +132,12 @@ def get_validation_code(email: str, session: Session = Depends(get_session)):
         logger.error(str(e))
         raise HTTPException(status_code=400, detail="Error retrieving validation code")
 
-@router.post("/validate-email/{validation_code}/{email}")
-def validate_email(validation_code: str, email: str, session: Session = Depends(get_session)):
-    logger.info(f"attempting to validate email for {email}")
+
+@router.post("/validate-email/{validation_code}")
+def validate_email(validation_code: str, session: Session = Depends(get_session)):
+    logger.info(f"attempting to validate email with code {validation_code}")
     try:
-        return User.validate_email(validation_code, email, session)
+        return User.validate_email(validation_code, session)
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error validating email")

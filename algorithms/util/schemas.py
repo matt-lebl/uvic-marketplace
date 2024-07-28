@@ -64,6 +64,7 @@ class Listing(BaseModel):
     reviews: Optional[List[Review]] = None
     images: Optional[List[Image]] = None
     distance: Optional[float] = Field(None, example=4.2)
+    charityID: Optional[str] = Field(None, example="1")
 
 class ListingSummary(BaseModel):
     """Schema for listing summary."""
@@ -74,7 +75,8 @@ class ListingSummary(BaseModel):
     description: Optional[str] = Field(None, example="No wear and tear, drop-off available.")
     price: float = Field(..., example=50.00)
     dateCreated: str = Field(..., example="2024-05-23T15:30:00Z")
-    imageUrl: Optional[HttpUrl] = Field(None, example="image URL for first Image")
+    imageUrl: Optional[str] = Field(None, example="image URL for first Image")
+    charityID: Optional[str] = Field(None, example="1")
 
 class Search(BaseModel):
     """Schema for search."""

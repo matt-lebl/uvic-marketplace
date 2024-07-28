@@ -32,7 +32,13 @@ export default function ListingCard(listing: ListingSummary) {
         }}
       >
         <Box>
-          <Typography variant="h6" alignSelf={'flex-start'} onClick={() => {navigate("listing/"+listing.listingID)}}>
+          <Typography
+            variant="h6"
+            alignSelf={'flex-start'}
+            onClick={() => {
+              navigate('listing/' + listing.listingID)
+            }}
+          >
             {listing.title}
           </Typography>
           <Typography variant="body1" alignSelf={'flex-start'}>

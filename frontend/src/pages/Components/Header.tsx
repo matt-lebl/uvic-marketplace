@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -8,6 +8,7 @@ import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
+import AnnouncementHeader from './AnnouncementHeader'
 
 export default function Header() {
   const handleSearch = (query: string) => {
@@ -24,7 +25,7 @@ export default function Header() {
         position="static"
         sx={{
           flexGrow: 1,
-          height: '8vh',
+          height: '70px',
           justifyContent: 'center',
         }}
       >
@@ -37,7 +38,8 @@ export default function Header() {
               '&:hover': {
                 backgroundColor: 'transparent',
               },
-              paddingX: 5,
+              paddingX: 0,
+              mr: 2
             }}
           >
             <Typography variant="h1" component="div">
@@ -74,13 +76,6 @@ export default function Header() {
               color="inherit"
             >
               Events
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => navigate('/listing/1234')}
-              color="inherit"
-            >
-              Browse
             </Button>
             <Button
               variant="text"
@@ -124,6 +119,7 @@ export default function Header() {
           </Box>
         </Toolbar>
       </AppBar>
+      <AnnouncementHeader />
     </Box>
   )
 }
