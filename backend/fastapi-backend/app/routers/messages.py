@@ -30,7 +30,7 @@ def get_thread(
 
 @messagesRouter.post("")
 def create_message(message: MessageBaseModel, authUserID: str):
-    message = convert_to_type(message, dict)
+    message = message.model_dump()
     message["sent_at"] = int(time.time())
     path = "messages/"
     response = send_request_to_data_layer(path, "POST", message)
