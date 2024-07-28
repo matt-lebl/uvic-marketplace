@@ -11,6 +11,7 @@ import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
+import Search from './Search'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
 import Footer from './Components/Footer'
@@ -64,6 +65,7 @@ const Router = () => {
             <Route path="messaging" element={<Messaging />} />
             <Route path="new-listing" element={<CreateListing />} />
             <Route path="edit-listing" element={<EditListing />} />
+            <Route path="search" element={<Search />} />
             <Route path="events" element={<Events />} />
           </>
         )}
