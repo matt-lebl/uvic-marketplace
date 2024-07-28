@@ -14,9 +14,10 @@ usersRouter = APIRouter(
 @usersRouter.post("/")
 async def create_user(
         user: NewUserReq,
+        response: Response
 ):
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
-    response_backend.set_cookie(
+    response.set_cookie(
         key="validation",
         value=sign_jwt(user.email),
         httponly=True,
@@ -34,7 +35,7 @@ async def login(loginRequest: LoginRequest, response: Response):
 
     if response_backend.status_code == 200:
         if "emailNotVerified" in response_json:
-            response_backend.set_cookie(
+            response.set_cookie(
                 key="validation",
                 value=sign_jwt(response_json["email"]),
                 httponly=True,
@@ -58,7 +59,7 @@ async def logout(response: Response):
     return {"message": "Successfully signed out"}
 
 
-@usersRouter.get("/send-confirmation-email")
+@usersRouter.post("/send-confirmation-email")
 async def send_validation_link(request: Request):
     validation_cookie = request.cookies.get("validation")
     if not validation_cookie:
@@ -72,7 +73,7 @@ async def send_validation_link(request: Request):
         payload = decode_jwt(validation_cookie)
         email = payload["email"]
         response = await send_request_to_backend(
-            f"user/send-validation-link/{email}", "GET"
+            f"user/send-validation-link/", "POST", json={"email": email}
         )
         return response.json()
     except Exception as e:
