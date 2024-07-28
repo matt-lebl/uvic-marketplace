@@ -72,6 +72,7 @@ async def get_user(id: str, authUserID: str):
 async def edit_user(user: UpdateUser, authUserID: str):
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
+    dsKafkaProducer.push_updated_user(user, authUserID)
     if response.status_code == 200:
         return convert_to_type(response.json(), User)
     return response.json()
