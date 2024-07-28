@@ -11,6 +11,7 @@ import MarkunreadIcon from '@mui/icons-material/Markunread'
 import { SearchRequest } from '../../interfaces'
 import { AddData, DataContext, GetData } from '../../DataContext'
 import { useContext } from 'react'
+import AnnouncementHeader from './AnnouncementHeader'
 
 const Header: React.FC = () => {
   const searchRequestID = "searchRequest"
