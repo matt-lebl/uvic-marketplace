@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend-reverse-proxy
-          image: ghcr.io/matt-lebl/uvic-marketplace/backend-reverse-proxy:b19b635
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-reverse-proxy:05e294f
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
