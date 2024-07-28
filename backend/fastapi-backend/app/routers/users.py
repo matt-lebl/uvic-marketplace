@@ -124,8 +124,9 @@ async def validate_email(request: ValidationRequest):
     return response.json()
 
 
-@userRouter.get("/send-validation-link")
-async def send_validation_link(email: str):
+@userRouter.post("/send-validation-link")
+async def send_validation_link(req: SendEmailRequest):
+    email = req.email
     if not UserValidator.validate_email(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
@@ -134,7 +135,6 @@ async def send_validation_link(email: str):
 
     email_validator.send_validation_email(email, validation_code)
     return {"message": "Validation email sent"}
-
 
 # @userRouter.post("/reset-password")
 # async def reset_password(emailModel: EmailModel):

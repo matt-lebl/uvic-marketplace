@@ -16,6 +16,11 @@ def sign_jwt(user_id: str) -> Dict[str, str]:
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
+def sign_validation_jwt(email: str) -> Dict[str, str]:
+    payload = {"email": email, "expires": time.time() + int(EXPIRY_TIME)}
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
 def decode_jwt(token: str) -> dict | None:
     try:
         decoded_token = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])

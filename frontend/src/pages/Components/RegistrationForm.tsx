@@ -115,8 +115,8 @@ export default function RegisterForm() {
 
   const handleVerifyEmail = async () => {
     try {
-      const verifyEmailURL = '/api/user/send-validation-link/' + userEmail
-      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
+      const verifyEmailURL = '/api/user/send-confirmation-email'
+      const verifyEmailResponse = await APIPost<string, null>(verifyEmailURL, null)
       if (verifyEmailResponse) {
         alert('Verification link sent to your email. Please check your inbox.')
       } else {
