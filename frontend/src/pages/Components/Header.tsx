@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
                 backgroundColor: 'transparent',
               },
               paddingX: 0,
-              mr: 2
+              mr: 2,
             }}
           >
             <Typography variant="h1" component="div">
@@ -129,6 +129,7 @@ const Header: React.FC = () => {
           </Box>
         </Toolbar>
       </AppBar>
+      <AnnouncementHeader />
     </Box>
   )
 }

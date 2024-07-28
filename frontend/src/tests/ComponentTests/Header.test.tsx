@@ -48,7 +48,6 @@ describe('Header', () => {
       </DataProvider>
     )
 
-
     fireEvent.click(getByText('My Listings'))
     expect(history.location.pathname).toBe('/profile')
 
