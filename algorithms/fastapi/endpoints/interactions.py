@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Body, Depends
 from typing import Dict
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.attributes import flag_modified
 from db.models import DB_Interaction, DB_User
 from db.deps import get_db
 from sqlalchemy.exc import SQLAlchemyError
@@ -79,11 +80,15 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
         # Ensure blacklisted_items is not None
         if user.blacklisted_items is None:
             user.blacklisted_items = []
-
+    
         # Append listing_id if not already in the list
         if listing_id not in user.blacklisted_items:
             user.blacklisted_items.append(listing_id)
-            db.commit()
+
+        # Explicitly mark the field as modified
+        flag_modified(user, "blacklisted_items")
+            
+        db.commit()
 
     # decrease item interaction score
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
