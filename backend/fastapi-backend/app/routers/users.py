@@ -129,7 +129,7 @@ async def validate_email(validation_code: str):
 
 @userRouter.get("/send-validation-link/{email}")
 async def send_validation_link(email: str):
-    if not EmailValidator.validate_email_domain(email):
+    if not UserValidator.validate_email(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
     response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
