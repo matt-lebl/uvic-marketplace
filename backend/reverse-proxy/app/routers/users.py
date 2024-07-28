@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Response, Request, HTTPException
 from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest
-from core.auth import sign_jwt, verify_jwt, decode_jwt
+from core.auth import sign_jwt, verify_jwt, decode_jwt, sign_validation_jwt
 from services.backend_connect import send_request_to_backend
 
 usersRouter = APIRouter(
@@ -19,7 +19,7 @@ async def create_user(
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
     response.set_cookie(
         key="validation",
-        value=sign_jwt(user.email),
+        value=sign_validation_jwt(user.email),
         httponly=True,
         samesite="strict"
     )
@@ -37,7 +37,7 @@ async def login(loginRequest: LoginRequest, response: Response):
         if "emailNotVerified" in response_json:
             response.set_cookie(
                 key="validation",
-                value=sign_jwt(response_json["email"]),
+                value=sign_validation_jwt(response_json["email"]),
                 httponly=True,
                 samesite="strict"
             )
@@ -73,7 +73,7 @@ async def send_validation_link(request: Request):
         payload = decode_jwt(validation_cookie)
         email = payload["email"]
         response = await send_request_to_backend(
-            f"user/send-validation-link/", "POST", json={"email": email}
+            f"user/send-validation-link", "POST", {"email": email}
         )
         return response.json()
     except Exception as e:
@@ -84,7 +84,7 @@ async def send_validation_link(request: Request):
 @usersRouter.post("/confirm-email")
 async def validate_email(request: ValidationRequest):
     response = await send_request_to_backend(
-        f"user/validate-email", "POST", json=request)
+        f"user/validate-email", "POST", request.model_dump())
     return response.json()
 
 
