@@ -9,6 +9,7 @@ from core.schemas import (
     User,
     NewUserReq,
     ValidationRequest,
+    SendEmailRequest,
 )
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
