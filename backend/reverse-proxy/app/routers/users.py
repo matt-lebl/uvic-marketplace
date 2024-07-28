@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Response
-from core.schemas import NewUser, LoginRequest, NewUserReq, User
-from core.auth import sign_jwt
+from fastapi import APIRouter, Response, Request, HTTPException
+from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest
+from core.auth import sign_jwt, verify_jwt, decode_jwt
 from services.backend_connect import send_request_to_backend
 
 usersRouter = APIRouter(
@@ -13,10 +13,15 @@ usersRouter = APIRouter(
 ## These endpoints can be interacted with without a valid JWT token
 @usersRouter.post("/")
 async def create_user(
-    user: NewUserReq,
+        user: NewUserReq,
 ):
-    print(user.model_dump())
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
+    response_backend.set_cookie(
+        key="validation",
+        value=sign_jwt(user.email),
+        httponly=True,
+        samesite="strict"
+    )
     return response_backend.json()
 
 
@@ -25,17 +30,26 @@ async def login(loginRequest: LoginRequest, response: Response):
     response_backend = await send_request_to_backend(
         "user/login", "POST", loginRequest.model_dump()
     )
-
-    user = response_backend.json()
+    response_json = response_backend.json()
 
     if response_backend.status_code == 200:
-        response.set_cookie(
-            key="authorization",
-            value=sign_jwt(user["userID"]),
-            httponly=True,
-            samesite="strict",
-        )
-    return user
+        if "emailNotVerified" in response_json:
+            response_backend.set_cookie(
+                key="validation",
+                value=sign_jwt(response_json["email"]),
+                httponly=True,
+                samesite="strict"
+            )
+            return {}
+
+        else:
+            response.set_cookie(
+                key="authorization",
+                value=sign_jwt(response_json["userID"]),
+                httponly=True,
+                samesite="strict",
+            )
+    return response_json
 
 
 @usersRouter.post("/logout")
@@ -44,32 +58,39 @@ async def logout(response: Response):
     return {"message": "Successfully signed out"}
 
 
-@usersRouter.get("/validate-email/{validation_code}/{email}")
-async def validate_email(validation_code: str, email: str):
+@usersRouter.get("/send-confirmation-email")
+async def send_validation_link(request: Request):
+    validation_cookie = request.cookies.get("validation")
+    if not validation_cookie:
+        raise HTTPException(status_code=400, detail="No authorization provided.")
+
+    if not verify_jwt(validation_cookie):
+        raise HTTPException(
+            status_code=403, detail="Invalid token or expired token."
+        )
+    try:
+        payload = decode_jwt(validation_cookie)
+        email = payload["email"]
+        response = await send_request_to_backend(
+            f"user/send-validation-link/{email}", "GET"
+        )
+        return response.json()
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500)
+
+
+@usersRouter.post("/confirm-email")
+async def validate_email(request: ValidationRequest):
     response = await send_request_to_backend(
-        f"user/validate-email/{validation_code}", "POST"
-    )
+        f"user/validate-email", "POST", json=request)
     return response.json()
 
 
-@usersRouter.get("/send-validation-link/{email}")
-async def send_validation_link(email: str):
-    response = await send_request_to_backend(
-        f"user/send-validation-link/{email}", "GET"
-    )
-    return response.json()
-
-# @usersRouter.get("/send-confirmation-email")
-# async def send_validation_link(email: str):
+# @userRouter.post("/reset-password")
+# async def reset_password(request: Request):
+#     email = request["email"]
 #     response = await send_request_to_backend(
-#         f"user/send-validation-link/{email}", "GET"
-#     )
-#     return response.json()
-
-# @usersRouter.post("/confirm-email")
-# async def validate_email(request: dict):
-#     code = request["code"]
-#     response = await send_request_to_backend(
-#         f"user/validate-email/{code}", "POST"
+#         f"user/reset-password/{email}", "POST"
 #     )
 #     return response.json()

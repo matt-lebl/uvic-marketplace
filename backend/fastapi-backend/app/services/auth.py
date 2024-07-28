@@ -63,8 +63,8 @@ class EmailValidator:
 
     def send_validation_email(self, receiver_email: str, unique_id: str):
         try:
-            subject = "Email Validation"
-            body = f"{API_URL}/validate-email/?code={unique_id}&email={receiver_email}"
+            subject = "Email Validation UVic Cybermarketplace"
+            body = f"Your verification code: {unique_id}"
 
             message = MIMEMultipart()
             message["From"] = self.email
