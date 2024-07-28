@@ -79,6 +79,7 @@ class NewListing(BaseModel):
 
     listing: NewListingBaseModel = Field(None, description="TODO", example="TODO")
 
+
 class UpdateListing(NewListing):
     """
     The UpdateListing schema is used when updating a listing.
@@ -283,3 +284,13 @@ class CharityWithFundsAndListings(Charity):
     listingsCount: float | None = Field(
         None, description='Number of listings associated with the charity'
     )
+
+
+class InvalidEmailNotification(BaseModel):
+    email: str
+    emailNotVerified: bool
+
+
+class ValidationRequest(BaseModel):
+    code: str
+

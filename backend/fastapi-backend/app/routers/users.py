@@ -8,6 +8,7 @@ from core.schemas import (
     UpdateUser,
     User,
     NewUserReq,
+    ValidationRequest,
 )
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
@@ -85,14 +86,7 @@ async def delete_user(authUserID: str):
     return response.json()
 
 
-## Auth Not Required
-# @userRouter.post("/reset-password")
-# async def reset_password(emailModel: EmailModel):
-#     # TODO: Implement password reset
-#     return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
-
-
-## Auth Not Required
+# Auth Not Required
 @userRouter.post("/login")
 async def login(loginRequest: LoginRequest):
     path = "user/login"
@@ -100,11 +94,13 @@ async def login(loginRequest: LoginRequest):
         loginResponse = await send_request_to_data_layer(
             path, "POST", loginRequest.model_dump()
         )
-    except Exception as e:
-        print(e)
+    except HTTPException as e:
+        print(e.detail)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
+        if "emailNotVerified" in loginResponse.json():
+            return loginResponse.json()
         try:
             if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
                 return convert_to_type(loginResponse.json(), User)
@@ -119,15 +115,15 @@ async def login(loginRequest: LoginRequest):
 
 
 # Logout need not be implemented, it is implemented in RP
-@userRouter.post("/validate-email/{validation_code}")
-async def validate_email(validation_code: str):
+@userRouter.post("/validate-email")
+async def validate_email(request: ValidationRequest):
     response = await send_request_to_data_layer(
-        f"/user/validate-email/{validation_code}", "POST"
+        f"/user/validate-email", "POST", json=request
     )
     return response.json()
 
 
-@userRouter.get("/send-validation-link/{email}")
+@userRouter.get("/send-validation-link")
 async def send_validation_link(email: str):
     if not UserValidator.validate_email(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
@@ -137,3 +133,9 @@ async def send_validation_link(email: str):
 
     email_validator.send_validation_email(email, validation_code)
     return {"message": "Validation email sent"}
+
+
+# @userRouter.post("/reset-password")
+# async def reset_password(emailModel: EmailModel):
+#     # TODO: Implement password reset
+#     return {"TODO": "Password reset email sent to {}".format(emailModel.email)}

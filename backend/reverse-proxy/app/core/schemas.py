@@ -264,3 +264,7 @@ class MessageThread(BaseModel):
     )
     other_participant: MessageParticipant | None = None
     last_message: Message | None = None
+
+
+class ValidationRequest(BaseModel):
+    code: str
