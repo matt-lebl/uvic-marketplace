@@ -41,9 +41,9 @@ def stop_suggesting_item_type(data: dict, db: Session):
 
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
     if interaction:
-        interaction.interaction_count = -5  # Negative influence
+        interaction.interaction_count = -30  # Negative influence
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-5)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-30)
 
     try:
         db.add(interaction)
