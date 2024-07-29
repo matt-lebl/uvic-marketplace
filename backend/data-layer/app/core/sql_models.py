@@ -33,6 +33,7 @@ class UserBase(SQLModel):
     email_validated: bool = Field(default=False)
     validation_code: str
     ignoreCharityListings: bool | None
+    passwordResetCode: str | None
 
 
 class User(UserBase, table=True):
@@ -137,6 +138,30 @@ class User(UserBase, table=True):
             raise HTTPException(status_code=401, detail="User ID not found")
         else:
             return user.email_validated
+
+    @classmethod
+    def set_password_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(cls.email == email)
+        user = session.exec(statement).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid code")
+        else:
+            setattr(user, "passwordResetCode", code)
+            session.add(user)
+            session.commit()
+        return {"message": "Password reset code added successfully"}
+
+    @classmethod
+    def login_with_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(and_(cls.email == email, cls.passwordResetCode == code))
+        user = session.exec(statement).first()
+        if user:
+            user.passwordResetCode = None
+            session.add(user)
+            session.commit()
+            return True
+        else:
+            return False
 
 
 class ListingBase(SQLModel):

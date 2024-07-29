@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Response, Request, HTTPException
-from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest
+from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest, SendEmailRequest
 from core.auth import sign_jwt, verify_jwt, decode_jwt, sign_validation_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -88,10 +88,9 @@ async def validate_email(request: ValidationRequest):
     return response.json()
 
 
-# @userRouter.post("/reset-password")
-# async def reset_password(request: Request):
-#     email = request["email"]
-#     response = await send_request_to_backend(
-#         f"user/reset-password/{email}", "POST"
-#     )
-#     return response.json()
+@usersRouter.post("/reset-password")
+async def reset_password(request: SendEmailRequest):
+    response = await send_request_to_backend(
+        f"user/reset-password/", "POST", request.model_dump()
+    )
+    return response.json()

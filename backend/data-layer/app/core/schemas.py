@@ -294,3 +294,7 @@ class InvalidEmailNotification(BaseModel):
 class ValidationRequest(BaseModel):
     code: str
 
+
+class PasswordResetRequest(BaseModel):
+    code: str
+    email: str
