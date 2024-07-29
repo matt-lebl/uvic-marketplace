@@ -7,15 +7,17 @@ import {
   FormHelperText,
   Box,
   Typography,
-  Button
+  Button,
 } from '@mui/material'
 
-export default function ValidateEmailCompnent() {
-
+export default function ValidateEmailComponent() {
   const handleVerifyEmail = async () => {
     try {
       const verifyEmailURL = '/api/user/send-confirmation-email'
-      const verifyEmailResponse = await APIPost<string, null>(verifyEmailURL, null)
+      const verifyEmailResponse = await APIPost<string, null>(
+        verifyEmailURL,
+        null
+      )
       if (verifyEmailResponse) {
         alert('Verification link sent to your email. Please check your inbox.')
       } else {
@@ -59,13 +61,23 @@ export default function ValidateEmailCompnent() {
           <Typography variant="h6" mt={2} mb={1}>
             1. Click the button below to send a verification code to your email.
           </Typography>
-          <Button onClick={handleVerifyEmail} variant="contained" color="primary" sx={{ my: 2, alignSelf:'flex-start' }}>
+          <Button
+            onClick={handleVerifyEmail}
+            variant="contained"
+            color="primary"
+            sx={{ my: 2, alignSelf: 'flex-start' }}
+          >
             Send Verification Code
           </Button>
           <Typography variant="h6" mt={2} mb={1}>
-            2. Enter the code we sent you in the field below, and click "Verify".
+            2. Enter the code we sent you in the field below, and click
+            "Verify".
           </Typography>
-          <Box display="flex" justifyContent="space-between" alignSelf={'flex-start'}>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignSelf={'flex-start'}
+          >
             <Formik
               initialValues={{ verificationCode: '' }}
               onSubmit={async (values, { setSubmitting }) => {
@@ -81,26 +93,26 @@ export default function ValidateEmailCompnent() {
                 isSubmitting,
               }) => (
                 <form onSubmit={handleSubmit}>
-                    <FormControl fullWidth>
-                      <TextField
-                        type="text"
-                        name="verificationCode"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        value={values.verificationCode}
-                        label="Verification Code"
-                        margin="normal"
-                      />
-                    </FormControl>
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      variant="contained"
-                      color="primary"
-                      sx={{ my: 2 }}
-                    >
-                      Verify
-                    </Button>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      name="verificationCode"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.verificationCode}
+                      label="Verification Code"
+                      margin="normal"
+                    />
+                  </FormControl>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    variant="contained"
+                    color="primary"
+                    sx={{ my: 2 }}
+                  >
+                    Verify
+                  </Button>
                 </form>
               )}
             </Formik>

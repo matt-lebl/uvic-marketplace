@@ -14,19 +14,17 @@ import { useContext } from 'react'
 import AnnouncementHeader from './AnnouncementHeader'
 
 const Header: React.FC = () => {
-  const searchRequestID = "searchRequest"
+  const searchRequestID = 'searchRequest'
   const navigate = useNavigate()
-  const context = useContext(DataContext);
-
+  const context = useContext(DataContext)
 
   const handleSearch = (query: SearchRequest) => {
     console.log(query)
-    AddData(context, searchRequestID, query);
+    AddData(context, searchRequestID, query)
     navigate('/search')
   }
 
   const name = localStorage.getItem('name') || 'User'
-
 
   return (
     <Box sx={{ flexGrow: 1 }}>

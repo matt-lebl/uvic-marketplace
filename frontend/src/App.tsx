@@ -11,9 +11,9 @@ function App() {
     <ThemeProvider theme={MarketplaceTheme}>
       <CssBaseline />
       <DataProvider>
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
       </DataProvider>
     </ThemeProvider>
   )
