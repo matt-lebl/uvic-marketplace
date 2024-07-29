@@ -45,15 +45,23 @@ export default function LoginForm() {
 
             if (response) {
               console.log('Response: ', response) // Remove later
-              alert('Login successful.')
-              localStorage.setItem('userID', response.userID)
-              localStorage.setItem('userID', response.userID)
-              localStorage.setItem('username', response.username)
-              localStorage.setItem('name', response.name)
-              localStorage.setItem('bio', response.bio)
-              localStorage.setItem('profileUrl', response.profilePictureUrl)
-              localStorage.setItem('email', loginRequest.email)
-              window.location.href = '/'
+
+              if (response.userID === undefined) {
+                // Email not verified. Clear cache and redirect to email verification page
+                localStorage.clear()
+                alert("Please verify your account to continue.")
+                window.location.href = '/validate-email'
+              } else {
+                // Login successful. Set user cache and redirect to home page
+                localStorage.setItem('userID', response.userID)
+                localStorage.setItem('userID', response.userID)
+                localStorage.setItem('username', response.username)
+                localStorage.setItem('name', response.name)
+                localStorage.setItem('bio', response.bio)
+                localStorage.setItem('profileUrl', response.profilePictureUrl)
+                localStorage.setItem('email', loginRequest.email)
+                window.location.href = '/'
+              }
             }
           } catch (error) {
             console.log('Response: ', response) // Remove later

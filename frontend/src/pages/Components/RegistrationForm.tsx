@@ -127,6 +127,22 @@ export default function RegisterForm() {
     }
   }
 
+  const handleVerificationCode = async (verificationCode: string) => {
+    try {
+      const verifyEmailURL = '/api/user/confirm-email'
+      const verifyEmailResponse = await APIPost<string, { code: string }>(
+        verifyEmailURL,
+        { code: verificationCode }
+      )
+      if (verifyEmailResponse) {
+        console.log(verifyEmailResponse)
+        alert('Email verified successfully!')
+      }
+    } catch (error) {
+      alert('An error occurred when verifying email: ' + error)
+    }
+  }
+
   return (
     <div>
       {showRegistrationForm ? (
@@ -334,7 +350,48 @@ export default function RegisterForm() {
             </Button>
           )}
           <Typography variant="h6" mt={2} mb={1}>
-            3. Click the link we sent you, and you're all set!
+            3. Check your email, and enter your verification code below:
+          </Typography>
+          <Formik
+            initialValues={{ verificationCode: '' }}
+            onSubmit={async (values, { setSubmitting }) => {
+              await handleVerificationCode(values.verificationCode)
+              setSubmitting(false)
+            }}
+          >
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <FormControl fullWidth>
+                  <TextField
+                    type="text"
+                    name="verificationCode"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.verificationCode}
+                    label="Verification Code"
+                    margin="normal"
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  variant="contained"
+                  color="primary"
+                  sx={{ my: 2 }}
+                >
+                  Verify
+                </Button>
+              </form>
+            )}
+          </Formik>
+          <Typography variant="h6" mt={2} mb={1}>
+            4. You're all set! Return to the login page to sign in.
           </Typography>
           <Button
             variant="contained"
