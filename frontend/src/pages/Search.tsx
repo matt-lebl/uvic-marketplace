@@ -1,17 +1,23 @@
 import './App.css'
 import { Box } from '@mui/material'
-import { SearchRequest, ListingSummary, SearchResultsResponse, Sort } from '../interfaces'
+import {
+  SearchRequest,
+  ListingSummary,
+  SearchResultsResponse,
+  Sort,
+} from '../interfaces'
 import SearchListings from './Components/SearchListings'
 import { APIGet } from '../APIlink'
 import { AddData, DataContext, GetData } from '../DataContext'
 import { useContext, useEffect, useState } from 'react'
 
-const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
-
+const BASESEARCHLIMIT: number = parseInt(
+  process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? '20'
+) // ?? "0" only exists to prevent type errors. It should never be reached.
 
 function Search() {
-  const context = useContext(DataContext);
-  const searchRequestID = "searchRequest"
+  const context = useContext(DataContext)
+  const searchRequestID = 'searchRequest'
   const [searchRequest, setSearchRequest] = useState<SearchRequest>({
     query: '',
     minPrice: undefined,
@@ -26,31 +32,41 @@ function Search() {
   } as SearchRequest)
 
   useEffect(() => {
-    const storedSearchRequest = GetData(context, searchRequestID);
+    const storedSearchRequest = GetData(context, searchRequestID)
     if (storedSearchRequest === null) {
-      AddData(context, searchRequestID, searchRequest);
-    } else if (Object.entries(storedSearchRequest).join(",") !== Object.entries(searchRequest).join(",")) {
-      setSearchRequest(storedSearchRequest);
+      AddData(context, searchRequestID, searchRequest)
+    } else if (
+      Object.entries(storedSearchRequest).join(',') !==
+      Object.entries(searchRequest).join(',')
+    ) {
+      setSearchRequest(storedSearchRequest)
     }
-  }, [context, searchRequest, searchRequestID]);
+  }, [context, searchRequest, searchRequestID])
 
-
-
-  const searchFunc = async (searchRequest: SearchRequest): Promise<{ totalItems: number, items: ListingSummary[] }> => {
+  const searchFunc = async (
+    searchRequest: SearchRequest
+  ): Promise<{ totalItems: number; items: ListingSummary[] }> => {
     var results = {
       totalItems: 0,
-      items: [] as ListingSummary[]
+      items: [] as ListingSummary[],
     }
-    const queryParams: [string, string | number][] = Object.entries(searchRequest).filter(([key, value]) => value !== undefined && value !== null) as [string, string | number][];
+    const queryParams: [string, string | number][] = Object.entries(
+      searchRequest
+    ).filter(([key, value]) => value !== undefined && value !== null) as [
+      string,
+      string | number,
+    ][]
     try {
-      const res = await APIGet<SearchResultsResponse>('/api/search', queryParams)
+      const res = await APIGet<SearchResultsResponse>(
+        '/api/search',
+        queryParams
+      )
       results.totalItems = res.totalItems
       results.items = res.items
     } catch (e) {
       console.error(e)
-    }
-    finally {
-      return results;
+    } finally {
+      return results
     }
   }
 
