@@ -85,10 +85,10 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
         if listing_id not in user.blacklisted_items:
             user.blacklisted_items.append(listing_id)
 
-        # Explicitly mark the field as modified
-        flag_modified(user, "blacklisted_items")
+            # Explicitly mark the field as modified
+            flag_modified(user, "blacklisted_items")
             
-        db.commit()
+            db.commit()
 
     # decrease item interaction score
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
