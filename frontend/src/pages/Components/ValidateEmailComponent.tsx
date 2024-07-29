@@ -80,6 +80,15 @@ export default function ValidateEmailComponent() {
           >
             <Formik
               initialValues={{ verificationCode: '' }}
+              validate={(values) => {
+                const errors: FormikErrors<{ verificationCode: string }> = {}
+                if (!values.verificationCode) {
+                  errors.verificationCode = 'Required'
+                } else if (!/^[a-zA-Z0-9-]+$/.test(values.verificationCode)) {
+                  errors.verificationCode = 'Invalid verification code'
+                }
+                return errors
+              }}
               onSubmit={async (values, { setSubmitting }) => {
                 await handleVerificationCode(values.verificationCode)
                 setSubmitting(false)
