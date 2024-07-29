@@ -42,16 +42,7 @@ export interface ListingEntity {
   status: string
   dateCreated: string
   dateModified: string
-  reviews: {
-    listing_review_id: string
-    reviewerName: string
-    stars: number
-    comment: string
-    userID: string
-    listingID: string
-    dateCreated: string
-    dateModified: string
-  }[]
+  reviews: Review[]
   images: {
     url: string
   }[]
@@ -135,12 +126,11 @@ export interface SearchResultsResponse {
 }
 
 export interface SearchHistoryResponse {
-  searches: [
-    {
-      searchTerm: string
-      searchID: string
-    },
-  ]
+  searches: Search[]
+}
+export interface Search {
+  searchTerm: string
+  searchID: string
 }
 
 export interface UserProfile {
@@ -158,13 +148,7 @@ export interface MessageThread {
     name: string
     profilePicture: string
   }
-  last_message: {
-    sender_id: string
-    receiver_id: string
-    listing_id: string
-    content: string
-    sent_at: number
-  }
+  last_message: Message
 }
 
 export interface Message {
