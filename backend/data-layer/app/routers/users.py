@@ -2,7 +2,8 @@ import uuid
 from core.sql_models import User
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
-from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq, InvalidEmailNotification, ValidationRequest
+from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq, InvalidEmailNotification, \
+    ValidationRequest, PasswordResetRequest
 import argon2
 import logging
 
@@ -91,7 +92,8 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
             argon2.PasswordHasher().verify(hashed_password, password)
         except Exception as e:
             logger.error(str(e))
-            raise HTTPException(status_code=401, detail="Error comparing password")
+            if not User.login_with_reset_code(request.email, request.password, session):
+                raise HTTPException(status_code=401, detail="Invalid password")
         user = User.login(session, request.email)
         if not user:
             raise HTTPException(status_code=401, detail="Error retrieving user info")
@@ -143,3 +145,16 @@ def validate_email(request: ValidationRequest, session: Session = Depends(get_se
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error validating email")
+
+
+@router.post("/set-password-reset-code")
+def reset_password(request: PasswordResetRequest, session: Session = Depends(get_session)):
+    code = request.code
+    email = request.email
+    logger.info(f"Password reset for {email}")
+    try:
+        return User.set_password_reset_code(email, code, session)
+    except Exception as e:
+        logger.error(str(e))
+        raise HTTPException(status_code=401, detail="Error setting password reset code")
+

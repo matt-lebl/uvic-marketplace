@@ -268,3 +268,7 @@ class MessageThread(BaseModel):
 
 class ValidationRequest(BaseModel):
     code: str
+
+
+class SendEmailRequest(BaseModel):
+    email: str
