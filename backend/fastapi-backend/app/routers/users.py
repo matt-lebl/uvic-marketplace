@@ -130,7 +130,7 @@ async def login(loginRequest: LoginRequest):
 @userRouter.post("/validate-email")
 async def validate_email(request: ValidationRequest):
     response = await send_request_to_data_layer(
-        f"/user/validate-email", "POST", json=request
+        f"/user/validate-email", "POST", request.model_dump()
     )
     return response.json()
 
