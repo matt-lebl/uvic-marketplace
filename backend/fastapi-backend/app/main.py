@@ -13,9 +13,9 @@ from services.env_vars import FB_ENV_VARS
 
 app = FastAPI()
 app.include_router(listings.listingsRouter)
+app.include_router(search.searchRouter)
 app.include_router(users.userRouter)
 app.include_router(charities.charityRouter)
-app.include_router(search.searchRouter)
 app.include_router(messages.messagesRouter)
 app.include_router(reviews.reviewsRouter)
 
