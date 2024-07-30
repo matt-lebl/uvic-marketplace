@@ -15,10 +15,12 @@ def record_click(data: dict, db: Session):
         raise KafkaException()
     
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
+
+    interaction_weight = 10
     if interaction:
-        interaction.interaction_count += 1
+        interaction.interaction_count += interaction_weight
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=1)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=interaction_weight)
 
     try:
         db.add(interaction)
@@ -40,10 +42,11 @@ def stop_suggesting_item_type(data: dict, db: Session):
         raise KafkaException(status_code=401, detail="No listingID in request")
 
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
+    interaction_weight = -100 # Negative influence
     if interaction:
-        interaction.interaction_count = -30  # Negative influence
+        interaction.interaction_count = interaction_weight
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-30)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=interaction_weight)
 
     try:
         db.add(interaction)
