@@ -148,9 +148,11 @@ def validate_email(request: ValidationRequest, session: Session = Depends(get_se
     logger.info(f"attempting to validate email with code {validation_code}")
     try:
         return User.validate_email(validation_code, session)
+    except HTTPException as e:
+        raise e
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=400, detail="Error validating email")
+        raise HTTPException(status_code=400, detail="Error validating email. " + str(e))
 
 
 @router.post("/set-password-reset-code")
