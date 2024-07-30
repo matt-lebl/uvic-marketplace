@@ -10,21 +10,21 @@ reviewsRouter = APIRouter(
 
 
 @reviewsRouter.post("")
-def add_review(review: NewReview, authUserID: str):
+async def add_review(review: NewReview, authUserID: str):
     path = "review/" + authUserID
-    response = send_request_to_data_layer(path, "POST", review)
+    response = await send_request_to_data_layer(path, "POST", review.model_dump())
     return response.json()
 
 
 @reviewsRouter.patch("/{id}")
-def edit_review(id: str, review: NewReview, authUserID: str):
+async def edit_review(id: str, review: NewReview, authUserID: str):
     path = "review/" + id + "/" + authUserID
-    response = send_request_to_data_layer(path, "PATCH", review)
+    response = await send_request_to_data_layer(path, "PATCH", review.model_dump())
     return response.json()
 
 
 @reviewsRouter.delete("/{id}")
-def delete_review(id: str, authUserID: str):
-    path = "review/" + authUserID + "/" + authUserID
-    response = send_request_to_data_layer(path, "DELETE")
+async def delete_review(id: str, authUserID: str):
+    path = "review/" + id + "/" + authUserID
+    response = await send_request_to_data_layer(path, "DELETE")
     return response.json()
