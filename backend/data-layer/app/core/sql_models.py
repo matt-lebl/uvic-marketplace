@@ -69,7 +69,10 @@ class User(UserBase, table=True):
         user = session.exec(statement).first()
 
         if not user:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid request -- user not found. Please report this incident to the backend team.",
+            )
 
         session.delete(user)
         session.commit()
@@ -203,7 +206,10 @@ class Listing(ListingBase, table=True):
         if not listing:
             raise HTTPException(status_code=404, detail="Listing not found")
         if listing.sellerId != seller_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this listing",
+            )
         for key, value in kwargs.items():
             setattr(listing, key, value)
         if status == "SOLD" and listing.charityId:
@@ -220,10 +226,13 @@ class Listing(ListingBase, table=True):
         listing = session.exec(statement).first()
 
         if not listing:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Listing does not exist")
 
         if listing.sellerId != userId:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this listing",
+            )
 
         session.delete(listing)
         session.commit()
@@ -308,7 +317,10 @@ class ListingReview(ListingReviewBase, table=True):
         if not review:
             raise HTTPException(status_code=404, detail="Listing not found")
         if review.userID != user_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this review",
+            )
         for key, value in kwargs.items():
             setattr(review, key, value)
         session.add(review)
@@ -323,10 +335,13 @@ class ListingReview(ListingReviewBase, table=True):
         review = session.exec(statement).first()
 
         if not review:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Review does not exist")
 
         if review.userID != userID:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this review",
+            )
 
         session.delete(review)
         session.commit()
