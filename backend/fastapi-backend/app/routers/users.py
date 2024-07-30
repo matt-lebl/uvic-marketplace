@@ -133,10 +133,11 @@ async def login(loginRequest: LoginRequest, response: Response):
 
 # Logout need not be implemented, it is implemented in RP
 @userRouter.post("/validate-email")
-async def validate_email(request: ValidationRequest):
+async def validate_email(request: ValidationRequest, returnResponse: Response):
     response = await send_request_to_data_layer(
         f"/user/validate-email", "POST", request.model_dump()
     )
+    returnResponse.status_code = response.status_code
     return response.json()
 
 
@@ -172,5 +173,12 @@ async def reset_password(req: SendEmailRequest):
         "/user/set-password-reset-code", "POST", {"email": email, "code": code}
     )
 
-    email_validator.send_password_reset_email(email, code)
+    try:
+        email_validator.send_password_reset_email(email, code)
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(
+            status_code=500,
+            detail="Email could not be sent -- most likely smtp credentials are invalid",
+        )
     return {"message": "Password reset email sent"}
