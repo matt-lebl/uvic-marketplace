@@ -3,7 +3,6 @@ from fastapi import APIRouter, Response
 
 from core.schemas import Message, MessageBaseModel
 from services.data_layer_connect import send_request_to_data_layer
-from services.utils import data_layer_failed
 
 messagesRouter = APIRouter(
     prefix="/api/messages",
@@ -18,8 +17,7 @@ async def get_overview(
 ):
     path = "messages/overview/" + authUserID
     response = await send_request_to_data_layer(path, "GET")
-    if data_layer_failed(response, returnResponse):
-        return response.json()
+    returnResponse.status_code = response.status_code
     return response.json()
 
 
@@ -34,8 +32,7 @@ async def get_thread(
 ):
     path = f"messages/thread/{listing_id}/{receiver_id}/{authUserID}"
     response = await send_request_to_data_layer(path, "GET")
-    if data_layer_failed(response, returnResponse):
-        return response.json()
+    returnResponse.status_code = response.status_code
     return response.json()
 
 
@@ -47,6 +44,5 @@ async def create_message(
     message["sent_at"] = int(time.time())
     path = "messages/" + authUserID
     response = await send_request_to_data_layer(path, "POST", message)
-    if data_layer_failed(response, returnResponse):
-        return response.json()
+    returnResponse.status_code = response.status_code
     return response.json()
