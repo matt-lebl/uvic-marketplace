@@ -30,7 +30,7 @@ email_validator = EmailValidator()
 
 def data_layer_failed(response_from_data_layer, response_to_client):
     if response_from_data_layer.status_code != 200:
-        response_to_client.status_code = 400
+        response_to_client.status_code = response_from_data_layer.status_code
         return True
     return False
 
@@ -111,32 +111,24 @@ async def delete_user(authUserID: str):
 
 # Auth Not Required
 @userRouter.post("/login")
-async def login(loginRequest: LoginRequest):
+async def login(loginRequest: LoginRequest, response: Response):
     path = "user/login"
-    try:
-        loginResponse = await send_request_to_data_layer(
-            path, "POST", loginRequest.model_dump()
-        )
-    except HTTPException as e:
-        print(e.detail)
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    loginResponse = await send_request_to_data_layer(
+        path, "POST", loginRequest.model_dump()
+    )
 
-    if loginResponse.status_code == 200:
-        if "emailNotVerified" in loginResponse.json():
-            return loginResponse.json()
-        try:
-            if authHandler.check_totp(
-                loginRequest.totp_code, loginResponse.json()["totp_secret"]
-            ):
-                return convert_to_type(loginResponse.json(), User)
-            else:
-                raise HTTPException(status_code=401, detail="Invalid TOTP code")
-        except Exception as e:
-            print(e)
-            raise HTTPException(status_code=401, detail="Invalid TOTP code")
+    if data_layer_failed(loginResponse, response):
+        return loginResponse.json()
+
+    if "emailNotVerified" in loginResponse.json():
+        return loginResponse.json()
+
+    if authHandler.check_totp(
+        loginRequest.totp_code, loginResponse.json()["totp_secret"]
+    ):
+        return convert_to_type(loginResponse.json(), User)
     else:
-        # TODO: Check what the data layer sends back and send the correct error message.
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        raise HTTPException(status_code=403, detail="Invalid TOTP code")
 
 
 # Logout need not be implemented, it is implemented in RP
