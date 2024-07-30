@@ -1,5 +1,12 @@
 from fastapi import APIRouter, Response, Request, HTTPException
-from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest, SendEmailRequest
+from core.schemas import (
+    NewUser,
+    LoginRequest,
+    NewUserReq,
+    User,
+    ValidationRequest,
+    SendEmailRequest,
+)
 from core.auth import sign_jwt, verify_jwt, decode_jwt, sign_validation_jwt
 from services.backend_connect import send_request_to_backend
 
@@ -12,17 +19,16 @@ usersRouter = APIRouter(
 
 ## These endpoints can be interacted with without a valid JWT token
 @usersRouter.post("/")
-async def create_user(
-        user: NewUserReq,
-        response: Response
-):
+async def create_user(user: NewUserReq, response: Response):
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
-    response.set_cookie(
-        key="validation",
-        value=sign_validation_jwt(user.email),
-        httponly=True,
-        samesite="strict"
-    )
+    response.status_code = response_backend.status_code
+    if response_backend.status_code == 200:
+        response.set_cookie(
+            key="validation",
+            value=sign_validation_jwt(user.email),
+            httponly=True,
+            samesite="strict",
+        )
     return response_backend.json()
 
 
@@ -39,7 +45,7 @@ async def login(loginRequest: LoginRequest, response: Response):
                 key="validation",
                 value=sign_validation_jwt(response_json["email"]),
                 httponly=True,
-                samesite="strict"
+                samesite="strict",
             )
             return {}
 
@@ -63,12 +69,12 @@ async def logout(response: Response):
 async def send_validation_link(request: Request):
     validation_cookie = request.cookies.get("validation")
     if not validation_cookie:
-        raise HTTPException(status_code=400, detail="No authorization provided for email validation")
+        raise HTTPException(
+            status_code=400, detail="No authorization provided for email validation"
+        )
 
     if not verify_jwt(validation_cookie):
-        raise HTTPException(
-            status_code=403, detail="Invalid token or expired token."
-        )
+        raise HTTPException(status_code=403, detail="Invalid token or expired token.")
     try:
         payload = decode_jwt(validation_cookie)
         email = payload["email"]
@@ -84,7 +90,8 @@ async def send_validation_link(request: Request):
 @usersRouter.post("/confirm-email")
 async def validate_email(request: ValidationRequest):
     response = await send_request_to_backend(
-        f"user/validate-email", "POST", request.model_dump())
+        f"user/validate-email", "POST", request.model_dump()
+    )
     return response.json()
 
 
