@@ -158,6 +158,8 @@ class Search(BaseModel):
 class SearchHistory(BaseModel):
     searches: list[Search] | None = None
 
+class SearchRequest(BaseModel):
+    searchTerm: str
 
 class Location(BaseModel):
     latitude: float | None = Field(None, example=34.23551)

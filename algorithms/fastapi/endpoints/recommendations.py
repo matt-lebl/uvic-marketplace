@@ -47,7 +47,15 @@ async def recommendations(*,
     view_charity_items = should_view_charity_items(user_id=authUserID, db=db)
 
     # Modify the Elasticsearch query based on charity item preference and blacklisted items
-    es_query = {"match_all": {}} if view_charity_items else {"bool": {"must_not": {"match": {"markedForCharity": True}}}}
+    es_query = {"match_all": {}} if view_charity_items else {
+                    "bool": {
+                        "must_not": {
+                            "exists": {
+                            "field": "charityId"
+                            }
+                        }
+                    }
+                }
 
     # Get all embeddings directly from Elasticsearch and compute cosine similarity with the user vector
     es_response = es.search(index="listings_index", body={"size": 10000, "query": es_query})
@@ -71,13 +79,16 @@ async def recommendations(*,
             similarities.append((listing_id, similarity))
     similarities.sort(key=lambda x: x[1], reverse=True)
     top_listing_ids = [listing_id for listing_id, _ in similarities[:limit]]
-    
     # Fetch the listing details from the database for the top listings
     recommendations = db.query(DB_Listing).filter(DB_Listing.listing_id.in_(top_listing_ids)).all()
 
+    # Sort these recommendations
+    id_position_map = {id_: index for index, id_ in enumerate(top_listing_ids)}
+    sorted_recommendations = sorted(recommendations, key=lambda x: id_position_map[x.listing_id])
+
     # Convert the top recommendations to the required format
     formatted_recommendations = []
-    for listing in recommendations: 
+    for listing in sorted_recommendations: 
 
         recommendation = {}
         recommendation["listingID"] = str(listing.listing_id) 
@@ -95,6 +106,7 @@ async def recommendations(*,
         recommendation["sellerName"] = es_listing['_source'].get("sellerName")
         recommendation["description"] = es_listing['_source'].get("description")
         recommendation["imageUrl"] = es_listing['_source'].get("imageUrl")
+        recommendation["charityID"] = es_listing['_source'].get("charityId")
 
         formatted_recommendations.append(recommendation)
 

@@ -1,8 +1,13 @@
 import requests
 import random
 import json
+import uuid
 
-auth_cookie = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNGU5ZmVhNDUtYTU1ZC00MzlhLWE0NzUtODZjNTAyNzM2ZTYwIiwiZXhwaXJlcyI6MTcyMTE2NTI2MS4zNTYxNzE0fQ.RXL8ttH1AXwD5H7-hW8i-NO4W5R993XUeRk-G1UaJOQ"
+# Get these from logging in
+cookies = {
+    "authorization": "paste cookie here",
+    "validation": "paste cookie here"
+}
 
 def add_listings(base_url):
     items = [
@@ -110,45 +115,29 @@ def add_listings(base_url):
     ]
 
     for i in range(100):
-        listing_data = {
+        listing_data = listing_data = {
             "listing": {
-                "listingID": str(i + 1),
                 "title": items[i][0],
-                "description": items[i][1],
-                "price": round(random.uniform(10.99, 999.99), 2),
                 "location": {
                     "latitude": round(random.uniform(34.0001, 34.9999), 5),
                     "longitude": round(random.uniform(-124.9999, -124.0001), 5)
+                },
+                "price": round(random.uniform(10.99, 999.99), 2),
+                "description": items[i][1],
+                "images": [
+                {
+                    "url": "imageurl.com"
                 }
+                ]
             }
         }
-        if i % 3 == 0:
-            # Add a charityID to some listings
-            listing_data["listing"]["charityId"] = random.randint(1, 10000)
-        response = requests.post(f"{base_url}/api/listing", json=listing_data, cookies={"authorization": auth_cookie})
+
+        response = requests.post(f"{base_url}/api/listing", json=listing_data, cookies=cookies)
         print(f"Added listing {i + 1}: {response.status_code}")
 
-def perform_search_queries(base_url):
-    queries = [
-        "basketball", "shoes", "sports equipment",
-        "clothes", "furniture", "picture frames", "kitchen appliances"
-    ]
-    headers = {"Authorization": "Bearer testtoken"}
-    limit = 4
-    for query in queries:
-        print(f"Searching for '{query}'...")
-        response = requests.get(f"{base_url}/api/search?query={query}&latitude=34.2331&longitude=-124.2323&limit={limit}", headers=headers, cookies={"authorization": auth_cookie})
-        if response.status_code == 200:
-            print(f"Search for '{query}': {response.status_code}")
-            print(json.dumps(response.json(), indent=2))  # Indent for pretty printing
-        else:
-            print(f"Search for '{query}' failed with status: {response.status_code}")
-            print(json.dumps(response.json(), indent=2))
-
 def main():
-    base_url = "http://localhost:8004"
+    base_url = "http://localhost:8000"
     add_listings(base_url)
-    perform_search_queries(base_url)
 
 if __name__ == "__main__":
     main()

@@ -31,8 +31,8 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
     }
 
     # Format charityID for Elasticsearch
-    if 'charityID' in listing_data:
-        listing_data['charityID'] = str(listing_data['charityID'])
+    if 'charityId' in listing_data:
+        listing_data['charityID'] = str(listing_data['charityId'])
 
     # Add the listing to Elasticsearch
     response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)

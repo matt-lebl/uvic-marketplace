@@ -13,6 +13,7 @@ USER_ID_FIELD = "authUserID"
 async def perform_http_request(method: str, url: str, params: dict | None = None, data: dict | None = None):
     async with httpx.AsyncClient() as client:
         try:
+            print(f"REVERSE-PROXY: Sending to algorithms URL: {url}")
             response = await client.request(method, url, params=params, json=data)
             response.raise_for_status()
             return response
