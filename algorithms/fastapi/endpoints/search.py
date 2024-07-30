@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Union
+from typing import Union
 
 from requests import Session
 from db.deps import get_db
 from util.charity_item_view import should_view_charity_items
 from util.schemas import ListingSummary, UserProfile, SearchResponse, SearchUserResponse, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
-from util.embedding import generate_embedding, find_closest_matches
+from util.embedding import generate_embedding
 
 es_wrapper = ElasticsearchWrapper()
 es = es_wrapper.es
@@ -90,15 +90,15 @@ async def search(*,
             for doc in response['hits']['hits']:
                 listings.append(ListingSummary(
                     listingID=doc["_id"],
-                    title=doc["_source"].get("title", "No title available"),  # Provide a default value if title is missing
+                    title=doc["_source"].get("title", "No title available"),
                     description=doc["_source"].get("description", "No description available"),
-                    price=doc["_source"].get("price", 0.0),  # Default price can be 0.0 or another sensible default
+                    price=doc["_source"].get("price", 0.0),
                     location=doc["_source"].get("location", "No location available"),
                     dateCreated=doc["_source"].get("dateCreated", "No date available"),
                     sellerID=doc["_source"].get("sellerID", "No seller ID available"),
                     sellerName=doc["_source"].get("sellerName", "No seller name available"),
-                    imageUrl=doc["_source"].get("imageUrl", "No image available"),  # Provide a default image URL or a placeholder if necessary
-                    charityID=doc["_source"].get("charityID", None)  # Use None or a suitable default if charityID is not required
+                    imageUrl=doc["_source"].get("imageUrl", "No image available"),
+                    charityID=doc["_source"].get("charityID", None)
                 ))
                 
             print("Listings; {}".format(listings))
