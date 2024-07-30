@@ -14,10 +14,11 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=MessageSchema)
-def create_message(message: MessageSchema, session: Session = Depends(get_session)):
+@router.post("/{userID}", response_model=MessageSchema)
+def create_message(message: MessageSchema, userID: str, session: Session = Depends(get_session)):
     message_data = message.model_dump()
     message_data["message_id"] = str(uuid.uuid4())
+    message_data["sender_id"] = userID
     new_message = Message.create(session=session, **message_data)
     logger.info(f"New Message Created{new_message}")
     return new_message
