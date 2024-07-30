@@ -3,7 +3,7 @@ import os
 import json
 from consumers.interactions import record_click
 from consumers.listings import create_listing, delete_listing
-from consumers.users import add_user, edit_user, delete_user
+from consumers.users import add_user, edit_user, delete_user, hide_charities
 from consumers.reviews import add_review, edit_review, delete_review
 from util.cold_start import add_cold_start_interactions
 from db.deps import get_db
@@ -101,6 +101,9 @@ def handle_create_user(data, db_session):
 def handle_edit_user(data, db_session):
     print(f"Handle edit user with data: {data}")
     edit_user(data, db_session)
+
+    if data["ignoreCharityListings"]:
+        hide_charities(data["userID"], db_session)
 
 def handle_delete_user(data, db_session):
     print(f"Handle delete user with data: {data}")

@@ -63,8 +63,27 @@ class EmailValidator:
 
     def send_validation_email(self, receiver_email: str, unique_id: str):
         try:
-            subject = "Email Validation"
-            body = f"{API_URL}/validate-email/?code={unique_id}&email={receiver_email}"
+            subject = "Email Validation UVic Cybermarketplace"
+            body = f"Your verification code: {unique_id}"
+
+            message = MIMEMultipart()
+            message["From"] = self.email
+            message["To"] = receiver_email
+            message["Subject"] = subject
+            message.attach(MIMEText(body, "plain"))
+
+            with smtplib.SMTP_SSL(self.smtp_server, self.port, context=self.context) as server:
+                server.login(self.email, self.password)
+                server.sendmail(self.email, receiver_email, message.as_string())
+            return unique_id
+        except Exception as error:
+            print(str(error))
+            raise error
+
+    def send_password_reset_email(self, receiver_email: str, unique_id: str):
+        try:
+            subject = "Password Reset UVic Cybermarketplace"
+            body = f"Your onetime password is: {unique_id}\n\n You can use this once to login to your account and reset your password."
 
             message = MIMEMultipart()
             message["From"] = self.email
@@ -99,6 +118,6 @@ class UserValidator:
 
     @classmethod
     def validate_username(cls, username: str):
-        username_pattern = r'^[a-zA-Z@_\d]{8,20}$'
+        username_pattern = r'^[a-zA-Z@_\d]{6,20}$'
         regex = re.compile(username_pattern)
         return bool(regex.fullmatch(username))

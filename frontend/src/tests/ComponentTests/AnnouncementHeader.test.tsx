@@ -29,7 +29,7 @@ const mockCharity: CharityEntity = {
 
 describe('AnnouncementHeader', () => {
   beforeEach(() => {
-    (APIGet as jest.Mock).mockImplementation(() =>
+    ;(APIGet as jest.Mock).mockImplementation(() =>
       Promise.resolve(mockCharity)
     )
   })
@@ -49,7 +49,7 @@ describe('AnnouncementHeader', () => {
   })
 
   test('handles API errors by displaying mock charity data', async () => {
-    (APIGet as jest.Mock).mockImplementation(() =>
+    ;(APIGet as jest.Mock).mockImplementation(() =>
       Promise.reject(new Error('API error'))
     )
     render(<AnnouncementHeader />)

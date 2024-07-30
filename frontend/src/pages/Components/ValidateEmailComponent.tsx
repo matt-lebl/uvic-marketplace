@@ -1,36 +1,51 @@
-import { Typography, Box, Button } from '@mui/material'
 import { useSearchParams } from 'react-router-dom'
-import { APIGet } from '../../APIlink'
-import { useEffect, useState } from 'react'
+import { APIGet, APIPost } from '../../APIlink'
+import { Formik, FormikHelpers, FormikErrors } from 'formik'
+import {
+  FormControl,
+  TextField,
+  FormHelperText,
+  Box,
+  Typography,
+  Button,
+} from '@mui/material'
 
-export default function ValidateEmailCompnent() {
-  const [searchParams] = useSearchParams()
-  let response = undefined
-
-  const email = searchParams.get('email')
-  const code = searchParams.get('code')
-
-  console.log('email:', email)
-  console.log('code:', code)
-
-  const [validated, setValidated] = useState(false)
-
-  useEffect(() => {
-    const validateEmail = async () => {
-      try {
-        const res = await APIGet<boolean>(
-          `/api/user/validate-email/${code}/${email}`
-        )
-        setValidated(res)
-      } catch (error) {
-        console.log(error)
+export default function ValidateEmailComponent() {
+  const handleVerifyEmail = async () => {
+    try {
+      const verifyEmailURL = '/api/user/send-confirmation-email'
+      const verifyEmailResponse = await APIPost<string, null>(
+        verifyEmailURL,
+        null
+      )
+      if (verifyEmailResponse) {
+        alert('Verification link sent to your email. Please check your inbox.')
+      } else {
+        alert('Verification link failed to send.')
       }
+    } catch (error) {
+      alert('An error occurred when sending validation email ' + error)
     }
-    validateEmail()
-  }, [])
+  }
+
+  const handleVerificationCode = async (verificationCode: string) => {
+    try {
+      const verifyEmailURL = '/api/user/confirm-email'
+      const verifyEmailResponse = await APIPost<string, { code: string }>(
+        verifyEmailURL,
+        { code: verificationCode }
+      )
+      if (verifyEmailResponse) {
+        console.log(verifyEmailResponse)
+        alert('Email verified successfully!')
+      }
+    } catch (error) {
+      alert('An error occurred when verifying email: ' + error)
+    }
+  }
 
   return (
-    <div className="Registration">
+    <div className="ValidateEmail">
       <header className="App-header">
         <Box
           width={400}
@@ -38,16 +53,79 @@ export default function ValidateEmailCompnent() {
           flexDirection="column"
           flexWrap="nowrap"
           alignItems="center"
-          marginTop={12}
+          marginTop={0}
         >
-          <Typography variant="h4" marginBottom={5}>
-            {validated ? 'Email validated' : 'Validating email...'}
+          <Typography variant="h4" alignSelf="flex-start" marginBottom={5}>
+            Verify Your Email
           </Typography>
-          {validated ? (
-            <Button href="/login" variant="contained" color="primary">
-              Login
-            </Button>
-          ) : null}
+          <Typography variant="h6" mt={2} mb={1}>
+            1. Click the button below to send a verification code to your email.
+          </Typography>
+          <Button
+            onClick={handleVerifyEmail}
+            variant="contained"
+            color="primary"
+            sx={{ my: 2, alignSelf: 'flex-start' }}
+          >
+            Send Verification Code
+          </Button>
+          <Typography variant="h6" mt={2} mb={1}>
+            2. Enter the code we sent you in the field below, and click
+            "Verify".
+          </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignSelf={'flex-start'}
+          >
+            <Formik
+              initialValues={{ verificationCode: '' }}
+              validate={(values) => {
+                const errors: FormikErrors<{ verificationCode: string }> = {}
+                if (!values.verificationCode) {
+                  errors.verificationCode = 'Required'
+                } else if (!/^[a-zA-Z0-9-]+$/.test(values.verificationCode)) {
+                  errors.verificationCode = 'Invalid verification code'
+                }
+                return errors
+              }}
+              onSubmit={async (values, { setSubmitting }) => {
+                await handleVerificationCode(values.verificationCode)
+                setSubmitting(false)
+              }}
+            >
+              {({
+                values,
+                handleChange,
+                handleBlur,
+                handleSubmit,
+                isSubmitting,
+              }) => (
+                <form onSubmit={handleSubmit}>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      name="verificationCode"
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.verificationCode}
+                      label="Verification Code"
+                      margin="normal"
+                    />
+                  </FormControl>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    variant="contained"
+                    color="primary"
+                    sx={{ my: 2 }}
+                  >
+                    Verify
+                  </Button>
+                </form>
+              )}
+            </Formik>
+          </Box>
         </Box>
       </header>
     </div>

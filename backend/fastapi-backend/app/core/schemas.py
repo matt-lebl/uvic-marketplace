@@ -263,8 +263,10 @@ class NewListing(BaseModel):
     images: list[Image] | None = None
     markedForCharity: bool | None = Field(None, example=False)
 
+
 class NewListingWithWrapper(BaseModel):
     listing: NewListing
+
 
 class UpdateListing(NewListingWithWrapper):
     status: str = Field(None, description="TODO", example="TODO")
@@ -276,3 +278,11 @@ class MessageThread(BaseModel):
     )
     other_participant: MessageParticipant | None = None
     last_message: Message | None = None
+
+
+class ValidationRequest(BaseModel):
+    code: str
+
+
+class SendEmailRequest(BaseModel):
+    email: str

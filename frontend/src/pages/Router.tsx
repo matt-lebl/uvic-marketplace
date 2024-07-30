@@ -25,10 +25,16 @@ const Router = () => {
     const userID = localStorage.getItem('userID')
     if (userID) {
       const getUser = async () => {
-        const response = await APIGet<string>(`/api/user/` + userID)
-        if (response) {
-          setLoggedIn(true)
-        } else {
+        try {
+          const response = await APIGet<string>(`/api/user/` + userID)
+          if (response) {
+            setLoggedIn(true)
+          } else {
+            localStorage.clear()
+            setLoggedIn(false)
+            navigate('/login')
+          }
+        } catch (error) {
           localStorage.clear()
           setLoggedIn(false)
           navigate('/login')

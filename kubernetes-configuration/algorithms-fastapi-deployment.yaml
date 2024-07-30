@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: algorithms-fastapi
-          image: ghcr.io/matt-lebl/uvic-marketplace/algorithms-fastapi:9edebad
+          image: ghcr.io/matt-lebl/uvic-marketplace/algorithms-fastapi:b6ad0a8
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8002
+            - containerPort: 80
           env:
             - name: POSTGRES_USER
               valueFrom:

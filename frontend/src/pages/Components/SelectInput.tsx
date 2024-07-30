@@ -1,32 +1,39 @@
 import { Select, InputLabel, MenuItem, SelectChangeEvent } from '@mui/material'
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 interface props {
-  label: string;
-  defaultVal: string;
-  onChange: (value: string | undefined) => void;
-  options: string[];
+  label: string
+  defaultVal: string
+  onChange: (value: string | undefined) => void
+  options: string[]
 }
 
-const SelectInput: React.FC<props> = ({ label, defaultVal, onChange, options }) => {
-  const [value, setValue] = useState<string | undefined>(defaultVal);
+const SelectInput: React.FC<props> = ({
+  label,
+  defaultVal,
+  onChange,
+  options,
+}) => {
+  const [value, setValue] = useState<string | undefined>(defaultVal)
 
   const handleChange = (event: SelectChangeEvent<string | undefined>) => {
-    const newValue = event.target.value;
+    const newValue = event.target.value
     setValue(newValue)
-    onChange(newValue);
-  };
+    onChange(newValue)
+  }
 
   return (
     <div>
       <InputLabel
-        id={label + "-select-label"}
-        data-testid={label + "-select-label"}
-      >{label}</InputLabel>
+        id={label + '-select-label'}
+        data-testid={label + '-select-label'}
+      >
+        {label}
+      </InputLabel>
       <Select
-        labelId={label + "-select-label"}
-        data-testid={label + "-simple-select"}
-        id={label + "-simple-select"}
+        labelId={label + '-select-label'}
+        data-testid={label + '-simple-select'}
+        id={label + '-simple-select'}
         value={value}
         label={label}
         onChange={handleChange}
@@ -38,6 +45,6 @@ const SelectInput: React.FC<props> = ({ label, defaultVal, onChange, options }) 
         ))}
       </Select>
     </div>
-  );
+  )
 }
-export default SelectInput;
+export default SelectInput

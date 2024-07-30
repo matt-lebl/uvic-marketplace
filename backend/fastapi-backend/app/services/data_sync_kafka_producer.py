@@ -1,5 +1,5 @@
 import json
-from core.schemas import Listing, NewListing, NewReview, NewUser
+from core.schemas import Listing, NewListing, NewReview, NewUser, UpdateUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
@@ -93,9 +93,15 @@ class DataSyncKafkaProducer:
         self.push_message("create-user", json.dumps({'user': user_dict}))
 
     # PATCH /api/user/{id}
-    def push_updated_user(self, user: NewUser):
-        # TODO
-        pass
+    def push_updated_user(self, user: UpdateUser, userID: str):
+        user_dict = {
+            'username': user.username,
+            'userID': userID,
+            'name': user.name,
+            'bio': user.bio,
+            'ignoreCharityListings': user.ignoreCharityListings
+        }
+        self.push_message("edit-user", json.dumps(user_dict))
 
     # DELETE /api/user/{id}
     def push_deleted_user(self, userID: str):
