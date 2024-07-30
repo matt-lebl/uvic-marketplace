@@ -29,11 +29,11 @@ export default function Events() {
 
   useEffect(() => {
     fetchMainEvent()
-  })
+  }, [])
 
   useEffect(() => {
     fetchAllEvents()
-  })
+  }, [])
 
   if (!curCharityEvent || !charityEvents) {
     return <Typography>No Events Found</Typography>
