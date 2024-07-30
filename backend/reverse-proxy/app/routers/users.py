@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Response, Request, HTTPException
-from core.schemas import NewUser, LoginRequest, NewUserReq, User, ValidationRequest, SendEmailRequest
+from core.schemas import LoginRequest, NewUserReq, ValidationRequest, SendEmailRequest
 from core.auth import sign_jwt, verify_jwt, decode_jwt, sign_validation_jwt
 from services.backend_connect import send_request_to_backend
 

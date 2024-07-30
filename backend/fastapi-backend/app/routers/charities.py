@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
 from core.schemas import CharityRequest, CharityWithFundsAndListings

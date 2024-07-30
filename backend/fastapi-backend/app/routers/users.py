@@ -3,7 +3,6 @@ import uuid
 from fastapi import APIRouter, HTTPException
 from core.schemas import (
     LoginRequest,
-    NewUser,
     NewUserReq,
     UpdateUser,
     User,
