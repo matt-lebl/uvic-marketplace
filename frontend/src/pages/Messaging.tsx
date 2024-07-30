@@ -14,11 +14,16 @@ import {
   DialogTitle,
   ListItemAvatar,
   Avatar,
+  Alert,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
-import { MessageThread, Message, User } from '../interfaces'
+import { MessageThread, Message, User, ListingSummary } from '../interfaces'
 import { APIGet, APIPost } from '../APIlink'
 
 const Messaging: React.FC = () => {
@@ -28,6 +33,9 @@ const Messaging: React.FC = () => {
   const [messages, setMessages] = useState<Record<string, Message[]>>({})
   const [open, setOpen] = useState<boolean>(false)
   const [newParticipant, setNewParticipant] = useState<string>('')
+  const [userListings, setUserListings] = useState<ListingSummary[]>([])
+  const [selectedUserListingId, setSelectedUserListingId] = useState<string>('')
+  const [searchError, setSearchError] = useState<string | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -71,14 +79,17 @@ const Messaging: React.FC = () => {
     if (!userId) return
     try {
       const fetchedMessages = await APIGet<Message[]>(
-        `/api/messages/thread/${listing_id}/${userId}`
+        '/api/messages/thread/' + listing_id + '/' + userId
       )
       setMessages((prevMessages) => ({
         ...prevMessages,
         [listing_id]: fetchedMessages,
       }))
     } catch (error) {
-      console.error(`Failed to fetch messages for thread ${listing_id}:`, error)
+      console.error(
+        'Failed to fetch messages for thread ' + listing_id + ':',
+        error
+      )
     }
   }
 
@@ -87,20 +98,20 @@ const Messaging: React.FC = () => {
   }
 
   const handleCreateNewConversation = async () => {
-    if (!newParticipant || !userId) return
+    if (!newParticipant || !userId || !selectedUserListingId) return
 
     try {
-      const user = await APIGet<User>(`/api/user/${newParticipant}`)
+      const user = await APIGet<User>('/api/user/' + newParticipant)
       if (!user) {
-        alert('User not found')
+        setSearchError('User not found')
         return
       }
 
       const initialMessage: Message = {
         sender_id: userId,
         receiver_id: user.userID,
-        listing_id: `listing-${threads.length + 1}`,
-        content: `Start of conversation with ${user.name}`,
+        listing_id: selectedUserListingId,
+        content: 'Start of conversation with ' + user.name,
         sent_at: Date.now(),
       }
 
@@ -120,6 +131,8 @@ const Messaging: React.FC = () => {
       setSelectedListingId(newThread.listing_id)
       setOpen(false)
       setNewParticipant('')
+      setSearchError(null)
+      setSelectedUserListingId('')
 
       setMessages((prevMessages) => ({
         ...prevMessages,
@@ -144,7 +157,7 @@ const Messaging: React.FC = () => {
     }
     try {
       await APIPost<Message, Message>(
-        `/api/messages/thread/${selectedListingId}/${userId}`,
+        '/api/messages/thread/' + selectedListingId + '/' + userId,
         newMessage
       )
       setMessages((prevMessages) => ({
@@ -191,9 +204,33 @@ const Messaging: React.FC = () => {
     }
   }
 
+  const fetchUserListings = async (userId: string) => {
+    try {
+      const fetchedListings = await APIGet<ListingSummary[]>(
+        '/api/listings/user/' + userId
+      )
+      if (Array.isArray(fetchedListings)) {
+        setUserListings(fetchedListings)
+      } else {
+        console.error('Fetched listings is not an array')
+        setSearchError('Failed to find user')
+      }
+    } catch (error) {
+      console.error('Failed to fetch user listings:', error)
+      setSearchError('Failed to find user')
+    }
+  }
+
+  useEffect(() => {
+    if (newParticipant) {
+      fetchUserListings(newParticipant)
+    }
+  }, [newParticipant])
+
   const selectedConversation = Array.isArray(threads)
     ? threads.find((thread) => thread.listing_id === selectedListingId)
     : null
+  console.log('Selected Conversation:', selectedConversation)
 
   const sortThreads = () => {
     setThreads((prevThreads) =>
@@ -319,6 +356,11 @@ const Messaging: React.FC = () => {
           <DialogContentText>
             Enter the name of the participant to start a new conversation.
           </DialogContentText>
+          {searchError && (
+            <Alert severity="error" onClose={() => setSearchError(null)}>
+              {searchError}
+            </Alert>
+          )}
           <TextField
             autoFocus
             margin="dense"
@@ -327,6 +369,25 @@ const Messaging: React.FC = () => {
             value={newParticipant}
             onChange={(e) => setNewParticipant(e.target.value)}
           />
+          {Array.isArray(userListings) && userListings.length > 0 && (
+            <FormControl fullWidth margin="dense">
+              <InputLabel id="select-listing-label">Select Listing</InputLabel>
+              <Select
+                labelId="select-listing-label"
+                value={selectedUserListingId}
+                label="Select Listing"
+                onChange={(e) =>
+                  setSelectedUserListingId(e.target.value as string)
+                }
+              >
+                {userListings.map((listing) => (
+                  <MenuItem key={listing.listingID} value={listing.listingID}>
+                    {listing.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
