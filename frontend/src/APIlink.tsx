@@ -107,3 +107,18 @@ export async function APIDelete(
   //throw new Error(`API request failed: ${error.message}`);
   //}
 }
+
+export async function APIUploadImage(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  //TODO: Make filename uuid
+  const filename = file.name
+
+  try {
+    await APIPost('/api/images/' + filename, formData)
+    return baseUrl + "/api/images/" + filename
+  } catch (error) {
+    console.error('Error uploading photo:', error)
+    return null
+  }
+}

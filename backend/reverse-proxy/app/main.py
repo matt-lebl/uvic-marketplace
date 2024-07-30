@@ -11,13 +11,14 @@ from services.backend_connect import send_request_to_backend_with_user_id
 from services.algorithms_connect import send_request_to_algorithms_with_user_id
 from services.env_vars import RP_ENV_VARS
 from decouple import config
-from routers import users
+from routers import users, images
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 # Catch All routes that don't require authentication
 app.include_router(users.usersRouter)
+app.include_router(images.imagesRouter)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080", # TODO: Remove localhost from production environment
