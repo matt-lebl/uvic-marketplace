@@ -64,29 +64,27 @@ async def login(loginRequest: LoginRequest, response: Response):
 @usersRouter.post("/logout")
 async def logout(response: Response):
     response.delete_cookie(key="authorization")
+    response.delete_cookie(key="validation")
     return {"message": "Successfully signed out"}
 
 
 @usersRouter.post("/send-confirmation-email")
-async def send_validation_link(request: Request):
+async def send_validation_link(request: Request, response: Response):
     validation_cookie = request.cookies.get("validation")
     if not validation_cookie:
         raise HTTPException(
             status_code=400, detail="No authorization provided for email validation"
         )
+    payload = decode_jwt(validation_cookie)
 
-    if not verify_jwt(validation_cookie):
+    if not payload:
         raise HTTPException(status_code=403, detail="Invalid token or expired token.")
-    try:
-        payload = decode_jwt(validation_cookie)
-        email = payload["email"]
-        response = await send_request_to_backend(
-            f"user/send-validation-link", "POST", {"email": email}
-        )
-        return response.json()
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=500)
+    email = payload["email"]
+    response_backend = await send_request_to_backend(
+        f"user/send-validation-link", "POST", {"email": email}
+    )
+    response.status_code = response_backend.status_code
+    return response_backend.json()
 
 
 @usersRouter.post("/confirm-email")
