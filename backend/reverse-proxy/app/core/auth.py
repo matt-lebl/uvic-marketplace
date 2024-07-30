@@ -1,17 +1,10 @@
-import base64
-import ssl
 import time
-import uuid
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from typing import Dict
 import jwt
 from decouple import config
 from fastapi import Request, HTTPException
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPBearer
 from services.env_vars import RP_ENV_VARS
-
-
 
 JWT_SECRET = config(RP_ENV_VARS.JWT_SECRET, default="developmentkey")
 JWT_ALGORITHM = config(RP_ENV_VARS.JWT_ALGORITHM, default="HS256")
@@ -20,6 +13,11 @@ EXPIRY_TIME = config(RP_ENV_VARS.EXPIRY_TIME, default=600)
 
 def sign_jwt(user_id: str) -> Dict[str, str]:
     payload = {"user_id": user_id, "expires": time.time() + int(EXPIRY_TIME)}
+    return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+
+
+def sign_validation_jwt(email: str) -> Dict[str, str]:
+    payload = {"email": email, "expires": time.time() + int(EXPIRY_TIME)}
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 

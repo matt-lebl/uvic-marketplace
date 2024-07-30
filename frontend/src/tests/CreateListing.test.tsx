@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import CreateListing from '../pages/CreateListing'
 import { APIPost } from '../APIlink'
+import { MemoryRouter } from 'react-router-dom'
 
 jest.mock('../APIlink', () => ({
   APIPost: jest.fn(),
@@ -42,12 +43,12 @@ describe('CreateListing Component', () => {
   })
 
   test('renders CreateListing component', () => {
-    render(<CreateListing />)
+    render(<MemoryRouter><CreateListing /></MemoryRouter>)
     expect(screen.getByText(/New Listing/i)).toBeInTheDocument()
   })
 
   test('validates required fields', async () => {
-    render(<CreateListing />)
+    render(<MemoryRouter><CreateListing /></MemoryRouter>)
 
     fireEvent.click(screen.getByRole('button', { name: /Submit/i }))
 
@@ -58,7 +59,7 @@ describe('CreateListing Component', () => {
   })
 
   test('handles input changes', () => {
-    render(<CreateListing />)
+    render(<MemoryRouter><CreateListing /></MemoryRouter>)
 
     fireEvent.change(screen.getByLabelText(/Listing Title/i), {
       target: { value: 'Test Title' },
@@ -74,7 +75,7 @@ describe('CreateListing Component', () => {
   test('submits the form with correct data', async () => {
     ;(APIPost as jest.Mock).mockResolvedValue({ success: true })
 
-    render(<CreateListing />)
+    render(<MemoryRouter><CreateListing /></MemoryRouter>)
 
     fireEvent.change(screen.getByLabelText(/Listing Title/i), {
       target: { value: 'Test Title' },

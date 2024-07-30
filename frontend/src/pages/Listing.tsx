@@ -76,11 +76,6 @@ const Listing: React.FC<ListingProps> = ({
           </Paper>
         </Box>
       </header>
-      <Box sx={{ mt: 2, ml: 2 }}>
-        <Typography variant="h4">{listingData.title}</Typography>
-        <Typography variant="body1">{listingData.description}</Typography>
-        <Typography variant="h6">${listingData.price}</Typography>
-      </Box>
     </div>
   )
 }
