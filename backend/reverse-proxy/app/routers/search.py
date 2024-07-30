@@ -13,7 +13,7 @@ searchRouter = APIRouter(
 @searchRouter.get("", dependencies=[Depends(require_jwt())])
 async def search(request: Request, token=Depends(require_jwt())):
     # add search history
-    path = "search-history/"
+    path = "user/search-history/"
     await send_request_to_backend_with_user_id(
         path, "POST", token, data={"searchTerm": request.query_params["query"]}
     )
