@@ -49,6 +49,12 @@ def update_listing(
     return updated_listing
 
 
+@router.get("/user/{seller_id}", response_model=list[ListingSchema])
+def get_user_listings(seller_id: str, session: Session = Depends(get_session)):
+    listings = Listing.get_by_seller_id(session, seller_id)
+    return [listing.convert_to_schema(session) for listing in listings]
+
+
 @router.get("/{listingID}", response_model=ListingSchema)
 def get_listing(listingID: str, session: Session = Depends(get_session)):
     listing = Listing.get_by_id(session, listingID)

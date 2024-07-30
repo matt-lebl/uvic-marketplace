@@ -250,6 +250,11 @@ class Listing(ListingBase, table=True):
         return session.exec(statement).all()
 
     @classmethod
+    def get_by_seller_id(cls, session: Session, seller_id: str):
+        statement = select(cls).where(cls.sellerId == seller_id)
+        return session.exec(statement).all()
+
+    @classmethod
     def convert_to_db_object(cls, listing_data: dict, seller_id: str, session: Session):
         listing_data["sellerId"] = seller_id
         listing_data["latitude"] = float(listing_data["location"]["latitude"])

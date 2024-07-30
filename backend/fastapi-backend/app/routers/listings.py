@@ -24,6 +24,14 @@ listingsRouter = APIRouter(
 )
 
 
+@listingsRouter.get("")
+async def get_user_listings(authUserID: str, returnResponse: Response):
+    path = "listing/user/" + authUserID
+    response = await send_request_to_data_layer(path, "GET")
+    returnResponse.status_code = response.status_code
+    return response.json()
+
+
 @listingsRouter.get("/{id}")
 async def get_listing(id: str, authUserID: str, returnResponse: Response):
     dsKafkaProducer.push_viewed_listing(id, authUserID)
