@@ -6,6 +6,7 @@ import SellerCard from './Components/SellerCard'
 import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
+import ListingMap from './Components/ListingMap'
 
 interface ListingProps {
   listingData?: ListingEntity
@@ -52,6 +53,7 @@ const Listing: React.FC<ListingProps> = ({
   return (
     <div className="Listing">
       <header className="App-header">
+
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Paper
             sx={{
@@ -75,6 +77,7 @@ const Listing: React.FC<ListingProps> = ({
             <SellerCard data={listingData} />
           </Paper>
         </Box>
+
       </header>
     </div>
   )

@@ -2,6 +2,7 @@ import React from 'react'
 import { Typography, Box, Paper, List, ListItem } from '@mui/material'
 import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
+import ListingMap from './ListingMap'
 
 interface SellerCardProps {
   data: ListingEntity
@@ -43,7 +44,8 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
           <Paper sx={{p:'5px', mb:'10px'}}>
             <Typography>{data.title}</Typography>
           </Paper>
-          <Paper sx={{p:'5px', mb:'10px'}}>
+          <ListingMap latlong={[48.48, -123.32]}/>
+          <Paper sx={{p:'5px', m:'10px 0px'}}>
             <Typography>{data.description}</Typography>
           </Paper>
         </Box>
