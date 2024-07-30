@@ -1,9 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from typing import List, Union
+
+from requests import Session
+from db.deps import get_db
+from util.charity_item_view import should_view_charity_items
 from util.schemas import ListingSummary, UserProfile, SearchResponse, SearchUserResponse, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
-import torch
-import numpy as np
 from util.embedding import generate_embedding, find_closest_matches
 
 es_wrapper = ElasticsearchWrapper()
@@ -23,8 +25,13 @@ async def search(*,
                  sort: Union[str, None] = None,
                  page: int = 1,
                  limit: int = 20,
-                 authUserID: Union[str, None] = None):
+                 authUserID: Union[str, None] = None,
+                 db: Session = Depends(get_db)):
     try:
+        see_charity_items = True  # Default to showing charity items
+        if authUserID:
+            see_charity_items = should_view_charity_items(authUserID, db)
+            
         if query:
             query_embedding = generate_embedding(query)
 
@@ -60,6 +67,18 @@ async def search(*,
                 "size": limit
             }
 
+            price_filters = []
+            if minPrice is not None:
+                price_filters.append({"range": {"price": {"gte": minPrice}}})
+            if maxPrice is not None:
+                price_filters.append({"range": {"price": {"lte": maxPrice}}})
+
+            if price_filters:
+                search_body['query']['bool']['filter'].extend(price_filters)
+
+            if not see_charity_items:
+                search_body['query']['bool']['filter'].append({"term": {"is_charity": False}})
+
             # Perform the search query
             response = es.search(index="listings_index", body=search_body)
 
@@ -69,16 +88,18 @@ async def search(*,
             # Extract documents from the response
             listings = [] 
             for doc in response['hits']['hits']:
-                listings.append(ListingSummary(listingID=doc["_id"], title=doc["_source"]["title"], 
-                                        description=doc["_source"].get("description"), 
-                                        price=doc["_source"]["price"], 
-                                        location=doc["_source"]["location"],
-                                        dateCreated=doc["_source"]["dateCreated"],
-                                        sellerID=doc['_source']["sellerID"],
-                                        sellerName=doc['_source']["sellerName"],
-                                        imageUrl=doc['_source'].get('imageUrl'),
-                                        **({"charityID": doc["_source"]["charityID"]} if "charityID" in doc["_source"] else {})
-                                        ))
+                listings.append(ListingSummary(
+                    listingID=doc["_id"],
+                    title=doc["_source"].get("title", "No title available"),  # Provide a default value if title is missing
+                    description=doc["_source"].get("description", "No description available"),
+                    price=doc["_source"].get("price", 0.0),  # Default price can be 0.0 or another sensible default
+                    location=doc["_source"].get("location", "No location available"),
+                    dateCreated=doc["_source"].get("dateCreated", "No date available"),
+                    sellerID=doc["_source"].get("sellerID", "No seller ID available"),
+                    sellerName=doc["_source"].get("sellerName", "No seller name available"),
+                    imageUrl=doc["_source"].get("imageUrl", "No image available"),  # Provide a default image URL or a placeholder if necessary
+                    charityID=doc["_source"].get("charityID", None)  # Use None or a suitable default if charityID is not required
+                ))
                 
             print("Listings; {}".format(listings))
             return SearchResponse(items=listings, totalItems=len(listings))
