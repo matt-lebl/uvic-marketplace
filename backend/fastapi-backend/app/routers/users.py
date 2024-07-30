@@ -149,7 +149,15 @@ async def send_validation_link(req: SendEmailRequest):
     response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
     validation_code = response.json()
 
-    email_validator.send_validation_email(email, validation_code)
+    try:
+        email_validator.send_validation_email(email, validation_code)
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(
+            status_code=500,
+            detail="Email could not be sent -- most likely smtp credentials are invalid",
+        )
+
     return {"message": "Validation email sent"}
 
 
