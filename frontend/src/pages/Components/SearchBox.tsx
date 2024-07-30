@@ -96,22 +96,26 @@ const Searchbox: React.FC<Props> = ({
   const [searchHistoryAnchorEl, setSearchHistoryAnchorEl] = React.useState<null | HTMLElement>(null);
   const openSearchHistory = Boolean(searchHistoryAnchorEl);
 
-  React.useEffect(() => {
-    document.addEventListener('click', (e) => handleSearchClick)
-    return () => {
-      document.removeEventListener('click', (e) => handleSearchClick)
-    }
-  }, [searchHistoryAnchorEl]);
+  // React.useEffect(() => {
+  //   document.addEventListener('click', (e) => {
+  //     debugger;
+  //     handleSearchClick(e)
+  //   })
+  //   // return () => {
+  //   //   document.removeEventListener('click', (e) => handleSearchClick)
+  //   // }
+  // }, [searchHistoryAnchorEl]);
 
   React.useEffect(() => {
-    setTimeout(async () => {
+    const getSearchHistory = async () => {
       await APIGet<SearchHistoryResponse>('/api/user/search-history')
         .catch((error) => {
           debugger;
           console.error('Failed to get search history')
         })
         .then((data) => setSearchHistory(data?.searches ?? [] as Search[]))
-    }, 1000);
+    }
+    getSearchHistory()
 
   }, [])
 
@@ -139,6 +143,7 @@ const Searchbox: React.FC<Props> = ({
         sx={{ ml: 1, flex: 1 }}
         value={query ?? undefined}
         onChange={handleChange}
+        onClick={handleSearchClick}
       />
       <Menu
         id="search-history-menu"
