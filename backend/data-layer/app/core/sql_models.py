@@ -13,10 +13,9 @@ from sqlmodel import (
     or_,
     delete, desc
 )
-from datetime import datetime
+from datetime import datetime, UTC
 from core.schemas import ListingSchema, UserProfile, ItemStatus
 from fastapi import HTTPException
-from core.config import PST_TZ
 
 
 class UserBase(SQLModel):
@@ -270,6 +269,8 @@ class Listing(ListingBase, table=True):
         reviews = self.get_reviews(session)
         data["seller_profile"] = user_profile
         data["reviews"] = reviews
+        data["dateCreated"] = data["dateCreated"].astimezone(UTC)
+        data["dateModified"] = data["dateModified"].astimezone(UTC)
         return ListingSchema(**data)
 
     def get_user_profile(self, session: Session):
@@ -308,6 +309,8 @@ class ListingReview(ListingReviewBase, table=True):
         session.add(review)
         session.commit()
         session.refresh(review)
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -326,7 +329,8 @@ class ListingReview(ListingReviewBase, table=True):
         session.add(review)
         session.commit()
         session.refresh(review)
-
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -519,6 +523,8 @@ class CharityTable(SQLModel, table=True):
     def convert_to_schema(self, session: Session):
         data = self.model_dump()
         data["organizations"] = OrganizationTable.get_from_list(self.organizations, session)
+        data["startDate"] = data["startDate"].astimezone(UTC)
+        data["endDate"] = data["endDate"].astimezone(UTC)
         return data
 
     @classmethod
@@ -552,13 +558,13 @@ class CharityTable(SQLModel, table=True):
 
     @classmethod
     def get_current_charity_id(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls.id).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
     @classmethod
     def get_current_charity(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
@@ -588,7 +594,6 @@ class CharityTable(SQLModel, table=True):
         session.commit()
 
         return {"message": "Charity deleted successfully"}
-
 
 class SearchHistoryTable(SQLModel, table=True):
     searchID: str = Field(default=None, primary_key=True)
