@@ -4,22 +4,23 @@ import { MapContainer, TileLayer, useMap, Marker, Popup, Circle } from 'react-le
 import './MapStyle.css'
 
 interface LocationProps {
-    latlong: [number, number]
+    lat: number,
+    long: number
 }
 
-const ListingMap: React.FC<LocationProps> = ({latlong}) => {
-    const position: LatLngTuple = latlong
+const ListingMap: React.FC<LocationProps> = ({ lat, long }) => {
+    const latitude = Math.round(lat * 1000) / 1000
+    const longitude = Math.round(long * 1000) / 1000
+    const position: LatLngTuple = [latitude, longitude]
 
     return (
-        
-            <MapContainer id='map' center={position} zoom={14} scrollWheelZoom={false}>
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <Circle center={position} radius={600}/>
-            </MapContainer>
-        
+        <MapContainer id='map' center={position} zoom={14} scrollWheelZoom={false}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Circle center={position} radius={600} />
+        </MapContainer>
     )
 }
 

@@ -53,31 +53,38 @@ const Listing: React.FC<ListingProps> = ({
   return (
     <div className="Listing">
       <header className="App-header">
-
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Paper
-            sx={{
-              padding: '20px',
-              height: '85vh',
-              backgroundColor: '#ffffff',
-            }}
-          >
-            <Typography sx={{ fontWeight: '700' }}>Photo Gallery</Typography>
-            <PhotoGallery images={listingData.images} />
-          </Paper>
-          <Paper
-            sx={{
-              minWidth: '40vw',
-              ml: 5,
-              backgroundColor: '#656565',
-              height: '85vh',
-              overflow: 'auto',
-            }}
-          >
-            <SellerCard data={listingData} />
-          </Paper>
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexWrap: 'nowrap',
+            alignItems: 'center',
+            marginTop: 1,
+            width: '90%',
+          }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+            <Paper
+              sx={{
+                padding: '20px',
+                height: '85vh',
+                backgroundColor: '#ffffff',
+              }}
+            >
+              <Typography sx={{ fontWeight: '700' }}>Photo Gallery</Typography>
+              <PhotoGallery images={listingData.images} />
+            </Paper>
+            <Paper
+              sx={{
+                minWidth: '40vw',
+                ml: 5,
+                backgroundColor: '#656565',
+                height: '85vh',
+                overflow: 'auto',
+              }}
+            >
+              <SellerCard data={listingData} />
+            </Paper>
+          </Box>
         </Box>
-
       </header>
     </div>
   )

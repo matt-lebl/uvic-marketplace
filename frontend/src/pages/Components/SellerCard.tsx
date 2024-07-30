@@ -13,42 +13,42 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
 
   return (
     <div className="Seller-Card">
-      <Box>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            padding: '50px',
-            flexGrow: 1,
-          }}
-        >
-          <ProfileIcon
-            id="listing-pfp"
-            name={seller_profile.name}
-            imageSrc={seller_profile.profilePictureUrl}
-          />
-          <Paper sx={{ flexGrow: 1, ml: '30px' }}>
-            <Typography sx={{ m: '10px' }}>
-              Seller: {seller_profile.username} ({seller_profile.name})
-            </Typography>
-            <Typography sx={{ m: '10px' }}>
-              Price: ${data.price}
-            </Typography>
-            <Typography sx={{ m: '10px' }}>
-              Bio: {seller_profile.bio}
-            </Typography>
-          </Paper>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          p: '20px 50px 20px 80px',
+          flexGrow: 1,
+        }}
+      >
+        <ProfileIcon
+          id="listing-pfp"
+          name={seller_profile.name}
+          imageSrc={seller_profile.profilePictureUrl}
+        />
+        <Paper sx={{ flexGrow: 1, ml: '50px' }}>
+          <Typography sx={{ m: '10px' }}>
+            Seller: {seller_profile.username} ({seller_profile.name})
+          </Typography>
+          <Typography sx={{ m: '10px' }}>
+            Bio: {seller_profile.bio}
+          </Typography>
+        </Paper>
+      </Box>
+      <Box sx={{ px: '50px' }}>
+        <ListingMap lat={data.location.latitude} long={data.location.longitude} />
 
+
+
+        <Box display='flex' flexDirection='row' m='20px 0'>
+          <Typography variant='h2' sx={{ p: '5px', mr:'40px'}}>{data.title}</Typography>
+          <Typography variant='h2' sx={{ p: '5px' }}>$ </Typography>
+          <Typography variant='h2'  sx={{ p:'5px' }}>{data.price}</Typography>
         </Box>
-        <Box sx={{px:'50px'}}>
-          <Paper sx={{p:'5px', mb:'10px'}}>
-            <Typography>{data.title}</Typography>
-          </Paper>
-          <ListingMap latlong={[48.48, -123.32]}/>
-          <Paper sx={{p:'5px', m:'10px 0px'}}>
-            <Typography>{data.description}</Typography>
-          </Paper>
-        </Box>
+
+        <Paper sx={{ p: '5px', m: '10px 0px' }}>
+          <Typography>{data.description}</Typography>
+        </Paper>
       </Box>
     </div>
   )
