@@ -88,16 +88,18 @@ async def send_validation_link(request: Request, response: Response):
 
 
 @usersRouter.post("/confirm-email")
-async def validate_email(request: ValidationRequest):
-    response = await send_request_to_backend(
+async def validate_email(request: ValidationRequest, response: Response):
+    response_backend = await send_request_to_backend(
         f"user/validate-email", "POST", request.model_dump()
     )
-    return response.json()
+    response.status_code = response.status_code
+    return response_backend.json()
 
 
 @usersRouter.post("/reset-password")
-async def reset_password(request: SendEmailRequest):
-    response = await send_request_to_backend(
+async def reset_password(request: SendEmailRequest, response: Response):
+    response_backend = await send_request_to_backend(
         f"user/reset-password/", "POST", request.model_dump()
     )
-    return response.json()
+    response.status_code = response_backend.status_code
+    return response_backend.json()
