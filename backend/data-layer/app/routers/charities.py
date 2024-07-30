@@ -38,7 +38,7 @@ def get_current_charity(session: Session = Depends(get_session)):
     logger.info(f"Current charity requested")
     if not charity:
         logger.error(f"No current charity")
-        raise HTTPException(status_code=404, detail="Charity not found")
+        raise HTTPException(status_code=404, detail="There is no current charity")
     return charity.convert_to_schema(session)
 
 
@@ -54,4 +54,7 @@ def delete_charity(id: str, session: Session = Depends(get_session)):
         return CharityTable.delete(id, session)
     except Exception as e:
         logger.error(e)
-        raise HTTPException(status_code=401, detail="Error deleting charity")
+        raise HTTPException(
+            status_code=400,
+            detail="Error deleting charity -- make sure the charity exists",
+        )
