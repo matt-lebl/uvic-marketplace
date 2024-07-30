@@ -1,4 +1,6 @@
 import uuid
+
+import sqlalchemy
 from core.sql_models import User
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
@@ -26,9 +28,13 @@ def create_user(user: NewUserReq, session: Session = Depends(get_session)):
     try:
         new_user = User.create(session=session, **user_data)
         return new_user
+    except sqlalchemy.exc.IntegrityError as duplicate:
+        logger.error("Duplicate user detected" + str(duplicate))
+        raise HTTPException(status_code=400, detail="User already exists" )
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error creating user")
+        #letting the error bubble up because we don't know the reason
+        raise HTTPException(status_code=400, detail="Error creating user" + str(e))
 
 
 @router.patch("/{userID}", response_model=UserSchema)
@@ -42,7 +48,7 @@ def update_user(userID: str, user: UpdateUser, session: Session = Depends(get_se
         return new_user
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error updating user")
+        raise HTTPException(status_code=400, detail="Error updating user" + str(e))
 
 
 @router.delete("/{userID}")

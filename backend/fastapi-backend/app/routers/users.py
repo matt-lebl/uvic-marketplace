@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 from core.schemas import (
     LoginRequest,
     NewUser,
@@ -28,24 +28,31 @@ authHandler = AuthHandler()
 email_validator = EmailValidator()
 
 
+def data_layer_failed(response_from_data_layer, response_to_client):
+    if response_from_data_layer.status_code != 200:
+        response_to_client.status_code = 400
+        return True
+    return False
+
+
 ## Auth Not Required
 @userRouter.post("/")
-async def create_user(user: NewUserReq):
+async def create_user(user: NewUserReq, returnResponse: Response):
     path = "user/"
 
     user = user.model_dump()
 
     if not UserValidator.validate_email(user["email"]):
         print("invalid email")
-        raise HTTPException(status_code=401, detail="Invalid email domain")
+        raise HTTPException(status_code=400, detail="Invalid email domain")
 
     if not UserValidator.validate_password(user["password"]):
         print("invalid password")
-        raise HTTPException(status_code=401, detail="Invalid password")
+        raise HTTPException(status_code=400, detail="Invalid password")
 
     if not UserValidator.validate_username(user["username"]):
         print("invalid username")
-        raise HTTPException(status_code=401, detail="Invalid username")
+        raise HTTPException(status_code=400, detail="Invalid username")
 
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
@@ -53,6 +60,10 @@ async def create_user(user: NewUserReq):
     user["validation_code"] = str(uuid.uuid4())
 
     response = await send_request_to_data_layer(path, "POST", user)
+
+    if data_layer_failed(response, returnResponse):
+        return response.json()
+
     response = response.json()
     response["totp_secret"] = totp_secret
     response["totp_uri"] = uri
@@ -76,11 +87,11 @@ async def edit_user(user: UpdateUser, authUserID: str):
 
     if not UserValidator.validate_password(user["password"]):
         print("invalid password")
-        raise HTTPException(status_code=401, detail="Invalid password")
+        raise HTTPException(status_code=400, detail="Invalid password")
 
     if not UserValidator.validate_username(user["username"]):
         print("invalid username")
-        raise HTTPException(status_code=401, detail="Invalid username")
+        raise HTTPException(status_code=400, detail="Invalid username")
 
     user["password"] = AuthHandler.hash_password(user["password"])
     path = "user/" + authUserID
@@ -114,7 +125,9 @@ async def login(loginRequest: LoginRequest):
         if "emailNotVerified" in loginResponse.json():
             return loginResponse.json()
         try:
-            if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
+            if authHandler.check_totp(
+                loginRequest.totp_code, loginResponse.json()["totp_secret"]
+            ):
                 return convert_to_type(loginResponse.json(), User)
             else:
                 raise HTTPException(status_code=401, detail="Invalid TOTP code")
@@ -139,7 +152,7 @@ async def validate_email(request: ValidationRequest):
 async def send_validation_link(req: SendEmailRequest):
     email = req.email
     if not UserValidator.validate_email(email):
-        raise HTTPException(status_code=401, detail="Invalid email domain")
+        raise HTTPException(status_code=400, detail="Invalid email domain")
 
     response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
     validation_code = response.json()
@@ -152,11 +165,12 @@ async def send_validation_link(req: SendEmailRequest):
 async def reset_password(req: SendEmailRequest):
     email = req.email
     if not UserValidator.validate_email(email):
-        raise HTTPException(status_code=401, detail="Invalid email domain")
+        raise HTTPException(status_code=400, detail="Invalid email domain")
 
     code = str(uuid.uuid4())
-    await send_request_to_data_layer("/user/set-password-reset-code", "POST", {"email": email, "code": code})
+    await send_request_to_data_layer(
+        "/user/set-password-reset-code", "POST", {"email": email, "code": code}
+    )
 
     email_validator.send_password_reset_email(email, code)
     return {"message": "Password reset email sent"}
-
