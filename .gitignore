@@ -39,3 +39,4 @@ node_modules/
 cypress/screenshots/
 cypress/videos/
 cypress/logs/
+cypress.env.json

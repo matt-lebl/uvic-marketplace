@@ -1,11 +1,18 @@
+const email = Cypress.env('e2e_email');
+const password = Cypress.env('e2e_password');
+const totp_secret = Cypress.env('totp_secret');
+
 describe("New Listing", () => {
   beforeEach(() => {
     cy.visit("https://market.lebl.ca/login");
-    cy.get('input[name="email"]').type("id7@uvic.ca");
-    cy.get('input[name="password"]').type("abcd1234");
-    cy.get('input[name="totp_code"]').type("123456");
+    cy.get('input[name="email"]').type(email);
+    cy.get('input[name="password"]').type(password);
+    cy.generateTotp(totp_secret).then((totp_code) => {
+      cy.get('input[name="totp_code"]').type(totp_code);
+    })
     cy.get('form[data-testid="login-form"]').submit();
-    cy.get("button").eq(5).click();
+    cy.url().should("eq", "https://market.lebl.ca/");
+    cy.get("button").eq(6).click();
   });
 
   it("Should load the New Listing page", () => {

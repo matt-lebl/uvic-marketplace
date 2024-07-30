@@ -24,3 +24,9 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 import 'cypress-file-upload';
+
+//This command generates a TOTP from a secret
+const otplib = require('otplib');
+Cypress.Commands.add('generateTotp', (secret) => {
+    return otplib.authenticator.generate(secret);
+  });
