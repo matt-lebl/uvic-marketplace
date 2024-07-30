@@ -1,4 +1,4 @@
-from datetime import time
+import time
 from fastapi import APIRouter
 
 from core.schemas import Message, MessageBaseModel
@@ -11,26 +11,30 @@ messagesRouter = APIRouter(
 )
 
 
-@messagesRouter.get("/overview/")
-async def get_overview(num_items: int, offset: int, authUserID: str):
+@messagesRouter.get("/overview")
+async def get_overview(authUserID: str, num_items: int = 10, offset: int = 0):
     path = "messages/overview/" + authUserID
     response = await send_request_to_data_layer(path, "GET")
     return response.json()
 
 
 @messagesRouter.get("/thread/{listing_id}/{receiver_id}")
-def get_thread(
-    listing_id: str, receiver_id: str, num_items: int, offset: int, authUserID: str
+async def get_thread(
+    listing_id: str,
+    receiver_id: str,
+    authUserID: str,
+    num_items: int = 10,
+    offset: int = 0,
 ):
     path = f"messages/thread/{listing_id}/{receiver_id}/{authUserID}"
-    response = send_request_to_data_layer(path, "GET")
+    response = await send_request_to_data_layer(path, "GET")
     return response.json()
 
 
 @messagesRouter.post("")
-def create_message(message: MessageBaseModel, authUserID: str):
+async def create_message(message: MessageBaseModel, authUserID: str):
     message = message.model_dump()
     message["sent_at"] = int(time.time())
-    path = "messages/"
-    response = send_request_to_data_layer(path, "POST", message)
+    path = "messages/" + authUserID
+    response = await send_request_to_data_layer(path, "POST", message)
     return response.json()
