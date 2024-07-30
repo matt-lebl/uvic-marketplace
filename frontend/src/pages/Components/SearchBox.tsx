@@ -109,7 +109,6 @@ const Searchbox: React.FC<Props> = ({
         .catch((error) => {
           debugger;
           console.error('Failed to get search history')
-          navigate('/error')
         })
         .then((data) => setSearchHistory(data?.searches ?? [] as Search[]))
     }, 1000);
