@@ -47,7 +47,15 @@ async def recommendations(*,
     view_charity_items = should_view_charity_items(user_id=authUserID, db=db)
 
     # Modify the Elasticsearch query based on charity item preference and blacklisted items
-    es_query = {"match_all": {}} if view_charity_items else {"bool": {"must_not": {"match": {"markedForCharity": True}}}}
+    es_query = {"match_all": {}} if view_charity_items else {
+                    "bool": {
+                        "must_not": {
+                            "exists": {
+                            "field": "charityId"
+                            }
+                        }
+                    }
+                }
 
     # Get all embeddings directly from Elasticsearch and compute cosine similarity with the user vector
     es_response = es.search(index="listings_index", body={"size": 10000, "query": es_query})
@@ -98,6 +106,7 @@ async def recommendations(*,
         recommendation["sellerName"] = es_listing['_source'].get("sellerName")
         recommendation["description"] = es_listing['_source'].get("description")
         recommendation["imageUrl"] = es_listing['_source'].get("imageUrl")
+        recommendation["charityID"] = es_listing['_source'].get("charityId")
 
         formatted_recommendations.append(recommendation)
 

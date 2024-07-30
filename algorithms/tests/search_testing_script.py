@@ -124,7 +124,7 @@ def add_listings(base_url):
         }
         if i % 3 == 0:
             # Add a charityID to some listings
-            listing_data["listing"]["charityID"] = random.randint(1, 10000)
+            listing_data["listing"]["charityId"] = random.randint(1, 10000)
         response = requests.post(f"{base_url}/api/listing", json=listing_data, cookies={"authorization": auth_cookie})
         print(f"Added listing {i + 1}: {response.status_code}")
 
