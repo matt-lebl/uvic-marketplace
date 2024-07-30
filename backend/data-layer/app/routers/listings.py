@@ -1,10 +1,9 @@
 import uuid
 from core.sql_models import Listing
-from core.config import PST_TZ
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
 from core.schemas import NewListing, ListingSchema, UpdateListing
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
 
 from sqlmodel import Session
@@ -22,7 +21,7 @@ def create_listing(
     listing_data = listing.model_dump()["listing"]
     listing_data = Listing.convert_to_db_object(listing_data, seller_id, session)
     listing_data["listingID"] = str(uuid.uuid4())
-    listing_data["dateCreated"] = datetime.now(PST_TZ)
+    listing_data["dateCreated"] = datetime.now(UTC).astimezone(UTC)
     listing_data["dateModified"] = listing_data["dateCreated"]
     new_listing = Listing.create(session=session, **listing_data)
     logger.info(f"New Listing Created{new_listing}")
@@ -40,7 +39,7 @@ def update_listing(
     listing_data = Listing.convert_to_db_object(listing.listing.model_dump(), seller_id, session)
     status = listing.status
     listing_data["listingID"] = listingID
-    listing_data["dateModified"] = datetime.now(PST_TZ)
+    listing_data["dateModified"] = datetime.now(UTC).astimezone()
     updated_listing = Listing.update(
         seller_id=seller_id, session=session, status=status, **listing_data
     )

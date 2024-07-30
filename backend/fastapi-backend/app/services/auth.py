@@ -14,7 +14,7 @@ VALIDATION_EMAIL_ENCRYPTION_KEY = config(FB_ENV_VARS.VALIDATION_EMAIL_ENCRYPTION
                                          default="xlCv7LmY28UfIoIXajSBcRvGnTQvNENdu_N3NKUQyS8=")
 API_URL = config(FB_ENV_VARS.FRONTEND_URL, default="http://localhost:8080")
 SMTP_SERVER = "smtp.gmail.com"
-VALIDATION_EMAIL_PASSWORD = config(FB_ENV_VARS.VALIDATION_EMAIL_PASSWORD, default="afakepassword")
+VALIDATION_EMAIL_PASSWORD = config(FB_ENV_VARS.VALIDATION_EMAIL_PASSWORD, default="mskavffokxwvrwvr")
 
 
 class AuthHandler:

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine

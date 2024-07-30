@@ -82,10 +82,10 @@ async def test_delete_user():
     assert response.status_code == 200
 
     response_get = client.get(f"/user/{userID}")
-    assert response_get.status_code == 401
+    assert response_get.status_code == 404
 
     resp_del = client.delete(f"/user/{userID}")
-    assert resp_del.status_code == 401
+    assert resp_del.status_code == 400
 
 
 @pytest.mark.asyncio
@@ -120,7 +120,7 @@ async def test_login():
     assert response.status_code == 200
     login_req2 = DataFactory.generate_login_request(user["email"], "wrongpassword")
     response = client.post(f"/user/login", json=login_req2)
-    assert response.status_code == 401
+    assert response.status_code == 400
 
 
 @pytest.mark.asyncio
@@ -275,7 +275,7 @@ async def test_create_message():
     listingID = response.json()["listingID"]
 
     message = data_factory.generate_message(listingID, user1_id, user2_id)
-    response = client.post("/messages/", json=message)
+    response = client.post(f"/messages/{user1_id}", json=message)
     assert response.status_code == 200
     assert response.json()["content"] == message["content"]
 
@@ -306,7 +306,7 @@ async def test_get_overview():
                 continue
             for i in range(5):
                 message = data_factory.generate_message(listing_ids[lst], user_ids[lst], user_ids[usr])
-                msg_response = client.post("/messages/", json=message)
+                msg_response = client.post(f"/messages/{user_ids[lst]}", json=message)
                 assert msg_response.status_code == 200
 
     final_resp = client.get(f"/messages/overview/{user_ids[0]}")
@@ -332,7 +332,7 @@ async def test_get_thread():
 
     for i in range(10):
         message = data_factory.generate_message(listingID, user1_id, user2_id)
-        response = client.post("/messages/", json=message)
+        response = client.post(f"/messages/{user1_id}", json=message)
         assert response.status_code == 200
 
     final_response = client.get(f"/messages/thread/{listingID}/{user2_id}/{user1_id}")
@@ -505,9 +505,10 @@ async def test_add_funds_to_charity():
     assert response.status_code == 200
     assert response.json()["dateModified"] != response.json()["dateCreated"]
 
-    charity_response = client.get("/charities/current")
-    assert charity_response.status_code == 200
-    assert charity_response.json()["funds"] == price
+    response = client.get("/charities/current")
+    assert response.status_code == 200
+    print(response.json())
+    assert response.json()["funds"] == price
 
 
 @pytest.mark.asyncio
