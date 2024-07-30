@@ -18,7 +18,7 @@ const BASESEARCHLIMIT: number = parseInt(
 function Search() {
   const context = useContext(DataContext)
   const searchRequestID = 'searchRequest'
-  const [searchRequest, setSearchRequest] = useState<SearchRequest>({
+  const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? {
     query: '',
     minPrice: undefined,
     maxPrice: undefined,
