@@ -82,24 +82,24 @@ async def get_user(id: str, authUserID: str):
 
 
 @userRouter.patch("/")
-async def edit_user(user: UpdateUser, authUserID: str):
-    user = user.model_dump()
-
-    if not UserValidator.validate_password(user["password"]):
+async def edit_user(user: UpdateUser, authUserID: str, returnResponse: Response):
+    if not UserValidator.validate_password(user.password):
         print("invalid password")
         raise HTTPException(status_code=400, detail="Invalid password")
 
-    if not UserValidator.validate_username(user["username"]):
+    if not UserValidator.validate_username(user.username):
         print("invalid username")
         raise HTTPException(status_code=400, detail="Invalid username")
 
-    user["password"] = AuthHandler.hash_password(user["password"])
+    user.password = AuthHandler.hash_password(user.password)
     path = "user/" + authUserID
+
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
+    if data_layer_failed(response, returnResponse):
+        return response.json()
+
     dsKafkaProducer.push_updated_user(user, authUserID)
-    if response.status_code == 200:
-        return convert_to_type(response.json(), User)
-    return response.json()
+    return convert_to_type(response.json(), User)
 
 
 @userRouter.delete("/")
