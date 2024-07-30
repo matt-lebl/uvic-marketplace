@@ -4,7 +4,7 @@ import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
 import { useState } from 'react'
 import { ChangeEvent } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { ListingEntity, ListingResponse, PatchListing } from '../interfaces'
 import { APIGet, APIPatch } from '../APIlink'
 
@@ -19,6 +19,7 @@ function EditListing() {
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
+  const navigate = useNavigate()
 
   const { listingID } = useParams();
 
@@ -63,6 +64,7 @@ function EditListing() {
     try {
       const response: ListingResponse | undefined = await APIPatch(listingURL, listingData)
       console.log(response)
+      navigate(`/listing/${listingID}`)
     } catch (error) {
       console.log(error)
       console.log(listingData)
@@ -133,7 +135,7 @@ function EditListing() {
                 fullWidth={true}
                 multiline={true}
                 sx={{ ml: '5px' }}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => setPrice(Number(e.target.value))}
                 defaultValue={price}
               ></InputBase>
             </Paper>
