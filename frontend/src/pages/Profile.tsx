@@ -4,8 +4,6 @@ import {
   Box,
   Typography,
   Avatar,
-  Tabs,
-  Tab,
   TextField,
   Button,
   Pagination,
@@ -32,7 +30,6 @@ interface ProfileProps {
 
 const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [editMode, setEditMode] = useState(false)
-  const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [listingsPerPage, setListingsPerPage] = useState(2)
   const [listings, setListings] = useState<ListingSummary[]>([])
@@ -41,10 +38,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [name, setName] = useState(user.name)
   const [bio, setBio] = useState(user.bio)
   const [profilePictureUrl, setProfilePictureUrl] = useState(user.profileUrl)
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue)
-  }
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -255,11 +248,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           )}
         </Box>
       </Box>
-      <Tabs value={activeTab} onChange={handleTabChange}>
-        <Tab label="Active Listings" />
-        <Tab label="Sold" />
-        <Tab label="Saved" />
-      </Tabs>
       <Box
         sx={{
           display: 'flex',
