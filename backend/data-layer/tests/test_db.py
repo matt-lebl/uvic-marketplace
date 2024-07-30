@@ -564,3 +564,78 @@ async def test_delete_charity():
     response = client.get("/charities/")
     assert response.status_code == 200
     assert len(response.json()) == 0
+
+
+@pytest.mark.asyncio
+async def test_add_to_history():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    userID = response.json()["userID"]
+    searchTerm = data_factory.generate_search()
+
+    response = client.post(f"/search-history/{userID}", json=searchTerm)
+    assert response.status_code == 200
+
+
+@pytest.mark.asyncio
+async def test_get_history():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    userID = response.json()["userID"]
+    for _ in range(10):
+        searchTerm = data_factory.generate_search()
+        response = client.post(f"/search-history/{userID}", json=searchTerm)
+        assert response.status_code == 200
+
+    response = client.get(f"/search-history/{userID}")
+    assert response.status_code == 200
+    assert len(response.json()["searches"]) == 10
+
+
+@pytest.mark.asyncio
+async def test_clear_history():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+    userID = response.json()["userID"]
+
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+    userID2 = response.json()["userID"]
+
+    for _ in range(10):
+        searchTerm1 = data_factory.generate_search()
+        searchTerm2 = data_factory.generate_search()
+
+        response = client.post(f"/search-history/{userID}", json=searchTerm1)
+        assert response.status_code == 200
+        response = client.post(f"/search-history/{userID2}", json=searchTerm2)
+        assert response.status_code == 200
+
+    response = client.get(f"/search-history/{userID}")
+    assert response.status_code == 200
+    assert len(response.json()["searches"]) == 10
+
+    response = client.get(f"/search-history/{userID2}")
+    assert response.status_code == 200
+    assert len(response.json()["searches"]) == 10
+
+    response = client.delete(f"/search-history/{userID}")
+    assert response.status_code == 200
+
+    response = client.get(f"/search-history/{userID}")
+    assert response.status_code == 200
+    assert len(response.json()["searches"]) == 0
+
+    response = client.get(f"/search-history/{userID2}")
+    assert response.status_code == 200
+    assert len(response.json()["searches"]) == 10

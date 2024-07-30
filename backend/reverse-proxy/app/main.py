@@ -11,24 +11,27 @@ from services.backend_connect import send_request_to_backend_with_user_id
 from services.algorithms_connect import send_request_to_algorithms_with_user_id
 from services.env_vars import RP_ENV_VARS
 from decouple import config
-from routers import users
+from routers import users, search
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
 # Catch All routes that don't require authentication
 app.include_router(users.usersRouter)
+app.include_router(search.searchRouter)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", # TODO: Remove localhost from production environment
-                   "https://localhost:8080",
-                   "http://localhost",
-                   "https://localhost",
-                   "http://market.lebl.ca",
-                   "https://market.lebl.ca"],
+    allow_origins=[
+        "http://localhost:8080",  # TODO: Remove localhost from production environment
+        "https://localhost:8080",
+        "http://localhost",
+        "https://localhost",
+        "http://market.lebl.ca",
+        "https://market.lebl.ca",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 ALGORITHMS_PATHS = ["search", "recommendations"]
@@ -52,16 +55,27 @@ TODO:
 # async def get_token():
 #     return sign_jwt("1")
 
-async def forward_request(path: str, method: str, token: str, params: dict | None = None, data: dict | None = None):
+
+async def forward_request(
+    path: str,
+    method: str,
+    token: str,
+    params: dict | None = None,
+    data: dict | None = None,
+):
     if path.split("/")[0] in ALGORITHMS_PATHS:
-        response = await send_request_to_algorithms_with_user_id(path, method, token, params, data)
+        response = await send_request_to_algorithms_with_user_id(
+            path, method, token, params, data
+        )
     else:
         response = await send_request_to_backend_with_user_id(path, method, token, data)
     return response
 
 
 @app.get("/api/{path:path}", dependencies=[Depends(require_jwt())])
-async def proxy_api_get_request(path: str | None, request: Request, token=Depends(require_jwt())):
+async def proxy_api_get_request(
+    path: str | None, request: Request, token=Depends(require_jwt())
+):
     response = await forward_request(path, "GET", token, params=request.query_params)
     return response.json()
 

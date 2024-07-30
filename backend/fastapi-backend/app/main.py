@@ -8,11 +8,12 @@ from urllib.parse import urljoin
 from fastapi import FastAPI, HTTPException
 import httpx
 from decouple import config
-from routers import listings, users, charities
+from routers import listings, users, charities, search
 from services.env_vars import FB_ENV_VARS
 
 app = FastAPI()
 app.include_router(listings.listingsRouter)
+app.include_router(search.searchRouter)
 app.include_router(users.userRouter)
 app.include_router(charities.charityRouter)
 

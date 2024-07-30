@@ -279,6 +279,9 @@ class MessageThread(BaseModel):
     other_participant: MessageParticipant | None = None
     last_message: Message | None = None
 
+class SearchTerm(BaseModel):
+    searchTerm: str
+
 
 class ValidationRequest(BaseModel):
     code: str
