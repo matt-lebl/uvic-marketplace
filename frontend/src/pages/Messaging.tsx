@@ -53,10 +53,14 @@ const Messaging: React.FC = () => {
       const fetchedThreads = await APIGet<MessageThread[]>(
         '/api/messages/overview'
       )
-      setThreads(fetchedThreads)
-      if (fetchedThreads.length > 0) {
-        setSelectedListingId(fetchedThreads[0].listing_id)
-        fetchMessagesForThread(fetchedThreads[0].listing_id)
+      if (Array.isArray(fetchedThreads)) {
+        setThreads(fetchedThreads)
+        if (fetchedThreads.length > 0) {
+          setSelectedListingId(fetchedThreads[0].listing_id)
+          fetchMessagesForThread(fetchedThreads[0].listing_id)
+        }
+      } else {
+        console.error('Fetched threads is not an array')
       }
     } catch (error) {
       console.error('Failed to fetch message threads:', error)
@@ -187,9 +191,9 @@ const Messaging: React.FC = () => {
     }
   }
 
-  const selectedConversation = threads.find(
-    (thread) => thread.listing_id === selectedListingId
-  )
+  const selectedConversation = Array.isArray(threads)
+    ? threads.find((thread) => thread.listing_id === selectedListingId)
+    : null
 
   const sortThreads = () => {
     setThreads((prevThreads) =>
@@ -212,70 +216,98 @@ const Messaging: React.FC = () => {
         </Grid>
         <Grid item xs={9}>
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '90%' }}>
-            <Box
-              sx={{
-                maxHeight: '100vh',
-                display: 'flex',
-                flexGrow: 0,
-                alignItems: 'center',
-                borderBottom: '1px solid #f0f0f0',
-                padding: '24px',
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar
-                  src={selectedConversation?.other_participant.profilePicture}
-                />
-              </ListItemAvatar>
-              <Typography variant="h6">
-                {selectedConversation?.other_participant.name}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                flexGrow: 1,
-                overflowY: 'auto',
-                padding: 2,
-                maxHeight: '70vh',
-              }}
-              ref={messagesContainerRef}
-            >
-              <List>
-                {messages[selectedListingId] &&
-                  messages[selectedListingId].map((message, index) => (
-                    <MessageBubble
-                      key={index}
-                      content={message.content}
-                      isSender={message.sender_id === userId}
+            {threads.length > 0 ? (
+              <>
+                <Box
+                  sx={{
+                    maxHeight: '100vh',
+                    display: 'flex',
+                    flexGrow: 0,
+                    alignItems: 'center',
+                    borderBottom: '1px solid #f0f0f0',
+                    padding: '24px',
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      src={
+                        selectedConversation?.other_participant?.profilePicture
+                      }
                     />
-                  ))}
-              </List>
-            </Box>
-            {selectedConversation && (
+                  </ListItemAvatar>
+                  <Typography variant="h6">
+                    {selectedConversation?.other_participant?.name ||
+                      'No conversation selected'}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    overflowY: 'auto',
+                    padding: 2,
+                    maxHeight: '70vh',
+                  }}
+                  ref={messagesContainerRef}
+                >
+                  <List>
+                    {messages[selectedListingId] &&
+                      messages[selectedListingId].map((message, index) => (
+                        <MessageBubble
+                          key={index}
+                          content={message.content}
+                          isSender={message.sender_id === userId}
+                        />
+                      ))}
+                  </List>
+                </Box>
+                {selectedConversation && (
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: 2,
+                      borderTop: '1px solid #f0f0f0',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      placeholder="Write a message"
+                      value={messageInput}
+                      onKeyDown={handleKeyDown}
+                      onChange={(e) => setMessageInput(e.target.value)}
+                    />
+                    <IconButton
+                      aria-label="send message"
+                      color="primary"
+                      onClick={handleSendMessage}
+                    >
+                      <SendIcon />
+                    </IconButton>
+                  </Box>
+                )}
+              </>
+            ) : (
               <Box
                 sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  padding: 2,
-                  borderTop: '1px solid #f0f0f0',
-                  flexShrink: 0,
+                  justifyContent: 'center',
+                  height: '100%',
+                  textAlign: 'center',
                 }}
               >
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  placeholder="Write a message"
-                  value={messageInput}
-                  onKeyDown={handleKeyDown}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                />
-                <IconButton
-                  aria-label="send message"
+                <Typography variant="h6">No conversations yet.</Typography>
+                <Button
+                  variant="contained"
                   color="primary"
-                  onClick={handleSendMessage}
+                  onClick={handleNewConversation}
+                  sx={{ mt: 2 }}
                 >
-                  <SendIcon />
-                </IconButton>
+                  Start a New Conversation
+                </Button>
               </Box>
             )}
           </Box>
