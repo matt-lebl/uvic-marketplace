@@ -104,9 +104,10 @@ async def edit_user(user: UpdateUser, authUserID: str, returnResponse: Response)
 
 
 @userRouter.delete("/")
-async def delete_user(authUserID: str):
+async def delete_user(authUserID: str, returnResponse: Response):
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "DELETE")
+    returnResponse.status_code = response.status_code
     return response.json()
 
 
@@ -143,14 +144,16 @@ async def validate_email(request: ValidationRequest, returnResponse: Response):
 
 
 @userRouter.post("/send-validation-link")
-async def send_validation_link(req: SendEmailRequest):
+async def send_validation_link(req: SendEmailRequest, returnResponse: Response):
     email = req.email
     if not UserValidator.validate_email(email):
         raise HTTPException(status_code=400, detail="Invalid email domain")
 
     response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
-    validation_code = response.json()
+    if data_layer_failed(response, returnResponse):
+        return response.json()
 
+    validation_code = response.json()
     try:
         email_validator.send_validation_email(email, validation_code)
     except Exception as e:
@@ -164,15 +167,18 @@ async def send_validation_link(req: SendEmailRequest):
 
 
 @userRouter.post("/reset-password/")
-async def reset_password(req: SendEmailRequest):
+async def reset_password(req: SendEmailRequest, returnResponse: Response):
     email = req.email
     if not UserValidator.validate_email(email):
         raise HTTPException(status_code=400, detail="Invalid email domain")
 
     code = str(uuid.uuid4())
-    await send_request_to_data_layer(
+
+    response = await send_request_to_data_layer(
         "/user/set-password-reset-code", "POST", {"email": email, "code": code}
     )
+    if data_layer_failed(response, returnResponse):
+        return response.json()
 
     try:
         email_validator.send_password_reset_email(email, code)
