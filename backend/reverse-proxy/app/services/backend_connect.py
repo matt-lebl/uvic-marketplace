@@ -12,15 +12,7 @@ USER_ID_FIELD = "authUserID"
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
         print(url)
-        try:
-            response = await client.request(method, url, json=data)
-            response.raise_for_status()
-            return response
-        except httpx.HTTPError as exc:
-            raise HTTPException(
-                status_code=500,
-                detail="Error in the backend request: " + str(exc),
-            )
+        return await client.request(method, url, json=data)
 
 
 async def send_request_to_backend(path: str, method: str, data: dict | None = None):
@@ -29,7 +21,7 @@ async def send_request_to_backend(path: str, method: str, data: dict | None = No
 
 
 async def send_request_to_backend_with_user_id(
-        path: str, method: str, token: str, data: dict | None = None
+    path: str, method: str, token: str, data: dict | None = None
 ):
     user_id = get_user_id_from_token(token)
 

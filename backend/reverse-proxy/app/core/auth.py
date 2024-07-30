@@ -65,7 +65,7 @@ class JWTBearer(HTTPBearer):
         auth_cookie = request.cookies.get("authorization")
 
         if not auth_cookie:
-            raise HTTPException(status_code=403, detail="No authorization provided.")
+            raise HTTPException(status_code=401, detail="No authorization provided.")
 
         if not verify_jwt(auth_cookie):
             raise HTTPException(
