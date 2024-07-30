@@ -63,7 +63,7 @@ async def logout(response: Response):
 async def send_validation_link(request: Request):
     validation_cookie = request.cookies.get("validation")
     if not validation_cookie:
-        raise HTTPException(status_code=400, detail="No authorization provided.")
+        raise HTTPException(status_code=400, detail="No authorization provided for email validation")
 
     if not verify_jwt(validation_cookie):
         raise HTTPException(
