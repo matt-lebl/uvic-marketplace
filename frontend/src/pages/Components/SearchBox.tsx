@@ -9,6 +9,7 @@ import { FilterAlt } from '@mui/icons-material'
 import NumericInput from './NumericOnlyInput'
 import SelectInput from './SelectInput'
 import { APIGet } from '../../APIlink'
+import { useNavigate } from 'react-router-dom'
 
 
 interface Props {
@@ -36,7 +37,6 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
   const [longitude, setLongitude] = useState<string>(previousSearchRequest?.longitude?.toString() ?? BASELONG)
   const [hasError, setHasError] = useState<number>(0)
   const [searchHistory, setSearchHistory] = useState<Search[]>([])
-  const [filteredSearchHistory, setFilteredSearchHistory] = useState<Search[]>([])
 
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -80,10 +80,8 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
 
   React.useEffect(() => {
     document.addEventListener('click', (e) => handleSearchClick)
-    document.addEventListener('keyup', (e) => handleFilterSearchHistory)
     return () => {
       document.removeEventListener('click', (e) => handleSearchClick)
-      document.removeEventListener('keyup', (e) => handleFilterSearchHistory)
     }
   }, [searchHistoryAnchorEl]);
 
@@ -109,13 +107,6 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
     else {
       setSearchHistoryAnchorEl(event.currentTarget);
     }
-  }
-
-  const handleFilterSearchHistory = (e: KeyboardEvent) => {
-    debugger
-    //test to see if key presses are already added to the change, or if we need to start storing them in a second ref.
-    setFilteredSearchHistory(searchHistory.filter(()).slice(0, BASESEARCHHISTORYLIMIT))
-
   }
 
   const onInvalidInputs = (value: boolean) => {
@@ -144,20 +135,20 @@ const Searchbox: React.FC<Props> = ({ placeholder, sx, id, submit, previousSearc
               No search history.
             </Typography>
           </MenuItem>) : (
-          filteredSearchHistory.map((searchValue, index) => (
-            <MenuItem>
-              <Typography
-                variant="body2"
-                fontSize={13}
-                align="left"
-                mt={1}
-                sx={{ textDecoration: 'underline', cursor: 'pointer' }}
-                onClick={() => setQuery(searchValue.searchTerm)}
-              >
-                {searchValue.searchTerm}
-              </Typography>
-            </MenuItem>
-          )))}
+            searchHistory.slice(0, BASESEARCHHISTORYLIMIT)).map((searchValue, index) => (
+              <MenuItem>
+                <Typography
+                  variant="body2"
+                  fontSize={13}
+                  align="left"
+                  mt={1}
+                  sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={() => setQuery(searchValue.searchTerm)}
+                >
+                  {searchValue.searchTerm}
+                </Typography>
+              </MenuItem>
+            ))}
       </Menu >
       <IconButton
         aria-label="filters"
