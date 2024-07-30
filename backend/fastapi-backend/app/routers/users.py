@@ -12,7 +12,7 @@ from core.schemas import (
     SendEmailRequest,
 )
 from services.data_layer_connect import send_request_to_data_layer
-from services.utils import convert_to_type
+from services.utils import convert_to_type, data_layer_failed
 from services.auth import AuthHandler, EmailValidator, UserValidator
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 
@@ -26,13 +26,6 @@ userRouter = APIRouter(
 
 authHandler = AuthHandler()
 email_validator = EmailValidator()
-
-
-def data_layer_failed(response_from_data_layer, response_to_client):
-    if response_from_data_layer.status_code != 200:
-        response_to_client.status_code = response_from_data_layer.status_code
-        return True
-    return False
 
 
 ## Auth Not Required
