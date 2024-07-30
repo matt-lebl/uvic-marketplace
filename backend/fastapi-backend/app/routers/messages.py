@@ -2,8 +2,7 @@ from datetime import time
 from fastapi import APIRouter
 
 from core.schemas import Message, MessageBaseModel
-from data_layer_connect import send_request_to_data_layer
-from utils import convert_to_type
+from services.data_layer_connect import send_request_to_data_layer
 
 messagesRouter = APIRouter(
     prefix="/api/messages",
