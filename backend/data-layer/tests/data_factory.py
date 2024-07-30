@@ -141,3 +141,13 @@ class DataFactory:
             "donated": 0,
             "receiving": receiving
         }
+
+    def generate_search(self):
+        return {"searchTerm": self.fake.text()}
+
+    @classmethod
+    def generate_password_reset_request(cls, email):
+        return {
+            "email": email,
+            "code": str(uuid.uuid4())
+        }

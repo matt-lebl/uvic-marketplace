@@ -11,18 +11,36 @@ import LoginHeader from './Components/LoginHeader'
 import Header from './Components/Header'
 import CreateListing from './CreateListing'
 import EditListing from './EditListing'
+import Search from './Search'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
 import Footer from './Components/Footer'
+import { APIGet } from '../APIlink'
 
 const Router = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const user = localStorage.getItem('userID')
-    if (user) {
-      setLoggedIn(true)
+    const userID = localStorage.getItem('userID')
+    if (userID) {
+      const getUser = async () => {
+        try {
+          const response = await APIGet<string>(`/api/user/` + userID)
+          if (response) {
+            setLoggedIn(true)
+          } else {
+            localStorage.clear()
+            setLoggedIn(false)
+            navigate('/login')
+          }
+        } catch (error) {
+          localStorage.clear()
+          setLoggedIn(false)
+          navigate('/login')
+        }
+      }
+      getUser()
     } else {
       setLoggedIn(false)
       const currentPath = window.location.pathname
@@ -53,6 +71,7 @@ const Router = () => {
             <Route path="messaging" element={<Messaging />} />
             <Route path="new-listing" element={<CreateListing />} />
             <Route path="edit-listing" element={<EditListing />} />
+            <Route path="search" element={<Search />} />
             <Route path="events" element={<Events />} />
           </>
         )}

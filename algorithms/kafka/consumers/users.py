@@ -36,3 +36,20 @@ def edit_user(data: dict, db: Session):
 def delete_user(data: dict, db: Session):
     # TODO implement delete user
     user_id = data['userID']
+
+def hide_charities(user_id: str, db: Session):
+    if user_id is None:
+        raise KafkaException(status_code=401, detail="No userID in request")
+
+    user = db.query(DB_User).filter(DB_User.user_id == user_id).first()
+    if user:
+        user.see_charity_items = False
+
+    try:
+        db.add(user)
+        db.commit()
+    except SQLAlchemyError as e:
+        print("Error adding user to postgres: ", e)
+        db.rollback()
+
+    return {"userID": user_id}

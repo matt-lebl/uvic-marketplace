@@ -135,8 +135,7 @@ class ItemSort(Enum):
 class UserPreferencesPayload(BaseModel):
     itemID: str | None = Field(None, example='B2309342A23')
 
-
-class Message(BaseModel):
+class MessageBaseModel(BaseModel):
     sender_id: str | None = Field(
         None, description='ID of the sender', example='A23434B090934'
     )
@@ -151,6 +150,8 @@ class Message(BaseModel):
         description='Content of the message',
         example='Hello, is this still available?',
     )
+
+class Message(MessageBaseModel):
     sent_at: int | None = Field(
         None,
         description='Unix timestamp of when the message was sent',
@@ -263,8 +264,10 @@ class NewListing(BaseModel):
     images: list[Image] | None = None
     markedForCharity: bool | None = Field(None, example=False)
 
+
 class NewListingWithWrapper(BaseModel):
     listing: NewListing
+
 
 class UpdateListing(NewListingWithWrapper):
     status: str = Field(None, description="TODO", example="TODO")
@@ -276,3 +279,14 @@ class MessageThread(BaseModel):
     )
     other_participant: MessageParticipant | None = None
     last_message: Message | None = None
+
+class SearchTerm(BaseModel):
+    searchTerm: str
+
+
+class ValidationRequest(BaseModel):
+    code: str
+
+
+class SendEmailRequest(BaseModel):
+    email: str

@@ -40,6 +40,11 @@ const validate = (values: FormValues) => {
   }
   if (!values.username) {
     errors.username = 'Required'
+  } else if (values.username.length < 6 || values.username.length > 20) {
+    errors.username = 'Username must be between 6 and 20 characters'
+  } else if (!/^[a-zA-Z0-9_@]*$/.test(values.username)) {
+    errors.username =
+      'Username must be alphanumeric, and must not contain special characters other than @ and _'
   }
   if (!values.email) {
     errors.email = 'Required'
@@ -50,6 +55,13 @@ const validate = (values: FormValues) => {
   }
   if (!values.password) {
     errors.password = 'Required'
+  } else if (values.password.length < 8) {
+    errors.password = 'Password must be at least 8 characters'
+  } else if (
+    !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).*$/.test(values.password)
+  ) {
+    errors.password =
+      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character'
   }
   if (!values.confirmPassword) {
     errors.confirmPassword = 'Required'
@@ -103,17 +115,34 @@ export default function RegisterForm() {
 
   const handleVerifyEmail = async () => {
     try {
-      const verifyEmailURL = '/api/user/send-validation-link/' + userEmail
-      const verifyEmailResponse = await APIGet<string>(verifyEmailURL)
+      const verifyEmailURL = '/api/user/send-confirmation-email'
+      const verifyEmailResponse = await APIPost<string, null>(
+        verifyEmailURL,
+        null
+      )
       if (verifyEmailResponse) {
         alert('Verification link sent to your email. Please check your inbox.')
       } else {
         alert('Verification link failed to send.')
       }
     } catch (error) {
-      alert({
-        error: 'An error occurred when sending validation email ' + error,
-      })
+      alert('An error occurred when sending validation email ' + error)
+    }
+  }
+
+  const handleVerificationCode = async (verificationCode: string) => {
+    try {
+      const verifyEmailURL = '/api/user/confirm-email'
+      const verifyEmailResponse = await APIPost<string, { code: string }>(
+        verifyEmailURL,
+        { code: verificationCode }
+      )
+      if (verifyEmailResponse) {
+        console.log(verifyEmailResponse)
+        alert('Email verified successfully!')
+      }
+    } catch (error) {
+      alert('An error occurred when verifying email: ' + error)
     }
   }
 
@@ -324,7 +353,48 @@ export default function RegisterForm() {
             </Button>
           )}
           <Typography variant="h6" mt={2} mb={1}>
-            3. Click the link we sent you, and you're all set!
+            3. Check your email, and enter your verification code below:
+          </Typography>
+          <Formik
+            initialValues={{ verificationCode: '' }}
+            onSubmit={async (values, { setSubmitting }) => {
+              await handleVerificationCode(values.verificationCode)
+              setSubmitting(false)
+            }}
+          >
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+            }) => (
+              <form onSubmit={handleSubmit}>
+                <FormControl fullWidth>
+                  <TextField
+                    type="text"
+                    name="verificationCode"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.verificationCode}
+                    label="Verification Code"
+                    margin="normal"
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  variant="contained"
+                  color="primary"
+                  sx={{ my: 2 }}
+                >
+                  Verify
+                </Button>
+              </form>
+            )}
+          </Formik>
+          <Typography variant="h6" mt={2} mb={1}>
+            4. You're all set! Return to the login page to sign in.
           </Typography>
           <Button
             variant="contained"

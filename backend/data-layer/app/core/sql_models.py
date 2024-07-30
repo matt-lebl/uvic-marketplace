@@ -11,7 +11,7 @@ from sqlmodel import (
     ARRAY,
     String,
     or_,
-    delete
+    delete, desc
 )
 from datetime import datetime
 from core.schemas import ListingSchema, UserProfile, ItemStatus
@@ -30,9 +30,10 @@ class UserBase(SQLModel):
     totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
-    email_validated: bool = Field(default=True)
+    email_validated: bool = Field(default=False)
     validation_code: str
     ignoreCharityListings: bool | None
+    passwordResetCode: str | None
 
 
 class User(UserBase, table=True):
@@ -68,7 +69,10 @@ class User(UserBase, table=True):
         user = session.exec(statement).first()
 
         if not user:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid request -- user not found. Please report this incident to the backend team.",
+            )
 
         session.delete(user)
         session.commit()
@@ -118,11 +122,11 @@ class User(UserBase, table=True):
         return session.exec(statement).first()
 
     @classmethod
-    def validate_email(cls, validation_code: str, email: str, session: Session):
-        statement = select(cls).where(and_(cls.email == email, cls.validation_code == validation_code))
+    def validate_email(cls, validation_code: str, session: Session):
+        statement = select(cls).where(cls.validation_code == validation_code)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or validation code")
+            raise HTTPException(status_code=400, detail="Invalid validation code")
         else:
             setattr(user, "email_validated", True)
             session.add(user)
@@ -134,9 +138,33 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.email == email)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="User ID not found")
+            raise HTTPException(status_code=400, detail="User ID not found")
         else:
             return user.email_validated
+
+    @classmethod
+    def set_password_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(cls.email == email)
+        user = session.exec(statement).first()
+        if not user:
+            raise HTTPException(status_code=400, detail="Invalid code")
+        else:
+            setattr(user, "passwordResetCode", code)
+            session.add(user)
+            session.commit()
+        return {"message": "Password reset code added successfully"}
+
+    @classmethod
+    def login_with_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(and_(cls.email == email, cls.passwordResetCode == code))
+        user = session.exec(statement).first()
+        if user:
+            user.passwordResetCode = None
+            session.add(user)
+            session.commit()
+            return True
+        else:
+            return False
 
 
 class ListingBase(SQLModel):
@@ -178,7 +206,10 @@ class Listing(ListingBase, table=True):
         if not listing:
             raise HTTPException(status_code=404, detail="Listing not found")
         if listing.sellerId != seller_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this listing",
+            )
         for key, value in kwargs.items():
             setattr(listing, key, value)
         if status == "SOLD" and listing.charityId:
@@ -195,10 +226,13 @@ class Listing(ListingBase, table=True):
         listing = session.exec(statement).first()
 
         if not listing:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Listing does not exist")
 
         if listing.sellerId != userId:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this listing",
+            )
 
         session.delete(listing)
         session.commit()
@@ -283,7 +317,10 @@ class ListingReview(ListingReviewBase, table=True):
         if not review:
             raise HTTPException(status_code=404, detail="Listing not found")
         if review.userID != user_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this review",
+            )
         for key, value in kwargs.items():
             setattr(review, key, value)
         session.add(review)
@@ -298,10 +335,13 @@ class ListingReview(ListingReviewBase, table=True):
         review = session.exec(statement).first()
 
         if not review:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Review does not exist")
 
         if review.userID != userID:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this review",
+            )
 
         session.delete(review)
         session.commit()
@@ -548,3 +588,30 @@ class CharityTable(SQLModel, table=True):
         session.commit()
 
         return {"message": "Charity deleted successfully"}
+
+
+class SearchHistoryTable(SQLModel, table=True):
+    searchID: str = Field(default=None, primary_key=True)
+    userID: str = Field(default=None, foreign_key="user.userID")
+    searchTerm: str
+    timestamp: datetime | None = Field(index=True)
+
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        history_element = cls(**kwargs)
+        session.add(history_element)
+        session.commit()
+        session.refresh(history_element)
+        return history_element
+
+    @classmethod
+    def delete(cls, userID: str, session: Session):
+        statement = delete(cls).where(cls.userID == userID)
+        session.exec(statement)
+        session.commit()
+
+    @classmethod
+    def get_history(cls, userID: str, session: Session):
+        statement = select(cls.searchID, cls.searchTerm).where(cls.userID == userID).order_by(desc(cls.timestamp))
+        result = session.exec(statement)
+        return {"searches": result.all()}

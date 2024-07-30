@@ -8,16 +8,15 @@ interface Props {
 }
 
 const OrgList: React.FC<Props> = ({ orgData, eventID }) => {
-
-    return (
-        <div className={'OrgList#' + eventID}>
-            <List>
-                {orgData.map((orgdata, key) => (
-                    <ListItem key={orgdata.name + key} sx={{p:'0'}}>
-                        <Box display='flex' flexDirection='row'>
-                            <Box width='80px'>
-                                <img src={orgdata.logoUrl} />
-                            </Box>
+  return (
+    <div className={'OrgList#' + eventID}>
+      <List>
+        {orgData.map((orgdata, key) => (
+          <ListItem key={orgdata.name + key} sx={{ p: '0' }}>
+            <Box display="flex" flexDirection="row">
+              <Box width="80px">
+                <img src={orgdata.logoUrl} />
+              </Box>
               <Box display="flex" flexDirection="column" p="0px 10px">
                 <Typography>{orgdata.name}</Typography>
                 <Typography>Donated: ${orgdata.donated}</Typography>

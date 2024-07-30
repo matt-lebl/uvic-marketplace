@@ -80,7 +80,7 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
         # Ensure blacklisted_items is not None
         if user.blacklisted_items is None:
             user.blacklisted_items = []
-    
+
         # Append listing_id if not already in the list
         if listing_id not in user.blacklisted_items:
             user.blacklisted_items.append(listing_id)

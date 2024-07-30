@@ -1,6 +1,13 @@
-from fastapi import APIRouter, Response
-from core.schemas import NewUser, LoginRequest, NewUserReq, User
-from core.auth import sign_jwt
+from fastapi import APIRouter, Response, Request, HTTPException
+from core.schemas import (
+    NewUser,
+    LoginRequest,
+    NewUserReq,
+    User,
+    ValidationRequest,
+    SendEmailRequest,
+)
+from core.auth import sign_jwt, verify_jwt, decode_jwt, sign_validation_jwt
 from services.backend_connect import send_request_to_backend
 
 usersRouter = APIRouter(
@@ -12,11 +19,16 @@ usersRouter = APIRouter(
 
 ## These endpoints can be interacted with without a valid JWT token
 @usersRouter.post("/")
-async def create_user(
-    user: NewUserReq,
-):
-    print(user.model_dump())
+async def create_user(user: NewUserReq, response: Response):
     response_backend = await send_request_to_backend("user/", "POST", user.model_dump())
+    response.status_code = response_backend.status_code
+    if response_backend.status_code == 200:
+        response.set_cookie(
+            key="validation",
+            value=sign_validation_jwt(user.email),
+            httponly=True,
+            samesite="strict",
+        )
     return response_backend.json()
 
 
@@ -25,36 +37,69 @@ async def login(loginRequest: LoginRequest, response: Response):
     response_backend = await send_request_to_backend(
         "user/login", "POST", loginRequest.model_dump()
     )
-
-    user = response_backend.json()
+    response_json = response_backend.json()
+    response.status_code = response_backend.status_code
 
     if response_backend.status_code == 200:
-        response.set_cookie(
-            key="authorization",
-            value=sign_jwt(user["userID"]),
-            httponly=True,
-            samesite="strict",
-        )
-    return user
+        if "emailNotVerified" in response_json:
+            response.set_cookie(
+                key="validation",
+                value=sign_validation_jwt(response_json["email"]),
+                httponly=True,
+                samesite="strict",
+            )
+            return {}
+
+        else:
+            response.set_cookie(
+                key="authorization",
+                value=sign_jwt(response_json["userID"]),
+                httponly=True,
+                samesite="strict",
+            )
+
+    return response_json
 
 
 @usersRouter.post("/logout")
 async def logout(response: Response):
     response.delete_cookie(key="authorization")
+    response.delete_cookie(key="validation")
     return {"message": "Successfully signed out"}
 
 
-@usersRouter.get("/validate-email/{validation_code}/{email}")
-async def validate_email(validation_code: str, email: str):
-    response = await send_request_to_backend(
-        f"user/validate-email/{validation_code}/{email}", "POST"
+@usersRouter.post("/send-confirmation-email")
+async def send_validation_link(request: Request, response: Response):
+    validation_cookie = request.cookies.get("validation")
+    if not validation_cookie:
+        raise HTTPException(
+            status_code=400, detail="No authorization provided for email validation"
+        )
+    payload = decode_jwt(validation_cookie)
+
+    if not payload:
+        raise HTTPException(status_code=403, detail="Invalid token or expired token.")
+    email = payload["email"]
+    response_backend = await send_request_to_backend(
+        f"user/send-validation-link", "POST", {"email": email}
     )
-    return response.json()
+    response.status_code = response_backend.status_code
+    return response_backend.json()
 
 
-@usersRouter.get("/send-validation-link/{email}")
-async def send_validation_link(email: str):
-    response = await send_request_to_backend(
-        f"user/send-validation-link/{email}", "GET"
+@usersRouter.post("/confirm-email")
+async def validate_email(request: ValidationRequest, response: Response):
+    response_backend = await send_request_to_backend(
+        f"user/validate-email", "POST", request.model_dump()
     )
-    return response.json()
+    response.status_code = response.status_code
+    return response_backend.json()
+
+
+@usersRouter.post("/reset-password")
+async def reset_password(request: SendEmailRequest, response: Response):
+    response_backend = await send_request_to_backend(
+        f"user/reset-password/", "POST", request.model_dump()
+    )
+    response.status_code = response_backend.status_code
+    return response_backend.json()

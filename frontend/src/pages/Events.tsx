@@ -16,7 +16,6 @@ export default function Events() {
     } catch (error) {
       console.log(error)
     }
-
   }
 
   const fetchAllEvents = async () => {
@@ -30,29 +29,43 @@ export default function Events() {
 
   useEffect(() => {
     fetchMainEvent()
-  })
+  }, [])
 
   useEffect(() => {
     fetchAllEvents()
-  })
-
+  }, [])
 
   if (!curCharityEvent || !charityEvents) {
-    return (
-      <Typography>No Events Found</Typography>
-    )
+    return <Typography>No Events Found</Typography>
   }
 
   return (
-    <div className='EventsPage'>
-      <Box display='flex' alignItems='center' justifyContent='center' width='100%' flexDirection='column'>
-        <Typography variant='h4' alignSelf='start' m='20px 0 0 10%'>Charity Events</Typography>
-        <Grid container spacing={1} sx={{ display: 'flex', width: '80%', alignItems: 'center', justifyContent: 'center' }}>
+    <div className="EventsPage">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        width="100%"
+        flexDirection="column"
+      >
+        <Typography variant="h4" alignSelf="start" m="20px 0 0 10%">
+          Charity Events
+        </Typography>
+        <Grid
+          container
+          spacing={1}
+          sx={{
+            display: 'flex',
+            width: '80%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Grid item md={12}>
             <EventCard eventData={curCharityEvent} />
           </Grid>
           {charityEvents.map((eventData, key) => (
-            <Grid item md={6} key={eventData.id + key} >
+            <Grid item md={6} key={eventData.id + key}>
               <EventCard eventData={eventData} />
             </Grid>
           ))}
@@ -61,4 +74,3 @@ export default function Events() {
     </div>
   )
 }
-
