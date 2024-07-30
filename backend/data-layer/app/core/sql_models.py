@@ -123,7 +123,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.validation_code == validation_code)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid validation code")
+            raise HTTPException(status_code=400, detail="Invalid validation code")
         else:
             setattr(user, "email_validated", True)
             session.add(user)
@@ -135,7 +135,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.email == email)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="User ID not found")
+            raise HTTPException(status_code=400, detail="User ID not found")
         else:
             return user.email_validated
 
@@ -144,7 +144,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.email == email)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid code")
+            raise HTTPException(status_code=400, detail="Invalid code")
         else:
             setattr(user, "passwordResetCode", code)
             session.add(user)
@@ -600,4 +600,3 @@ class SearchHistoryTable(SQLModel, table=True):
         statement = select(cls.searchID, cls.searchTerm).where(cls.userID == userID).order_by(desc(cls.timestamp))
         result = session.exec(statement)
         return {"searches": result.all()}
-

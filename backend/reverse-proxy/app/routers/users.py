@@ -38,6 +38,7 @@ async def login(loginRequest: LoginRequest, response: Response):
         "user/login", "POST", loginRequest.model_dump()
     )
     response_json = response_backend.json()
+    response.status_code = response_backend.status_code
 
     if response_backend.status_code == 200:
         if "emailNotVerified" in response_json:
@@ -56,6 +57,7 @@ async def login(loginRequest: LoginRequest, response: Response):
                 httponly=True,
                 samesite="strict",
             )
+
     return response_json
 
 

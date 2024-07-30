@@ -58,7 +58,7 @@ def delete_user(userID: str, session: Session = Depends(get_session)):
         return User.delete(userID, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error deleting user")
+        raise HTTPException(status_code=400, detail="Error deleting user")
 
 
 @router.get("/", response_model=list[UserSchema])
@@ -67,7 +67,7 @@ def get_all_users(session: Session = Depends(get_session)):
         return User.get_all(session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error getting users")
+        raise HTTPException(status_code=400, detail="Error getting users")
 
 
 @router.get("/{user_id}", response_model=UserSchema)
@@ -80,7 +80,7 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
         return user
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error creating user")
+        raise HTTPException(status_code=400, detail="Error creating user")
 
 
 @router.post("/login", response_model=UserSchema | InvalidEmailNotification)
@@ -93,16 +93,16 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
         hashed_password = User.get_password(session, request.email)
         password = request.password
         if not password:
-            raise HTTPException(status_code=401, detail="Invalid request, no password")
+            raise HTTPException(status_code=400, detail="Invalid request, no password")
         try:
             argon2.PasswordHasher().verify(hashed_password, password)
         except Exception as e:
             logger.error(str(e))
             if not User.login_with_reset_code(request.email, request.password, session):
-                raise HTTPException(status_code=401, detail="Invalid password")
+                raise HTTPException(status_code=400, detail="Invalid password")
         user = User.login(session, request.email)
         if not user:
-            raise HTTPException(status_code=401, detail="Error retrieving user info")
+            raise HTTPException(status_code=400, detail="Error retrieving user info")
         return user
     except Exception as e:
         logger.error(str(e))
@@ -116,7 +116,7 @@ def get_totp_secret(userID: str, session: Session = Depends(get_session)):
         return User.get_totp_secret(userID, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error retrieving TOTP secret")
+        raise HTTPException(status_code=400, detail="Error retrieving TOTP secret")
 
 
 @router.post("/add-totp-secret/{totp_secret}/{userID}")
@@ -126,7 +126,7 @@ def add_totp_secret(totp_secret: str, userID: str, session: Session = Depends(ge
         return User.add_totp_secret(totp_secret, userID, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error adding TOTP Secret")
+        raise HTTPException(status_code=400, detail="Error adding TOTP Secret")
 
 
 @router.get("/validation-code/{email}")
@@ -150,7 +150,7 @@ def validate_email(request: ValidationRequest, session: Session = Depends(get_se
         return User.validate_email(validation_code, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error validating email")
+        raise HTTPException(status_code=400, detail="Error validating email")
 
 
 @router.post("/set-password-reset-code")
@@ -162,5 +162,5 @@ def reset_password(request: PasswordResetRequest, session: Session = Depends(get
         return User.set_password_reset_code(email, code, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error setting password reset code")
+        raise HTTPException(status_code=400, detail="Error setting password reset code")
 
