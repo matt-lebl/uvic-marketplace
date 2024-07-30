@@ -1,9 +1,12 @@
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useEffect } from 'react'
 import './App.css'
 import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
 import { useState } from 'react'
 import { ChangeEvent } from 'react'
+import { useParams } from 'react-router-dom'
+import { ListingEntity } from '../interfaces'
+import { APIGet,APIPatch } from '../APIlink'
 
 function EditListing() {
   const [title, setTitle] = useState<string>('')
@@ -11,6 +14,30 @@ function EditListing() {
   const [desc, setDesc] = useState<string>('')
 
   const [pics, setPics] = useState<Array<string>>([])
+
+  const [listingData, setListingData] = useState<ListingEntity | undefined>()
+
+  const {listingID} = useParams();
+
+  const fetchListing = async () => {
+    try {
+      const listingURL : string = `/api/listing/${listingID}`
+
+      const response : ListingEntity | undefined = await APIGet(listingURL)
+
+      if(response){
+        setListingData(response)
+        setTitle(response.title)
+        setDesc(response.description)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    fetchListing()
+  }, [])
 
   const titleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
@@ -22,8 +49,7 @@ function EditListing() {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    console.log(title)
-    console.log(desc)
+    
   }
 
   return (
@@ -61,7 +87,7 @@ function EditListing() {
                 multiline={true}
                 sx={{ fontWeight: 600 }}
                 onChange={titleChange}
-                defaultValue="Old Title"
+                defaultValue={title}
               ></InputBase>
             </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
@@ -72,7 +98,7 @@ function EditListing() {
                 multiline={true}
                 sx={{ pb: '100px' }}
                 onChange={descChange}
-                defaultValue="Old Description"
+                defaultValue={desc}
               />
             </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
