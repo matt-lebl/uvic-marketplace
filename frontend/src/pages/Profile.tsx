@@ -26,91 +26,17 @@ const currentUser: User = {
   email: localStorage.getItem('email') || '',
 }
 
-const mockListings: ListingSummary[] = [
-  {
-    listingID: '1',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 1',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 75,
-    dateCreated: '2023-01-01',
-    imageUrl:
-      'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y291Y2h8ZW58MHx8MHx8fDA%3D',
-    charityID: '1',
-  },
-  {
-    listingID: '2',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 2',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 50,
-    dateCreated: '2023-01-02',
-    imageUrl:
-      'https://images.unsplash.com/photo-1611967164521-abae8fba4668?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNvdWNofGVufDB8fDB8fHww',
-    charityID: '1',
-  },
-  {
-    listingID: '3',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 3',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 75,
-    dateCreated: '2023-01-01',
-    imageUrl:
-      'https://images.unsplash.com/photo-1511401139252-f158d3209c17?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGNvdWNofGVufDB8fDB8fHww',
-    charityID: '1',
-  },
-  {
-    listingID: '4',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 4',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 50,
-    dateCreated: '2023-01-02',
-    imageUrl:
-      'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGNvdWNofGVufDB8fDB8fHww',
-    charityID: '1',
-  },
-  {
-    listingID: '5',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 5',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 75,
-    dateCreated: '2023-01-01',
-    imageUrl:
-      'https://images.unsplash.com/photo-1590251024078-8a6d9f90b02d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGNvdWNofGVufDB8fDB8fHww',
-    charityID: '1',
-  },
-  {
-    listingID: '6',
-    sellerID: '1',
-    sellerName: 'First Last',
-    title: 'Couch Item Title 6',
-    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-    price: 50,
-    dateCreated: '2023-01-02',
-    imageUrl:
-      'https://images.unsplash.com/photo-1578500494198-246f612d3b3d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzJ8fGNvdWNofGVufDB8fDB8fHww',
-    charityID: '1',
-  },
-]
-
 interface ProfileProps {
   user: User
-  listings: ListingSummary[]
 }
 
-const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
+const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [editMode, setEditMode] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [listingsPerPage, setListingsPerPage] = useState(2)
+  const [listings, setListings] = useState<ListingSummary[]>([])
+  const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState(user.username)
   const [name, setName] = useState(user.name)
   const [bio, setBio] = useState(user.bio)
@@ -173,11 +99,6 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     setEditMode(false)
   }
 
-  const currentListings = listings.slice(
-    (currentPage - 1) * listingsPerPage,
-    currentPage * listingsPerPage
-  )
-
   const updateListingsPerPage = () => {
     const width = window.innerWidth
     if (width > 1740) {
@@ -194,6 +115,28 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     window.addEventListener('resize', updateListingsPerPage)
     return () => window.removeEventListener('resize', updateListingsPerPage)
   }, [])
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const fetchedListings = await APIGet<ListingSummary[]>(
+          `/api/listing/${user.userID}`
+        )
+        setListings(fetchedListings)
+      } catch (error) {
+        console.error('Failed to fetch listings:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchListings()
+  }, [user.userID])
+
+  const currentListings = listings.slice(
+    (currentPage - 1) * listingsPerPage,
+    currentPage * listingsPerPage
+  )
 
   return (
     <Box sx={{ margin: 6 }}>
@@ -228,7 +171,6 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
                 fullWidth
                 sx={{ marginBottom: 1 }}
               />
-
               <TextField
                 label="Bio"
                 value={bio}
@@ -236,6 +178,13 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
                 fullWidth
                 multiline
                 rows={4}
+                sx={{ marginBottom: 1 }}
+              />
+              <TextField
+                label="Profile Picture URL"
+                value={profilePictureUrl}
+                onChange={(e) => setProfilePictureUrl(e.target.value)}
+                fullWidth
                 sx={{ marginBottom: 1 }}
               />
             </Box>
@@ -321,59 +270,87 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
         }}
       >
         <Grid container spacing={2} justifyContent="center">
-          {currentListings.map((listing) => (
-            <Grid item key={listing.listingID}>
-              <Card
-                key={listing.listingID}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  marginBottom: 2,
-                  width: '40vh',
-                  height: '30vh',
-                  padding: '16px',
-                  borderRadius: '16px',
-                  boxSizing: 'border-box',
-                  background: '#B5DBFF',
-                }}
-              >
-                <Box
+          {loading ? (
+            <Grid
+              item
+              sx={{
+                display: 'flex',
+                minHeight: '20vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flex: 1,
+              }}
+            >
+              <Typography variant="h6">Loading...</Typography>
+            </Grid>
+          ) : listings.length === 0 ? (
+            <Grid
+              item
+              sx={{
+                display: 'flex',
+                minHeight: '20vh',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flex: 1,
+              }}
+            >
+              <Typography variant="h6">No Listings</Typography>
+            </Grid>
+          ) : (
+            currentListings.map((listing) => (
+              <Grid item key={listing.listingID}>
+                <Card
+                  key={listing.listingID}
                   sx={{
-                    width: '100%',
-                    height: '60%',
-                    overflow: 'hidden',
                     display: 'flex',
+                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    marginBottom: 2,
+                    width: '40vh',
+                    height: '30vh',
+                    padding: '16px',
+                    borderRadius: '16px',
+                    boxSizing: 'border-box',
+                    background: '#B5DBFF',
                   }}
                 >
-                  <CardMedia
-                    component="img"
+                  <Box
                     sx={{
-                      height: '100%',
-                      width: 'auto',
-                      objectFit: 'fill',
-                      borderRadius: '10px',
+                      width: '100%',
+                      height: '60%',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
-                    image={listing.imageUrl}
-                    alt={listing.title}
-                  />
-                </Box>
-                <CardContent sx={{ width: '100%' }}>
-                  <Typography component="h5" variant="h5">
-                    {listing.title}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    ${listing.price}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {listing.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
+                  >
+                    <CardMedia
+                      component="img"
+                      sx={{
+                        height: '100%',
+                        width: 'auto',
+                        objectFit: 'fill',
+                        borderRadius: '10px',
+                      }}
+                      image={listing.imageUrl}
+                      alt={listing.title}
+                    />
+                  </Box>
+                  <CardContent sx={{ width: '100%' }}>
+                    <Typography component="h5" variant="h5">
+                      {listing.title}
+                    </Typography>
+                    <Typography variant="subtitle1" color="textSecondary">
+                      ${listing.price}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {listing.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          )}
         </Grid>
       </Box>
       <Box
@@ -383,17 +360,19 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
           marginTop: 2,
         }}
       >
-        <Pagination
-          count={Math.ceil(listings.length / listingsPerPage)}
-          page={currentPage}
-          onChange={handlePageChange}
-        />
+        {listings.length > listingsPerPage && !loading && (
+          <Pagination
+            count={Math.ceil(listings.length / listingsPerPage)}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        )}
       </Box>
     </Box>
   )
 }
 const ProfileContainer: React.FC = () => {
-  return <Profile user={currentUser} listings={mockListings} />
+  return <Profile user={currentUser} />
 }
 
 export default ProfileContainer
