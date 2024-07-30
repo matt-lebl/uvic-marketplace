@@ -5,51 +5,77 @@ import PhotoPreviewList from './Components/PhotoPreviewList'
 import { useState } from 'react'
 import { ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom'
-import { ListingEntity } from '../interfaces'
-import { APIGet,APIPatch } from '../APIlink'
+import { ListingEntity, ListingResponse, NewListing } from '../interfaces'
+import { APIGet, APIPatch } from '../APIlink'
 
 function EditListing() {
   const [title, setTitle] = useState<string>('')
-
   const [desc, setDesc] = useState<string>('')
+  const [price, setPrice] = useState<number>(0)
+  const [imageNames, setImageNames] = useState<Array<string>>([])
+  const [imageURLs, setImageURLs] = useState<Array<string>>([])
+  const [latitude, setLatitude] = useState<number | undefined >()
+  const [longitude, setLongitude] = useState<number | undefined >()
+  const [geolocationError, setGeolocationError] = useState<string | null>(null)
+  const [titleError, setTitleError] = useState<boolean>(false)
+  const [priceError, setPriceError] = useState<boolean>(false)
 
-  const [pics, setPics] = useState<Array<string>>([])
-
-  const [listingData, setListingData] = useState<ListingEntity | undefined>()
-
-  const {listingID} = useParams();
+  const { listingID } = useParams();
 
   const fetchListing = async () => {
     try {
-      const listingURL : string = `/api/listing/${listingID}`
+      const listingURL: string = `/api/listing/${listingID}`
 
-      const response : ListingEntity | undefined = await APIGet(listingURL)
+      const response: ListingEntity  = await APIGet(listingURL)
 
-      if(response){
-        setListingData(response)
+      if (response) {
         setTitle(response.title)
         setDesc(response.description)
+        setPrice(response.price)
+        setLatitude(response.location.latitude)
+        setLongitude(response.location.longitude)
       }
     } catch (error) {
       console.log(error)
     }
   }
 
+  async function patchListing() {
+
+    if (latitude === undefined || longitude === undefined) {
+      alert('Location is not available.')
+      return
+    }
+    
+    const listingData : NewListing = {
+      title,
+      description: desc,
+      price,
+      location: { latitude, longitude },
+      images: imageURLs.map((url) => ({ url }))
+    }
+    const listingURL: string = `/api/listing/${listingID}`
+
+    try {
+      const response : ListingResponse | undefined = await APIPatch(listingURL, listingData)
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+      console.log(listingData)
+      console.log(title)
+    }
+
+  }
+
   useEffect(() => {
     fetchListing()
   }, [])
 
-  const titleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value)
-  }
-
-  const descChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setDesc(event.target.value)
-  }
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
-    
+
+    patchListing()
   }
 
   return (
@@ -71,7 +97,6 @@ function EditListing() {
             }}
           >
             <Typography variant="h2">Edit Listing</Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'cloumn' }}></Box>
             <Paper
               sx={{
                 flexGrow: 1,
@@ -86,8 +111,26 @@ function EditListing() {
                 fullWidth={true}
                 multiline={true}
                 sx={{ fontWeight: 600 }}
-                onChange={titleChange}
+                onChange={(e) => setTitle(e.target.value)}
                 defaultValue={title}
+              ></InputBase>
+            </Paper>
+            <Paper
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                alignItems: 'center',
+                p: '20px',
+                m: '10px 0px 10px 0px',
+              }}
+            >$
+              <InputBase
+                id="Listing-Title"
+                fullWidth={true}
+                multiline={true}
+                sx={{ml:'5px'}}
+                onChange={(e) => setTitle(e.target.value)}
+                defaultValue={price}
               ></InputBase>
             </Paper>
             <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
@@ -97,7 +140,7 @@ function EditListing() {
                 fullWidth={true}
                 multiline={true}
                 sx={{ pb: '100px' }}
-                onChange={descChange}
+                onChange={(e) => setDesc(e.target.value)}
                 defaultValue={desc}
               />
             </Paper>
