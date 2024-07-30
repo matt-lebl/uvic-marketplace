@@ -35,34 +35,12 @@ async def test_create_user():
 async def test_validate_email():
     user = data_factory.generate_user()
     validation_code = user["validation_code"]
-    email = user["email"]
     response = client.post("/user/", json=user)
     assert response.status_code == 200
     assert response.json()["username"] == user["username"]
 
-    response2 = client.post(f"/user/validate-email/{validation_code}/{email}")
+    response2 = client.post(f"/user/validate-email", json={"code": validation_code})
     assert response2.status_code == 200
-
-
-@pytest.mark.asyncio
-async def test_check_validation():
-    user = data_factory.generate_user()
-    validation_code = user["validation_code"]
-    email = user["email"]
-    response = client.post("/user/", json=user)
-    assert response.status_code == 200
-    assert response.json()["username"] == user["username"]
-
-    response = client.get(f"/user/is-validated/{email}")
-    assert response.status_code == 200
-    assert not response.json()
-
-    response = client.post(f"/user/validate-email/{validation_code}/{email}")
-    assert response.status_code == 200
-
-    response = client.get(f"/user/is-validated/{email}")
-    assert response.status_code == 200
-    assert response.json()
 
 
 @pytest.mark.asyncio
@@ -130,15 +108,49 @@ async def test_login():
     create_response = client.post("/user/", json=user)
     assert create_response.status_code == 200
 
-    validate_response = client.post(f"/user/validate-email/{code}/{email}")
+    login_req = DataFactory.generate_login_request(email, p1)
+    response = client.post(f"/user/login", json=login_req)
+    assert response.status_code == 200
+    assert response.json()["email"] == email
+
+    validate_response = client.post(f"/user/validate-email", json={"code": code})
     assert validate_response.status_code == 200
 
-    login_req = DataFactory.generate_login_request(email, p1)
     response = client.post(f"/user/login", json=login_req)
     assert response.status_code == 200
     login_req2 = DataFactory.generate_login_request(user["email"], "wrongpassword")
     response = client.post(f"/user/login", json=login_req2)
     assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_reset_password():
+    user, p1 = data_factory.generate_user(need_password=True)
+    email = user["email"]
+    code = user["validation_code"]
+    create_response = client.post("/user/", json=user)
+    assert create_response.status_code == 200
+
+    login_req = DataFactory.generate_login_request(email, p1)
+    response = client.post(f"/user/login", json=login_req)
+    assert response.status_code == 200
+    assert response.json()["email"] == email
+
+    validate_response = client.post(f"/user/validate-email", json={"code": code})
+    assert validate_response.status_code == 200
+
+    reset_password_req = DataFactory.generate_password_reset_request(email)
+    response = client.post("/user/set-password-reset-code", json=reset_password_req)
+    assert response.status_code == 200
+
+    login_req = DataFactory.generate_login_request(email, reset_password_req["code"])
+    response = client.post("/user/login", json=login_req)
+    assert response.status_code == 200
+    assert response.json()["email"] == email
+
+    login_req = DataFactory.generate_login_request(email, reset_password_req["code"])
+    response = client.post("/user/login", json=login_req)
+    assert response.status_code != 200
 
 
 @pytest.mark.asyncio

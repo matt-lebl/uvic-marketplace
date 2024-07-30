@@ -193,6 +193,33 @@ export interface UpdateUser {
   profilePictureUrl: string
 }
 
+export enum SearchType {
+  USERS = 'USERS',
+  LISTINGS = 'LISTINGS',
+}
+
+export enum Sort {
+  RELEVANCE = 'RELEVANCE',
+  PRICE_ASC = 'PRICE_ASC',
+  PRICE_DESC = 'PRICE_DESC',
+  LISTED_TIME_ASC = 'LISTED_TIME_ASC',
+  LISTED_TIME_DESC = 'LISTED_TIME_DESC',
+  DISTANCE_ASC = 'DISTANCE_ASC',
+  DISTANCE_DESC = 'DISTANCE_DESC',
+}
+
+export interface SearchRequest {
+  query: string
+  minPrice?: number
+  maxPrice?: number
+  status?: ItemStatus
+  searchType?: SearchType
+  latitude: number
+  longitude: number
+  sort?: Sort
+  page?: number
+  limit?: number
+}
 export interface CharityEntity {
   id: string
   name: string

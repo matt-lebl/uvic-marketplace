@@ -36,7 +36,7 @@ app.add_middleware(
 
 ALGORITHMS_PATHS = ["search", "recommendations"]
 
-fastapi_backend_url = config(RP_ENV_VARS.FA_URL, default="http://localhost:8001")
+fastapi_backend_url = config(RP_ENV_VARS.FB_URL, default="http://localhost:8001")
 fastapi_algorithms_url = config(RP_ENV_VARS.FA_URL, default="http://localhost:8004")
 
 """

@@ -30,9 +30,10 @@ class UserBase(SQLModel):
     totp_secret: str | None
     items_sold: list | None = Field(sa_column=Column(ARRAY(String)))
     items_purchased: list | None = Field(sa_column=Column(ARRAY(String)))
-    email_validated: bool = Field(default=True)
+    email_validated: bool = Field(default=False)
     validation_code: str
     ignoreCharityListings: bool | None
+    passwordResetCode: str | None
 
 
 class User(UserBase, table=True):
@@ -118,11 +119,11 @@ class User(UserBase, table=True):
         return session.exec(statement).first()
 
     @classmethod
-    def validate_email(cls, validation_code: str, email: str, session: Session):
-        statement = select(cls).where(and_(cls.email == email, cls.validation_code == validation_code))
+    def validate_email(cls, validation_code: str, session: Session):
+        statement = select(cls).where(cls.validation_code == validation_code)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid email or validation code")
+            raise HTTPException(status_code=401, detail="Invalid validation code")
         else:
             setattr(user, "email_validated", True)
             session.add(user)
@@ -137,6 +138,30 @@ class User(UserBase, table=True):
             raise HTTPException(status_code=401, detail="User ID not found")
         else:
             return user.email_validated
+
+    @classmethod
+    def set_password_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(cls.email == email)
+        user = session.exec(statement).first()
+        if not user:
+            raise HTTPException(status_code=401, detail="Invalid code")
+        else:
+            setattr(user, "passwordResetCode", code)
+            session.add(user)
+            session.commit()
+        return {"message": "Password reset code added successfully"}
+
+    @classmethod
+    def login_with_reset_code(cls, email: str, code: str, session: Session):
+        statement = select(cls).where(and_(cls.email == email, cls.passwordResetCode == code))
+        user = session.exec(statement).first()
+        if user:
+            user.passwordResetCode = None
+            session.add(user)
+            session.commit()
+            return True
+        else:
+            return False
 
 
 class ListingBase(SQLModel):

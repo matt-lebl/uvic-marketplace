@@ -2,7 +2,8 @@ import uuid
 from core.sql_models import User
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
-from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq
+from core.schemas import UserSchema, NewUser, LoginRequest, UpdateUser, NewUserReq, InvalidEmailNotification, \
+    ValidationRequest, PasswordResetRequest
 import argon2
 import logging
 
@@ -76,12 +77,13 @@ def get_user(user_id: str, session: Session = Depends(get_session)):
         raise HTTPException(status_code=401, detail="Error creating user")
 
 
-@router.post("/login", response_model=UserSchema)
+@router.post("/login", response_model=UserSchema | InvalidEmailNotification)
 def login(request: LoginRequest, session: Session = Depends(get_session)):
     logger.info("Login request")
     try:
         if not User.is_validated(request.email, session):
-            raise HTTPException(status_code=401, detail="Email is not validated")
+            logger.info(f"Email {request.email} not validated")
+            return {"email": request.email, "emailNotVerified": True}
         hashed_password = User.get_password(session, request.email)
         password = request.password
         if not password:
@@ -90,7 +92,8 @@ def login(request: LoginRequest, session: Session = Depends(get_session)):
             argon2.PasswordHasher().verify(hashed_password, password)
         except Exception as e:
             logger.error(str(e))
-            raise HTTPException(status_code=401, detail="Error comparing password")
+            if not User.login_with_reset_code(request.email, request.password, session):
+                raise HTTPException(status_code=401, detail="Invalid password")
         user = User.login(session, request.email)
         if not user:
             raise HTTPException(status_code=401, detail="Error retrieving user info")
@@ -132,21 +135,26 @@ def get_validation_code(email: str, session: Session = Depends(get_session)):
         logger.error(str(e))
         raise HTTPException(status_code=400, detail="Error retrieving validation code")
 
-@router.post("/validate-email/{validation_code}/{email}")
-def validate_email(validation_code: str, email: str, session: Session = Depends(get_session)):
-    logger.info(f"attempting to validate email for {email}")
+
+@router.post("/validate-email")
+def validate_email(request: ValidationRequest, session: Session = Depends(get_session)):
+    validation_code = request.code
+    logger.info(f"attempting to validate email with code {validation_code}")
     try:
-        return User.validate_email(validation_code, email, session)
+        return User.validate_email(validation_code, session)
     except Exception as e:
         logger.error(str(e))
         raise HTTPException(status_code=401, detail="Error validating email")
 
 
-@router.get("/is-validated/{userID}")
-def is_validated(userID: str, session: Session = Depends(get_session)):
-    logger.info(f"Checking if email validated for {userID}")
+@router.post("/set-password-reset-code")
+def reset_password(request: PasswordResetRequest, session: Session = Depends(get_session)):
+    code = request.code
+    email = request.email
+    logger.info(f"Password reset for {email}")
     try:
-        return User.is_validated(userID, session)
+        return User.set_password_reset_code(email, code, session)
     except Exception as e:
         logger.error(str(e))
-        raise HTTPException(status_code=401, detail="Error checking account validation")
+        raise HTTPException(status_code=401, detail="Error setting password reset code")
+

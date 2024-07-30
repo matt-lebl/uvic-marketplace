@@ -4,14 +4,17 @@ import { BrowserRouter } from 'react-router-dom'
 import Router from './pages/Router'
 import MarketplaceTheme from './Theme'
 import { CssBaseline } from '@mui/material'
+import { DataProvider } from './DataContext'
 
 function App() {
   return (
     <ThemeProvider theme={MarketplaceTheme}>
       <CssBaseline />
-      <BrowserRouter>
-        <Router />
-      </BrowserRouter>
+      <DataProvider>
+        <BrowserRouter>
+          <Router />
+        </BrowserRouter>
+      </DataProvider>
     </ThemeProvider>
   )
 }

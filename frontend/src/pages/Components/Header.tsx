@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
@@ -8,15 +8,23 @@ import ProfileIcon from './ProfileIcon'
 import Searchbox from './SearchBox'
 import { useNavigate } from 'react-router-dom'
 import MarkunreadIcon from '@mui/icons-material/Markunread'
+import { SearchRequest } from '../../interfaces'
+import { AddData, DataContext, GetData } from '../../DataContext'
+import { useContext } from 'react'
+import AnnouncementHeader from './AnnouncementHeader'
 
-export default function Header() {
-  const handleSearch = (query: string) => {
+const Header: React.FC = () => {
+  const searchRequestID = 'searchRequest'
+  const navigate = useNavigate()
+  const context = useContext(DataContext)
+
+  const handleSearch = (query: SearchRequest) => {
     console.log(query)
+    AddData(context, searchRequestID, query)
+    navigate('/search')
   }
 
   const name = localStorage.getItem('name') || 'User'
-
-  const navigate = useNavigate()
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -38,7 +46,7 @@ export default function Header() {
                 backgroundColor: 'transparent',
               },
               paddingX: 0,
-              mr: 2
+              mr: 2,
             }}
           >
             <Typography variant="h1" component="div">
@@ -60,6 +68,7 @@ export default function Header() {
               flexGrow: 1,
             }}
             submit={handleSearch}
+            previousSearchRequest={GetData(context, searchRequestID) ?? null}
           />
           <Box
             sx={{
@@ -118,6 +127,9 @@ export default function Header() {
           </Box>
         </Toolbar>
       </AppBar>
+      <AnnouncementHeader />
     </Box>
   )
 }
+
+export default Header

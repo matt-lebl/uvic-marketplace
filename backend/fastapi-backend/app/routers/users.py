@@ -8,10 +8,12 @@ from core.schemas import (
     UpdateUser,
     User,
     NewUserReq,
-    )
+    ValidationRequest,
+    SendEmailRequest,
+)
 from services.data_layer_connect import send_request_to_data_layer
 from services.utils import convert_to_type
-from services.auth import AuthHandler, EmailValidator
+from services.auth import AuthHandler, EmailValidator, UserValidator
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 
 dsKafkaProducer = DataSyncKafkaProducer(disable=False)
@@ -33,8 +35,17 @@ async def create_user(user: NewUserReq):
 
     user = user.model_dump()
 
-    if not EmailValidator.validate_email_domain(user["email"]):
+    if not UserValidator.validate_email(user["email"]):
+        print("invalid email")
         raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    if not UserValidator.validate_password(user["password"]):
+        print("invalid password")
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+    if not UserValidator.validate_username(user["username"]):
+        print("invalid username")
+        raise HTTPException(status_code=401, detail="Invalid username")
 
     totp_secret, uri = AuthHandler.generate_otp(user["email"])
     user["password"] = AuthHandler.hash_password(user["password"])
@@ -61,8 +72,20 @@ async def get_user(id: str, authUserID: str):
 
 @userRouter.patch("/")
 async def edit_user(user: UpdateUser, authUserID: str):
+    user = user.model_dump()
+
+    if not UserValidator.validate_password(user["password"]):
+        print("invalid password")
+        raise HTTPException(status_code=401, detail="Invalid password")
+
+    if not UserValidator.validate_username(user["username"]):
+        print("invalid username")
+        raise HTTPException(status_code=401, detail="Invalid username")
+
+    user["password"] = AuthHandler.hash_password(user["password"])
     path = "user/" + authUserID
     response = await send_request_to_data_layer(path, "PATCH", user.model_dump())
+    dsKafkaProducer.push_updated_user(user, authUserID)
     if response.status_code == 200:
         return convert_to_type(response.json(), User)
     return response.json()
@@ -75,14 +98,7 @@ async def delete_user(authUserID: str):
     return response.json()
 
 
-## Auth Not Required
-# @userRouter.post("/reset-password")
-# async def reset_password(emailModel: EmailModel):
-#     # TODO: Implement password reset
-#     return {"TODO": "Password reset email sent to {}".format(emailModel.email)}
-
-
-## Auth Not Required
+# Auth Not Required
 @userRouter.post("/login")
 async def login(loginRequest: LoginRequest):
     path = "user/login"
@@ -90,17 +106,18 @@ async def login(loginRequest: LoginRequest):
         loginResponse = await send_request_to_data_layer(
             path, "POST", loginRequest.model_dump()
         )
-    except Exception as e:
-        print(e)
+    except HTTPException as e:
+        print(e.detail)
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     if loginResponse.status_code == 200:
+        if "emailNotVerified" in loginResponse.json():
+            return loginResponse.json()
         try:
-            return convert_to_type(loginResponse.json(), User)
-            # if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
-            #     return convert_to_type(loginResponse.json(), User)
-            # else:
-            #     raise HTTPException(status_code=401, detail="Invalid TOTP code")
+            if authHandler.check_totp(loginRequest.totp_code, loginResponse.json()["totp_secret"]):
+                return convert_to_type(loginResponse.json(), User)
+            else:
+                raise HTTPException(status_code=401, detail="Invalid TOTP code")
         except Exception as e:
             print(e)
             raise HTTPException(status_code=401, detail="Invalid TOTP code")
@@ -110,23 +127,18 @@ async def login(loginRequest: LoginRequest):
 
 
 # Logout need not be implemented, it is implemented in RP
-@userRouter.post("/validate-email/{validation_code}/{email}")
-async def validate_email(validation_code: str, email: str):
-    # decrypted_email = authHandler.decrypt_secret(email)
-    # decrypted_validation_code = authHandler.decrypt_secret(validation_code)
-
-    if not EmailValidator.validate_email_domain(email):
-        raise HTTPException(status_code=401, detail="Invalid email domain")
-
+@userRouter.post("/validate-email")
+async def validate_email(request: ValidationRequest):
     response = await send_request_to_data_layer(
-        f"/user/validate-email/{validation_code}/{email}", "POST"
+        f"/user/validate-email", "POST", request.model_dump()
     )
     return response.json()
 
 
-@userRouter.get("/send-validation-link/{email}")
-async def send_validation_link(email: str):
-    if not EmailValidator.validate_email_domain(email):
+@userRouter.post("/send-validation-link")
+async def send_validation_link(req: SendEmailRequest):
+    email = req.email
+    if not UserValidator.validate_email(email):
         raise HTTPException(status_code=401, detail="Invalid email domain")
 
     response = await send_request_to_data_layer(f"/user/validation-code/{email}", "GET")
@@ -134,3 +146,17 @@ async def send_validation_link(email: str):
 
     email_validator.send_validation_email(email, validation_code)
     return {"message": "Validation email sent"}
+
+
+@userRouter.post("/reset-password/")
+async def reset_password(req: SendEmailRequest):
+    email = req.email
+    if not UserValidator.validate_email(email):
+        raise HTTPException(status_code=401, detail="Invalid email domain")
+
+    code = str(uuid.uuid4())
+    await send_request_to_data_layer("/user/set-password-reset-code", "POST", {"email": email, "code": code})
+
+    email_validator.send_password_reset_email(email, code)
+    return {"message": "Password reset email sent"}
+
