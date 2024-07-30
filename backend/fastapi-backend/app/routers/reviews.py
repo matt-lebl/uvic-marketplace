@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Response
 from services.data_layer_connect import send_request_to_data_layer
 from core.schemas import NewReview
+from services.data_sync_kafka_producer import DataSyncKafkaProducer
+
+# Development note: The DataSyncKafkaProducer class is used to send messages to Kafka.
+# If you want to disable sending messages to Kafka, you can set disable=True when initializing the DataSyncKafkaProducer class.
+dsKafkaProducer = DataSyncKafkaProducer(disable=False)
 
 reviewsRouter = APIRouter(
     prefix="/api/review",
@@ -14,6 +19,7 @@ async def add_review(review: NewReview, authUserID: str, returnResponse: Respons
     path = "review/" + authUserID
     response = await send_request_to_data_layer(path, "POST", review.model_dump())
     returnResponse.status_code = response.status_code
+    dsKafkaProducer.push_new_review(review, authUserID)
     return response.json()
 
 
