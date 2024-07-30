@@ -72,15 +72,18 @@ def get_all_users(session: Session = Depends(get_session)):
 
 @router.get("/{user_id}", response_model=UserSchema)
 def get_user(user_id: str, session: Session = Depends(get_session)):
-    try:
+    
         logger.info(f"Getting user {user_id}")
-        user = User.get_by_id(session, user_id)
+        
+        try:
+            user = User.get_by_id(session, user_id)
+        except Exception as e:
+            logger.error(str(e))
+            raise HTTPException(status_code=400, detail="Internal error getting user. " + str(e))
+        
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return user
-    except Exception as e:
-        logger.error(str(e))
-        raise HTTPException(status_code=400, detail="Error creating user")
 
 
 @router.post("/login", response_model=UserSchema | InvalidEmailNotification)
