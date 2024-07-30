@@ -13,7 +13,7 @@ searchRouter = APIRouter(
 async def add_search_history(searchTerm: SearchTerm, authUserID: str):
     path = "search-history/" + authUserID
     response = await send_request_to_data_layer(
-        path, "POST", authUserID, data=searchTerm.model_dump()
+        path, "POST", data=searchTerm.model_dump()
     )
     return response.json()
 
