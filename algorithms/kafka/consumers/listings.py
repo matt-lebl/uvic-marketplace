@@ -27,6 +27,10 @@ def create_listing(data: dict, db: Session):
     listing_data['sellerID'] = listing_data['seller_profile']['userID']
     listing_data['sellerName'] = listing_data['seller_profile']['name']
 
+    # Format charityID for Elasticsearch
+    if 'charityId' in listing_data:
+        listing_data['charityID'] = str(listing_data['charityId'])
+
     if 'images' in listing_data and len(listing_data['images']) > 0:
         listing_data['imageUrl'] = listing_data['images'][0]['url']
 

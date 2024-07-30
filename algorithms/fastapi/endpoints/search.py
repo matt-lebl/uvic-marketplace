@@ -77,7 +77,15 @@ async def search(*,
                 search_body['query']['bool']['filter'].extend(price_filters)
 
             if not see_charity_items:
-                search_body['query']['bool']['filter'].append({"term": {"is_charity": False}})
+                search_body['query']['bool']['filter'].append({
+                    "bool": {
+                        "must_not": {
+                            "exists": {
+                            "field": "charityId"
+                            }
+                        }
+                    }
+                })
 
             # Perform the search query
             response = es.search(index="listings_index", body=search_body)
@@ -98,7 +106,7 @@ async def search(*,
                     sellerID=doc["_source"].get("sellerID", "No seller ID available"),
                     sellerName=doc["_source"].get("sellerName", "No seller name available"),
                     imageUrl=doc["_source"].get("imageUrl", "No image available"),
-                    charityID=doc["_source"].get("charityID", None)
+                    charityID=doc["_source"].get("charityId", None)
                 ))
                 
             print("Listings; {}".format(listings))
