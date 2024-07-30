@@ -71,13 +71,16 @@ async def recommendations(*,
             similarities.append((listing_id, similarity))
     similarities.sort(key=lambda x: x[1], reverse=True)
     top_listing_ids = [listing_id for listing_id, _ in similarities[:limit]]
-    
     # Fetch the listing details from the database for the top listings
     recommendations = db.query(DB_Listing).filter(DB_Listing.listing_id.in_(top_listing_ids)).all()
 
+    # Sort these recommendations
+    id_position_map = {id_: index for index, id_ in enumerate(top_listing_ids)}
+    sorted_recommendations = sorted(recommendations, key=lambda x: id_position_map[x.listing_id])
+
     # Convert the top recommendations to the required format
     formatted_recommendations = []
-    for listing in recommendations: 
+    for listing in sorted_recommendations: 
 
         recommendation = {}
         recommendation["listingID"] = str(listing.listing_id) 
