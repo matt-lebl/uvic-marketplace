@@ -52,6 +52,6 @@ spec:
             - name: FB_URL
               value: "http://backend-fastapi:8001"
             - name: FA_URL
-              value: "http://algorithms-fastapi:80"
+              value: "http://algorithms-fastapi:8004"
             - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
               value: 'true'

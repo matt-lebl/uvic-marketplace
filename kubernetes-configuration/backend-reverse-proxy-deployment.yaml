@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend-reverse-proxy
-          image: ghcr.io/matt-lebl/uvic-marketplace/backend-reverse-proxy:05e294f
+          image: ghcr.io/matt-lebl/uvic-marketplace/backend-reverse-proxy:063bc09
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -22,6 +22,6 @@ spec:
             - name: FB_URL
               value: "http://backend-fastapi:8001"
             - name: FA_URL
-              value: "http://algorithms-fastapi:80"
+              value: "http://algorithms-fastapi:8004"
       imagePullSecrets:
         - name: github-container-registry
