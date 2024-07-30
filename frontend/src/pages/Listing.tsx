@@ -178,23 +178,18 @@ const Listing: React.FC<ListingProps> = ({ listingData: initialListingData, }) =
             }}
           >
             <SellerCard data={listingData} />
+            {hasExistingReview ? null : <Button onClick={createReview}>Add Review</Button>}
+            <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+              {reviewData.map((reviewProps, index) => (
+                <Grid item sx={{ width: '100%' }} key={index}>
+                  <ReviewCard {...reviewProps} />
+                </Grid>
+              ))}
+            </Grid>
           </Paper>
         </Box>
       </header>
-      <Box sx={{ mt: 2, ml: 2 }}>
-        <Typography variant="h4">{listingData.title}</Typography>
-        <Typography variant="body1">{listingData.description}</Typography>
-        <Typography variant="h6">${listingData.price}</Typography>
-      </Box>
-      {hasExistingReview ? null : <Button onClick={createReview}>Add Review</Button>}
-      <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-        {reviewData.map((reviewProps, index) => (
-          <Grid item sx={{ width: '100%' }} key={index}>
-            <ReviewCard {...reviewProps} />
-          </Grid>
-        ))}
-      </Grid>
-    </div >
+    </div>
   )
 }
 
