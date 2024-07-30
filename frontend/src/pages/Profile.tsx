@@ -15,16 +15,15 @@ import {
   Grid,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
-import { APIGet } from '../APIlink'
+import { APIGet, APIPost } from '../APIlink'
 
 const currentUser: User = {
-  userID: localStorage.getItem('userID') || '1',
-  username: localStorage.getItem('username') || 'firstlast',
-  name: localStorage.getItem('name') || 'First Last',
-  bio: localStorage.getItem('bio') || 'User Bio Here',
-  profileUrl:
-    localStorage.getItem('profileUrl') || 'https://randomuser.me/api/',
-  email: localStorage.getItem('email') || 'test@gmail.com',
+  userID: localStorage.getItem('userID') || '',
+  username: localStorage.getItem('username') || '',
+  name: localStorage.getItem('name') || '',
+  bio: localStorage.getItem('bio') || '',
+  profileUrl: localStorage.getItem('profileUrl') || '',
+  email: localStorage.getItem('email') || '',
 }
 
 const mockListings: ListingSummary[] = [
@@ -112,6 +111,10 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
   const [listingsPerPage, setListingsPerPage] = useState(2)
+  const [username, setUsername] = useState(user.username)
+  const [name, setName] = useState(user.name)
+  const [bio, setBio] = useState(user.bio)
+  const [profilePictureUrl, setProfilePictureUrl] = useState(user.profileUrl)
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue)
@@ -128,6 +131,48 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     setEditMode(!editMode)
   }
 
+  const handleLogout = async () => {
+    try {
+      await APIPost('/api/user/logout')
+      localStorage.clear()
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Failed to logout:', error)
+      alert('Logout failed. Please try again.')
+    }
+  }
+
+  const handleSave = async () => {
+    const updatedUser = {
+      username,
+      name,
+      email: user.email,
+      bio,
+      profilePictureUrl,
+      ignoreCharityListings: false,
+    }
+
+    try {
+      await APIPost('/api/user/', updatedUser)
+      localStorage.setItem('username', username)
+      localStorage.setItem('name', name)
+      localStorage.setItem('email', user.email)
+      localStorage.setItem('bio', bio)
+      localStorage.setItem('profileUrl', profilePictureUrl)
+      setEditMode(false)
+    } catch (error) {
+      console.error('Failed to update profile:', error)
+    }
+  }
+
+  const handleCancel = () => {
+    setUsername(user.username)
+    setName(user.name)
+    setBio(user.bio)
+    setProfilePictureUrl(user.profileUrl)
+    setEditMode(false)
+  }
+
   const currentListings = listings.slice(
     (currentPage - 1) * listingsPerPage,
     currentPage * listingsPerPage
@@ -141,18 +186,6 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
       setListingsPerPage(2)
     } else {
       setListingsPerPage(1)
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      const logoutResponse = await APIGet<boolean>(`/api/user/logout`)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      alert('Logged out successfully. See you later!')
-      localStorage.clear()
-      window.location.href = '/'
     }
   }
 
@@ -176,29 +209,34 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
       >
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            src={user.profileUrl}
+            src={profilePictureUrl}
             sx={{ width: 150, height: 150, marginRight: 8 }}
           />
           {editMode ? (
             <Box>
               <TextField
-                label="Name"
-                defaultValue={user.name}
+                label="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 fullWidth
                 sx={{ marginBottom: 1 }}
               />
               <TextField
-                label="Email"
-                defaultValue={user.email}
+                label="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 fullWidth
                 sx={{ marginBottom: 1 }}
               />
+
               <TextField
                 label="Bio"
-                defaultValue={user.bio}
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
                 fullWidth
                 multiline
                 rows={4}
+                sx={{ marginBottom: 1 }}
               />
             </Box>
           ) : (
@@ -211,7 +249,7 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
             >
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <Typography variant="h6" fontSize="4rem">
-                  {user.name}
+                  {name}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -223,27 +261,49 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
                 sx={{ display: 'flex', alignItems: 'center', paddingTop: 2 }}
               >
                 <Typography variant="h4" fontSize="1rem">
-                  {user.bio}
+                  {bio || ''}
                 </Typography>
               </Box>
             </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', alignSelf: 'stretch', gap: '10px' }}>
-          <Button
-            onClick={toggleEditMode}
-            sx={{ alignSelf: 'flex-start' }}
-            variant="contained"
-          >
-            {editMode ? 'Save' : 'Edit'}
-          </Button>
-          <Button
-            onClick={handleLogout}
-            sx={{ alignSelf: 'flex-start' }}
-            variant="contained"
-          >
-            Logout
-          </Button>
+          {editMode ? (
+            <>
+              <Button
+                onClick={handleSave}
+                sx={{ alignSelf: 'flex-start' }}
+                variant="contained"
+              >
+                Save
+              </Button>
+              <Button
+                onClick={handleCancel}
+                sx={{ alignSelf: 'flex-start' }}
+                variant="contained"
+                color="secondary"
+              >
+                Cancel
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={toggleEditMode}
+                sx={{ alignSelf: 'flex-start' }}
+                variant="contained"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={handleLogout}
+                sx={{ alignSelf: 'flex-start' }}
+                variant="contained"
+              >
+                Logout
+              </Button>
+            </>
+          )}
         </Box>
       </Box>
       <Tabs value={activeTab} onChange={handleTabChange}>
@@ -332,7 +392,6 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
     </Box>
   )
 }
-
 const ProfileContainer: React.FC = () => {
   return <Profile user={currentUser} listings={mockListings} />
 }
