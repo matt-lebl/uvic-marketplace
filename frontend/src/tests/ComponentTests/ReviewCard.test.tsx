@@ -27,7 +27,16 @@ describe('ReviewCard', () => {
     };
 
     const mockNewReviewProps = {
-        data: undefined,
+        data: {
+            listing_review_id: 'new-review',
+            reviewerName: "Jane Smith",
+            stars: 0,
+            comment: '',
+            userID: mockData.userID,
+            dateCreated: '',
+            dateModified: '',
+            listingID: "456",
+        } as Review,
         startInEditMode: true,
         listingID: '456',
         onDeleteReview: jest.fn(),

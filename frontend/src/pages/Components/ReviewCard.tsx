@@ -15,66 +15,56 @@ import CreateIcon from '@mui/icons-material/Create';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { NewReview, Review } from '../../interfaces'
 
+
 export interface ReviewProps {
-    data?: Review,
+    data: Review,
     startInEditMode?: boolean
     listingID: string
-    onDeleteReview: (listing_review_id: string) => void | null
-    onCreateReview: (review: NewReview) => void
-    onModifyReview: (review: Review) => void | null
-    onCancelCreateReview: () => void
+    onDeleteReview?: (listing_review_id: string) => void | null
+    onCreateReview?: (review: NewReview) => void
+    onModifyReview?: (review: Review) => void | null
+    onCancelCreateReview?: () => void
 }
 
 const ReviewCard: React.FC<ReviewProps> = ({ data, startInEditMode, listingID, onDeleteReview, onCreateReview, onModifyReview, onCancelCreateReview }) => {
-    const [listing_review_id, setListingReviewId] = React.useState<string>(data?.listing_review_id ?? 'new-review');
-    const [reviewerName, setReviewerName] = React.useState<string>(data?.reviewerName ?? localStorage.getItem('username') ?? "Unknown");
-    const [stars, setStars] = React.useState<number>(data?.stars ?? 0);
-    const [comment, setComment] = React.useState<string>(data?.comment ?? '');
-    const [userID, setUserID] = React.useState<string>(data?.userID ?? '');
-    const [dateCreated, setDateCreated] = React.useState<string>(data?.dateCreated ?? '');
-    const [dateModified, setDateModified] = React.useState<string>(data?.dateModified ?? '');
+    const [review, setReview] = React.useState<Review>(data)
+    const [stars, setStars] = React.useState<number>(data.stars);
+    const [comment, setComment] = React.useState<string>(data?.comment);
     const [editMode, setEditMode] = React.useState<boolean>(startInEditMode ?? false);
     const [hasChanges, setHasChanges] = React.useState<boolean>(false);
-    const [isOwningUser, setIsOwningUser] = React.useState<boolean>(data == null || data?.userID == localStorage.getItem('userID'));
+    const [isOwningUser, setIsOwningUser] = React.useState<boolean>(data.userID === localStorage.getItem('userID'));
+    const [confirmDelete, setConfirmDelete] = React.useState<boolean>(false);
 
     const handleSubmit = () => {
-        if (listing_review_id == 'new-review') {
+        if (review.listing_review_id === 'new-review') {
             const newReview: NewReview = {
                 stars: stars,
                 comment: comment,
                 listingID: listingID,
             }
-            onCreateReview(newReview);
-        } else {
-            const review: Review = {
-                listing_review_id: listing_review_id,
-                reviewerName: reviewerName,
-                stars: stars,
-                comment: comment,
-                userID: userID,
-                listingID: listingID,
-                dateCreated: dateCreated,
-                dateModified: dateModified,
+            if (onCreateReview) {
+                onCreateReview(newReview);
             }
-            onModifyReview(review);
+        } else if (onModifyReview) {
+            onModifyReview({ ...review, stars: stars, comment: comment });
         }
+        setEditMode(!editMode)
     }
-    const handleDelete = () => { onDeleteReview(listing_review_id) };
+
+    const handleDelete = () => { if (onDeleteReview) onDeleteReview(review.listing_review_id) };
     const handleEdit = () => {
-        console.log(listing_review_id)
-        if (listing_review_id == 'new-review') {
-            onCancelCreateReview();
+        if (review.listing_review_id === 'new-review') {
+            if (onCancelCreateReview) onCancelCreateReview();
         } else {
-            console.log("reset")
-            setStars(data?.stars ?? 0);
-            setComment(data?.comment ?? '');
+            setStars(review.stars);
+            setComment(review.comment);
             setEditMode(!editMode)
         }
     };
     //need to add edit button.
     return (
-        <div className="Review-Card">
-            <form data-testid={listing_review_id + "-review-form"}>
+        <div className="Review-Card" id={`${review.listing_review_id}-review`} >
+            <form data-testid={review.listing_review_id + "-review-form"}>
                 <Paper sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -93,26 +83,26 @@ const ReviewCard: React.FC<ReviewProps> = ({ data, startInEditMode, listingID, o
                         }}
                     >
                         <Rating
-                            data-testid={listing_review_id + "-rating"}
+                            data-testid={review.listing_review_id + "-rating"}
                             value={stars}
                             readOnly={!editMode}
                             onChange={(event, newValue) => {
-                                if (newValue == data?.stars && comment == data?.comment) { setHasChanges(false) } else { setHasChanges(true) };
+                                if (newValue === data?.stars && comment === data?.comment) { setHasChanges(false) } else { setHasChanges(true) };
                                 setStars(newValue ?? 0);
                             }}
                         />
-                        <Typography variant="subtitle2" data-testid={listing_review_id + "-reviewer-name"}>{reviewerName}</Typography>
+                        <Typography variant="subtitle2" data-testid={review.listing_review_id + "-reviewer-name"}>{review.reviewerName}</Typography>
                     </Box>
                     {editMode ? <TextField
-                        data-testid={listing_review_id + "-comment"}
+                        data-testid={review.listing_review_id + "-comment"}
                         value={comment}
                         onChange={(e) => {
-                            if (e.target.value == data?.comment && data?.stars == stars) { setHasChanges(false) } else { setHasChanges(true) };
+                            if (e.target.value === data?.comment && data?.stars === stars) { setHasChanges(false) } else { setHasChanges(true) };
                             setComment(e.target.value)
                         }}
                         multiline
                         required
-                    /> : <Typography data-testid={listing_review_id + "-comment"}>{comment}</Typography>}
+                    /> : <Typography marginLeft="5px" data-testid={review.listing_review_id + "-comment"}>{comment}</Typography>}
                     <Box
                         sx={{
                             justifyContent: 'space-between',
@@ -124,30 +114,42 @@ const ReviewCard: React.FC<ReviewProps> = ({ data, startInEditMode, listingID, o
                             paddingTop: '5px',
                         }}>
                         {isOwningUser ?
-                            <ButtonGroup data-testid={listing_review_id + "-button-group"}>
+                            <ButtonGroup data-testid={review.listing_review_id + "-button-group"}>
                                 {editMode ?
                                     <Button
-                                        data-testid={listing_review_id + "-save-button"}
+                                        data-testid={review.listing_review_id + "-save-button"}
                                         disabled={!hasChanges}
                                         onClick={handleSubmit}>
                                         <CheckCircleIcon />
-                                    </Button> :
-                                    <Button
-                                        data-testid={listing_review_id + "-edit-button"}
-                                        onClick={handleEdit}>
-                                        <CreateIcon />
-                                    </Button>}
+                                    </Button> : confirmDelete ?
+                                        <Button
+                                            data-testid={review.listing_review_id + "-confirm-delete-button"}
+                                            onClick={handleDelete}>
+                                            Confirm Delete
+                                        </Button>
+                                        :
+                                        <Button
+                                            data-testid={review.listing_review_id + "-edit-button"}
+                                            onClick={handleEdit}>
+                                            <CreateIcon />
+                                        </Button>}
                                 {editMode ?
                                     <Button
-                                        data-testid={listing_review_id + "-cancel-button"}
+                                        data-testid={review.listing_review_id + "-cancel-button"}
                                         onClick={handleEdit}>
                                         <CancelIcon />
-                                    </Button> :
-                                    <Button
-                                        data-testid={listing_review_id + "-delete-button"}
-                                        onClick={handleDelete}>
-                                        <DeleteForeverIcon />
-                                    </Button>}
+                                    </Button> : confirmDelete ?
+                                        <Button
+                                            data-testid={review.listing_review_id + "-cancel-delete-button"}
+                                            onClick={() => setConfirmDelete(false)}>
+                                            Cancel Delete
+                                        </Button>
+                                        :
+                                        <Button
+                                            data-testid={review.listing_review_id + "-delete-button"}
+                                            onClick={() => setConfirmDelete(true)}>
+                                            <DeleteForeverIcon />
+                                        </Button>}
                             </ButtonGroup> : null}
                         <Box
                             sx={{
@@ -158,8 +160,8 @@ const ReviewCard: React.FC<ReviewProps> = ({ data, startInEditMode, listingID, o
                                 ml: '20px',
                             }}
                         >
-                            <Typography variant="caption" data-testid={listing_review_id + "-date-added"}>Added: {dateCreated}</Typography>
-                            <Typography variant="caption" data-testid={listing_review_id + "-date-modified"}>Last Modified: {dateModified}</Typography>
+                            <Typography variant="caption" data-testid={review.listing_review_id + "-date-added"}>Added: {review.dateCreated !== '' ? new Date(review.dateCreated).toLocaleString() : ''}</Typography>
+                            <Typography variant="caption" data-testid={review.listing_review_id + "-date-modified"}>Last Modified: {review.dateModified !== '' ? new Date(review.dateModified).toLocaleString() : ''}</Typography>
                         </Box>
                     </Box>
                 </Paper>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import '../App.css'
 import { Typography, Box, Paper, Grid, Button } from '@mui/material'
 import { APIDelete, APIPatch, APIPost } from '../../APIlink'
@@ -12,55 +12,22 @@ interface ReviewsProps {
 
 const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
     const [userID, setUserID] = useState(localStorage.getItem('userID'))
-    const [reviewData, setReviewData] = useState<ReviewProps[]>((initialReviews?.map((review) => {
-        return {
-            data: review,
-            startInEditMode: false,
-            listingID: listingID,
-            onDeleteReview: review.userID == userID ? deleteReview : null,
-            onCreateReview: postNewReview,
-            onModifyReview: review.userID == userID ? modifyReview : null,
-            onCancelCreateReview: cancelCreateReview,
-        }
-    }) ?? []) as ReviewProps[])
-    const [hasExistingReview, setHasExistingReview] = useState(!(initialReviews?.every((value) => value.userID != userID)) ?? false)
-
-
-    const createReview = () => {
-        setReviewData([
-            {
-                data: undefined,
-                startInEditMode: true,
+    const [otherUserReviews, setOtherUserReviews] = useState<ReviewProps[]>((initialReviews?.filter((review) => review.userID !== userID)
+        .map((review) => {
+            return {
+                data: review,
+                startInEditMode: false,
                 listingID: listingID,
-                onDeleteReview: deleteReview,
-                onCreateReview: postNewReview,
-                onModifyReview: modifyReview,
-                onCancelCreateReview: cancelCreateReview,
-            },
-            ...reviewData,
-        ]);
-    };
+            }
+        }) ?? []) as ReviewProps[])
 
-    const postNewReview = (review: NewReview) => {
+    const deleteReview = (listing_review_id: string) => {
         const func = async () => {
             try {
-                const URL: string = `/api/review`;
-                const newReview = await APIPost<Review, NewReview>(URL, review);
-                if (newReview) {
-                    setReviewData([
-                        {
-                            data: newReview,
-                            startInEditMode: false,
-                            listingID: listingID,
-                            onDeleteReview: deleteReview,
-                            onCreateReview: postNewReview,
-                            onModifyReview: modifyReview,
-                            onCancelCreateReview: cancelCreateReview,
-                        },
-                        ...(reviewData.filter((review) => review.data !== undefined)),
-                    ])
-                    setHasExistingReview(true)
-                }
+                const URL: string = `/api/review/${listing_review_id}`;
+                await APIDelete(URL);
+                setReviewData(otherUserReviews)
+                setHasExistingReview(false)
             }
             catch (error) {
                 console.log('Request Error', error)
@@ -86,12 +53,11 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
                         startInEditMode: false,
                         listingID: listingID,
                         onDeleteReview: deleteReview,
-                        onCreateReview: postNewReview,
                         onModifyReview: modifyReview,
-                        onCancelCreateReview: cancelCreateReview,
                     },
-                    ...(reviewData.filter((r) => r.data?.listing_review_id !== review.listing_review_id)),
-                ]);
+                    ...otherUserReviews,
+                ] as ReviewProps[]);
+                return
             }
             catch (error) {
                 console.log('Request Error', error)
@@ -99,18 +65,42 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
         }
         func()
     };
+
+    const [reviewData, setReviewData] = useState<ReviewProps[]>([
+        ...initialReviews?.filter((review) => review.userID === userID).map((review) => {
+            return {
+                data: review,
+                startInEditMode: false,
+                listingID: listingID,
+                onDeleteReview: deleteReview,
+                onModifyReview: modifyReview,
+            }
+        }) ?? [],
+        ...otherUserReviews,
+    ] as ReviewProps[])
 
     const cancelCreateReview = () => {
-        setReviewData(reviewData.filter((review) => review.data !== undefined));
+        setReviewData(otherUserReviews);
     };
 
-    const deleteReview = (listing_review_id: string) => {
+    const postNewReview = (review: NewReview) => {
         const func = async () => {
             try {
-                const URL: string = `/api/review/${listing_review_id}`;
-                await APIDelete(URL);
-                setReviewData(reviewData.filter((review) => review.data?.listing_review_id !== listing_review_id))
-                setHasExistingReview(false)
+                const URL: string = `/api/review`;
+                const newReview = await APIPost<Review, NewReview>(URL, review);
+                if (newReview) {
+                    setReviewData([
+                        {
+                            data: newReview,
+                            startInEditMode: false,
+                            listingID: listingID,
+                            onDeleteReview: deleteReview,
+                            onModifyReview: modifyReview,
+                        },
+                        ...otherUserReviews,
+                    ] as ReviewProps[])
+                    setHasExistingReview(true)
+                }
             }
             catch (error) {
                 console.log('Request Error', error)
@@ -118,9 +108,30 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
         }
         func()
     };
-    /*
-                            padding: '0px',
-    */
+
+    const createReview = () => {
+        setReviewData([
+            {
+                data: {
+                    listing_review_id: 'new-review',
+                    reviewerName: localStorage.getItem('username') ?? "Unknown",
+                    stars: 0,
+                    comment: '',
+                    userID: userID,
+                    dateCreated: '',
+                    dateModified: '',
+                    listingID: listingID,
+                } as Review,
+                startInEditMode: true,
+                listingID: listingID,
+                onCreateReview: postNewReview,
+                onCancelCreateReview: cancelCreateReview,
+            },
+            ...otherUserReviews,
+        ]);
+    };
+    const [hasExistingReview, setHasExistingReview] = useState(!(initialReviews?.every((value) => value.userID !== userID)) ?? false)
+
     return (
         <Box
             sx={{
@@ -162,14 +173,15 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
                         </Button>
                     }
                 </Box>
-                < Grid border={'white'} bgcolor={'transparent'} width={'100%'} >
-                    {
-                        reviewData.map((reviewProps, index) => (
-                            <Grid item sx={{ width: '100%', padding: '10px' }} key={index}>
+                < Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+                    {reviewData.map((reviewProps, index) => {
+                        debugger;
+                        return (
+                            <Grid item sx={{ width: '100%', padding: '10px' }} key={reviewProps.data.listing_review_id}>
                                 <ReviewCard {...reviewProps} />
                             </Grid>
-                        ))
-                    }
+                        )
+                    })}
                 </Grid >
             </Paper>
         </Box>)
