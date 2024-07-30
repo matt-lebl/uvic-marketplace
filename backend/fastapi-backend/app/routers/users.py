@@ -71,14 +71,15 @@ async def create_user(user: NewUserReq, returnResponse: Response):
     return response
 
 
-@userRouter.get("/{id}", response_model=User)
-async def get_user(id: str, authUserID: str):
+@userRouter.get("/{id}")
+async def get_user(id: str, authUserID: str, returnResponse: Response):
     path = "user/" + id
     response = await send_request_to_data_layer(path, "GET")
-    if response.status_code == 200:
-        return convert_to_type(response.json(), User)
-    print("Getting user failed")
-    return response.json()
+
+    if data_layer_failed(response, returnResponse):
+        return response.json()
+
+    return convert_to_type(response.json(), User)
 
 
 @userRouter.patch("/")
