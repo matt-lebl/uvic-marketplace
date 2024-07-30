@@ -38,8 +38,6 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
       <Box sx={{ px: '50px' }}>
         <ListingMap lat={data.location.latitude} long={data.location.longitude} />
 
-
-
         <Box display='flex' flexDirection='row' m='20px 0'>
           <Typography variant='h2' sx={{ p: '5px', mr:'40px'}}>{data.title}</Typography>
           <Typography variant='h2' sx={{ p: '5px' }}>$ </Typography>
