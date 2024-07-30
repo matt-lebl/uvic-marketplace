@@ -19,6 +19,23 @@ export interface NewListing {
   }[]
 }
 
+export interface PatchListing {
+  listing: {
+    title: string
+    description: string
+    price: number
+    location: {
+      latitude: number
+      longitude: number
+    }
+    images: {
+      url: string
+    }[]
+    markedForCharity: boolean
+  }
+  status : string
+}
+
 export interface ListingResponse {
   listing: ListingEntity
 }
