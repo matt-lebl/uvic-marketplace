@@ -5,7 +5,7 @@ import PhotoPreviewList from './Components/PhotoPreviewList'
 import { useState } from 'react'
 import { ChangeEvent } from 'react'
 import { useParams } from 'react-router-dom'
-import { ListingEntity, ListingResponse, NewListing } from '../interfaces'
+import { ListingEntity, ListingResponse, PatchListing } from '../interfaces'
 import { APIGet, APIPatch } from '../APIlink'
 
 function EditListing() {
@@ -14,8 +14,8 @@ function EditListing() {
   const [price, setPrice] = useState<number>(0)
   const [imageNames, setImageNames] = useState<Array<string>>([])
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
-  const [latitude, setLatitude] = useState<number | undefined >()
-  const [longitude, setLongitude] = useState<number | undefined >()
+  const [latitude, setLatitude] = useState<number | undefined>()
+  const [longitude, setLongitude] = useState<number | undefined>()
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
@@ -26,7 +26,7 @@ function EditListing() {
     try {
       const listingURL: string = `/api/listing/${listingID}`
 
-      const response: ListingEntity  = await APIGet(listingURL)
+      const response: ListingEntity = await APIGet(listingURL)
 
       if (response) {
         setTitle(response.title)
@@ -46,18 +46,22 @@ function EditListing() {
       alert('Location is not available.')
       return
     }
-    
-    const listingData : NewListing = {
-      title,
-      description: desc,
-      price,
-      location: { latitude, longitude },
-      images: imageURLs.map((url) => ({ url }))
+
+    const listingData : PatchListing = {
+      listing: {
+        title,
+        description: desc,
+        price,
+        location: { latitude, longitude },
+        images: imageURLs.map((url) => ({ url })),
+        markedForCharity: false
+      },
+      status: "AVAILABLE"
     }
     const listingURL: string = `/api/listing/${listingID}`
 
     try {
-      const response : ListingResponse | undefined = await APIPatch(listingURL, listingData)
+      const response: ListingResponse | undefined = await APIPatch(listingURL, listingData)
       console.log(response)
     } catch (error) {
       console.log(error)
@@ -128,7 +132,7 @@ function EditListing() {
                 id="Listing-Title"
                 fullWidth={true}
                 multiline={true}
-                sx={{ml:'5px'}}
+                sx={{ ml: '5px' }}
                 onChange={(e) => setTitle(e.target.value)}
                 defaultValue={price}
               ></InputBase>
