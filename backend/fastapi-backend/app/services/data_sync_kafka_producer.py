@@ -58,8 +58,8 @@ class DataSyncKafkaProducer:
 
     # DELETE /api/listing/{id}
     def push_deleted_listing(self, listingID: str):
-        # TODO
-        pass
+        obj = {"listingID": listingID}
+        self.push_message("delete-listing", json.dumps(obj))
 
     # GET /api/listing/
     def push_viewed_listing(self, listingID: str, userID: str = 0):
