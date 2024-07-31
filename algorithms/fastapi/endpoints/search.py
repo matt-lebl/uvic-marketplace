@@ -73,7 +73,6 @@ async def search(*,
             if maxPrice is not None:
                 filters.append({"range": {"price": {"lte": maxPrice}}})
 
-            print(status)
             filters.append({"match": {"status": status}})
 
             if filters:
@@ -94,7 +93,17 @@ async def search(*,
                 ItemSortEnum.PRICE_ASC: {"price": {"order": "asc"}},
                 ItemSortEnum.PRICE_DESC: {"price": {"order": "desc"}},
                 ItemSortEnum.LISTED_TIME_ASC: {"dateCreated": {"order": "asc"}},
-                ItemSortEnum.LISTED_TIME_DESC: {"dateCreated": {"order": "desc"}}
+                ItemSortEnum.LISTED_TIME_DESC: {"dateCreated": {"order": "desc"}},
+                ItemSortEnum.DISTANCE_ASC: {"_geo_distance": {
+                    "location": {"lat": latitude, "lon": longitude},
+                    "order": "asc",
+                    "unit": "km"
+                }},
+                ItemSortEnum.DISTANCE_DESC: {"_geo_distance": {
+                    "location": {"lat": latitude, "lon": longitude},
+                    "order": "desc",
+                    "unit": "km"
+                }}
             }
             if sort != ItemSortEnum.RELEVANCE and sort in sort_orders:
                 print("Sorting by: {}".format(sort))
