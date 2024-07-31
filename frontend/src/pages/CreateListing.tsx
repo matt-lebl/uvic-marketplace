@@ -107,7 +107,7 @@ function CreateListing() {
       description: desc,
       price,
       location: { latitude, longitude },
-      images: uploadedImageURLs,
+      images: uploadedImageURLs.map((url:string) => ({ url })),
       markedForCharity: false,
     }
 
