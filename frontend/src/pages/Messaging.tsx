@@ -25,8 +25,11 @@ import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
 import { MessageThread, Message, User, ListingSummary } from '../interfaces'
 import { APIGet, APIPost } from '../APIlink'
+import { useNavigate } from 'react-router-dom'
 
 const Messaging: React.FC = () => {
+  const navigate = useNavigate()
+
   const [selectedListingId, setSelectedListingId] = useState<string>('')
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>([])
@@ -68,10 +71,14 @@ const Messaging: React.FC = () => {
           fetchMessagesForThread(fetchedThreads[0].listing_id)
         }
       } else {
+        debugger
         console.error('Fetched threads is not an array')
+        navigate('/error')
       }
     } catch (error) {
-      console.error('Failed to fetch message threads:', error)
+      debugger
+      console.error('Failed to fetch message threads')
+      navigate('/error')
     }
   }
 
@@ -86,10 +93,11 @@ const Messaging: React.FC = () => {
         [listing_id]: fetchedMessages,
       }))
     } catch (error) {
+      debugger;
       console.error(
-        'Failed to fetch messages for thread ' + listing_id + ':',
-        error
+        'Failed to fetch messages for thread ' + listing_id
       )
+      navigate('/error')
     }
   }
 
@@ -140,7 +148,9 @@ const Messaging: React.FC = () => {
       }))
       scrollToBottom()
     } catch (error) {
-      console.error('Failed to create new conversation:', error)
+      debugger
+      console.error('Failed to create new conversation')
+      navigate('/error')
     }
   }
 
@@ -177,7 +187,9 @@ const Messaging: React.FC = () => {
       sortThreads()
       scrollToBottom()
     } catch (error) {
-      console.error('Failed to send message:', error)
+      debugger
+      console.error('Failed to send message')
+      navigate('/error')
     }
   }
 
@@ -212,10 +224,12 @@ const Messaging: React.FC = () => {
       if (Array.isArray(fetchedListings)) {
         setUserListings(fetchedListings)
       } else {
+        debugger
         console.error('Fetched listings is not an array')
         setSearchError('Failed to find user')
       }
     } catch (error) {
+      debugger
       console.error('Failed to fetch user listings:', error)
       setSearchError('Failed to find user')
     }

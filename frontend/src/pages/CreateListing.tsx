@@ -30,8 +30,6 @@ function CreateListing() {
   async function apiSubmit(listing: Partial<ListingEntity>) {
     try {
       const response: ListingResponse | undefined = await APIPost('/api/listing', { listing })
-      console.log('Response:', response)
-
       if (response) {
         navigate(`/listing/${response.listing.listingID}`)
       } else {
@@ -39,8 +37,9 @@ function CreateListing() {
         navigate('/');
       }
     } catch (error) {
-      console.log('Request Error:', error)
-      alert("listing creation failed" + error)
+      debugger
+      console.error('Failed to create listing')
+      navigate('/error')
     }
 
   }

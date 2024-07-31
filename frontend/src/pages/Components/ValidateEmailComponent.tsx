@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { APIGet, APIPost } from '../../APIlink'
 import { Formik, FormikHelpers, FormikErrors } from 'formik'
 import {
@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 
 export default function ValidateEmailComponent() {
+  const navigate = useNavigate()
   const handleVerifyEmail = async () => {
     try {
       const verifyEmailURL = '/api/user/send-confirmation-email'
@@ -24,7 +25,9 @@ export default function ValidateEmailComponent() {
         alert('Verification link failed to send.')
       }
     } catch (error) {
-      alert('An error occurred when sending validation email ' + error)
+      debugger
+      console.error("Error sending validation Email")
+      navigate('/error')
     }
   }
 
@@ -40,7 +43,9 @@ export default function ValidateEmailComponent() {
         alert('Email verified successfully!')
       }
     } catch (error) {
-      alert('An error occurred when verifying email: ' + error)
+      debugger
+      console.error('An error occurred when verifying email')
+      navigate('/error')
     }
   }
 

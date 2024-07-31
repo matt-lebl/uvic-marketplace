@@ -37,7 +37,10 @@ function EditListing() {
         setLongitude(response.location.longitude)
       }
     } catch (error) {
-      console.log(error)
+      debugger
+      console.error("Failed to fetch listing data")
+      navigate('/error')
+
     }
   }
 
@@ -48,7 +51,7 @@ function EditListing() {
       return
     }
 
-    const listingData : PatchListing = {
+    const listingData: PatchListing = {
       listing: {
         title,
         description: desc,
@@ -66,9 +69,9 @@ function EditListing() {
       console.log(response)
       navigate(`/listing/${listingID}`)
     } catch (error) {
-      console.log(error)
-      console.log(listingData)
-      console.log(title)
+      debugger
+      console.error("Failed to Update Listing")
+      navigate('/error')
     }
 
   }
