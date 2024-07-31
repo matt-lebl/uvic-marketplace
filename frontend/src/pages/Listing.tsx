@@ -6,16 +6,15 @@ import SellerCard from './Components/SellerCard'
 import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
+import Reviews from './Components/Reviews'
 
 
 interface ListingProps {
   listingData?: ListingEntity
 }
 
-const Listing: React.FC<ListingProps> = ({
-  listingData: initialListingData,
-}) => {
-  const { listingID } = useParams()
+const Listing: React.FC<ListingProps> = ({ listingData: initialListingData, }) => {
+  const { listingID } = useParams<string>()
   const [listingData, setListingData] = useState<ListingEntity | undefined>(
     initialListingData
   )
@@ -38,7 +37,6 @@ const Listing: React.FC<ListingProps> = ({
         setLoading(false)
       }
     }
-
     fetchListing()
   }, [listingID, initialListingData])
 
@@ -46,7 +44,7 @@ const Listing: React.FC<ListingProps> = ({
     return <div>Loading...</div>
   }
 
-  if (!listingData) {
+  if (!listingData || !listingID) {
     return <div>Listing not found</div>
   }
 
@@ -54,13 +52,13 @@ const Listing: React.FC<ListingProps> = ({
     <div className="Listing">
       <header className="App-header">
         <Box sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            flexWrap: 'nowrap',
-            alignItems: 'center',
-            marginTop: 1,
-            maxWidth: '90%',
-          }}>
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          alignItems: 'center',
+          marginTop: 1,
+          width: '90%',
+        }}>
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Paper
               sx={{
@@ -82,6 +80,8 @@ const Listing: React.FC<ListingProps> = ({
               }}
             >
               <SellerCard data={listingData} />
+              <Reviews listingID={listingID} initialReviews={listingData?.reviews ?? []} />
+
             </Paper>
           </Box>
         </Box>

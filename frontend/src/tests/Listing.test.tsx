@@ -21,7 +21,18 @@ const mockListing: ListingEntity = {
   status: 'open',
   dateCreated: '2021-01-01',
   dateModified: '2021-01-02',
-  reviews: [],
+  reviews: [
+    {
+      listing_review_id: '789',
+      reviewerName: 'Test Reviewer',
+      stars: 5,
+      comment: 'This is a test review',
+      userID: '101',
+      listingID: '123',
+      dateCreated: '2021-01-03',
+      dateModified: '2021-01-04',
+    },
+  ],
   distance: 5,
 }
 

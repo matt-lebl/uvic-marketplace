@@ -1,6 +1,8 @@
-# Set up for fastapi servers:
+## Set up for fastapi servers (running locally without docker):
 
-#### QUICK SET UP
+> Reccommended: Follow the local environment setup in the main README. These instructions do work but are no longer needed now that all docker containers are setup using make.
+
+### OPTION 1: Quick setup
 
 - EVERYTHING IS AUTOMATED WITH run_server.ps1
   `./run_servers.ps1`
@@ -9,7 +11,9 @@
 
   _* bash script is added but not tested as I am using powershell on Windows *_
 
-#### setup env
+### OPTION 2: Manual setup
+
+#### set up virtual environment
 
 - Setup virtual environment for each server
   example:
@@ -26,7 +30,7 @@
 - Install dependencies: - Change current directory to the target server - Install dependencies based on target servers requirements
   `pip install -r "./requirements.txt`
 
-### run db
+#### run db
 
 - start docker-desktop
 - cd into backend/db
@@ -47,15 +51,13 @@
 - Run main.py with **data-layer** virtual environment
   `python ./main.py`
 
->
+# Testing
 
-## Testing
+#### Testing: data_layer
 
-### testing data_layer
-running `pytest test_db.py`will run all tests for the data layer
+- running `pytest test_db.py`will run all tests for the data layer
 
-
-### Notes
+## Dev Notes
 
 - Interactive OpenAPI docs are found at [url]/docs
   > Alternate docs at [url]/redoc
@@ -81,17 +83,3 @@ running `pytest test_db.py`will run all tests for the data layer
     > [FastAPI JWT docs](https://fastapi.tiangolo.com/tutorial/security/oauth2-jwt/)
   - pytest
   - httpx (needed to use pytest)
-
-### Current dependencies
-
-**reverse-proxy**
-
-- fastapi
-
-**api**
-
-- fastapi
-
-**data-layer**
-
-- fastapi
