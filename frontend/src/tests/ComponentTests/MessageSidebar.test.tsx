@@ -41,7 +41,6 @@ describe('MessageSidebar', () => {
     const { getByText } = render(
       <MessageSidebar
         messages={messages}
-        onCreateMessage={() => {}}
         onSelectMessage={() => {}}
         selectedListingId="listing-1"
       />
@@ -52,27 +51,11 @@ describe('MessageSidebar', () => {
     expect(getByText('User 2')).toBeInTheDocument()
   })
 
-  it('calls onCreateMessage when new message button is clicked', () => {
-    const onCreateMessage = jest.fn()
-    const { getByTestId } = render(
-      <MessageSidebar
-        messages={messages}
-        onCreateMessage={onCreateMessage}
-        onSelectMessage={() => {}}
-        selectedListingId="listing-1"
-      />
-    )
-
-    fireEvent.click(getByTestId('create-message-button'))
-    expect(onCreateMessage).toHaveBeenCalled()
-  })
-
   it('calls onSelectMessage when a conversation is clicked', () => {
     const onSelectMessage = jest.fn()
     const { getByText } = render(
       <MessageSidebar
         messages={messages}
-        onCreateMessage={() => {}}
         onSelectMessage={onSelectMessage}
         selectedListingId="listing-1"
       />
@@ -86,7 +69,6 @@ describe('MessageSidebar', () => {
     const { getByText } = render(
       <MessageSidebar
         messages={messages}
-        onCreateMessage={() => {}}
         onSelectMessage={() => {}}
         selectedListingId="listing-1"
       />

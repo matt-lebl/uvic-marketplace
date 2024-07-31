@@ -41,6 +41,7 @@ class User(UserBase, table=True):
                                                   sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
     received_messages: list["Message"] = Relationship(back_populates="receiver",
                                                       sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
+    search_history: "SearchHistoryTable" = Relationship(back_populates="searcher")
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -246,6 +247,11 @@ class Listing(ListingBase, table=True):
     @classmethod
     def get_all(cls, session: Session):
         statement = select(cls)
+        return session.exec(statement).all()
+
+    @classmethod
+    def get_by_seller_id(cls, session: Session, seller_id: str):
+        statement = select(cls).where(cls.sellerId == seller_id)
         return session.exec(statement).all()
 
     @classmethod
@@ -595,11 +601,14 @@ class CharityTable(SQLModel, table=True):
 
         return {"message": "Charity deleted successfully"}
 
-class SearchHistoryTable(SQLModel, table=True):
+class SearchHistoryBase(SQLModel):
     searchID: str = Field(default=None, primary_key=True)
     userID: str = Field(default=None, foreign_key="user.userID")
     searchTerm: str
     timestamp: datetime | None = Field(index=True)
+
+class SearchHistoryTable(SearchHistoryBase, table=True):
+    searcher: User = Relationship(back_populates="search_history")
 
     @classmethod
     def create(cls, session: Session, **kwargs):

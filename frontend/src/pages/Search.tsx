@@ -10,12 +10,15 @@ import SearchListings from './Components/SearchListings'
 import { APIGet } from '../APIlink'
 import { AddData, DataContext, GetData } from '../DataContext'
 import { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const BASESEARCHLIMIT: number = parseInt(
   process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? '20'
 ) // ?? "0" only exists to prevent type errors. It should never be reached.
 
 function Search() {
+  const navigate = useNavigate()
+
   const context = useContext(DataContext)
   const searchRequestID = 'searchRequest'
   const [searchRequest, setSearchRequest] = useState<SearchRequest>(GetData(context, searchRequestID) ?? {
@@ -56,18 +59,24 @@ function Search() {
       string,
       string | number,
     ][]
-    try {
-      const res = await APIGet<SearchResultsResponse>(
+
+    const func = async () => {
+      await APIGet<SearchResultsResponse>(
         '/api/search',
         queryParams
       )
-      results.totalItems = res.totalItems
-      results.items = res.items
-    } catch (e) {
-      console.error(e)
-    } finally {
-      return results
+        .then((response: SearchResultsResponse) => {
+          results.totalItems = response.totalItems
+          results.items = response.items
+        })
+        .catch((error: any) => {
+          debugger;
+          console.error("Could not get Search Results")
+          navigate('/error')
+        })
     }
+    func()
+    return results;
   }
 
   return (

@@ -52,8 +52,9 @@ function EditListing() {
         setImages(response.images)
       }
     } catch (error) {
+      debugger
       console.log(error)
-      setErrorMessage('Failed to load listing data.')
+      navigate('/error')
     } finally {
       setLoading(false)
     }
@@ -112,8 +113,9 @@ function EditListing() {
       console.log(response)
       navigate(`/listing/${listingID}`)
     } catch (error) {
-      console.log(error)
-      setErrorMessage('Failed to update listing. Please try again.')
+      debugger
+      console.error("Failed to Update Listing")
+      navigate('/error')
     }
   }
 

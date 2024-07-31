@@ -40,7 +40,9 @@ const Listing: React.FC<ListingProps> = ({
           checkUserListing(response)
         }
       } catch (error) {
-        console.log('Request Error', error)
+        debugger
+        console.log('Request Error')
+        navigate('/error')
       } finally {
         setLoading(false)
       }

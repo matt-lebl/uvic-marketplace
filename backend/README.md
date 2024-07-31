@@ -53,9 +53,11 @@
 
 # Testing
 
-#### Testing: data_layer
-
-- running `pytest test_db.py`will run all tests for the data layer
+1. Run dev environment
+   > **Recommended:** Run dev environment with `make all`. Follow instructions in main README
+   > **Alternative:** Run backend locally using run_servers.ps1 or manually setup virtual environments for each server and install requirements.
+2. Run tests
+   > **Recommended:** Run tests with automated script `run_tests.ps1` > **Alternative:** Manually run tests for each server found in tests directory with `pytest ./test.py`
 
 ## Dev Notes
 
