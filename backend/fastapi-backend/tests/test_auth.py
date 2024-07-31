@@ -171,6 +171,7 @@ def test_totp_secret_encryption_decryption(auth_handler):
     assert decrypted_totp_secret == totp_secret
 
 
+# comment out if the 30 second wait is too long
 def test_expired_totp_code(new_user, auth_handler):
     # Create a new user and extract the TOTP secret
     response = client.post("/api/user/", json=new_user)
