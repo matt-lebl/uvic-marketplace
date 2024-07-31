@@ -1,9 +1,10 @@
 import uuid
-from core.sql_models import *
-from fastapi import APIRouter, Depends, HTTPException
+from core.sql_models import Message
+from fastapi import APIRouter, Depends
 from core.dependencies import get_session
 from core.schemas import MessageSchema, MessageThread
 import logging
+from sqlmodel import Session
 
 logging.basicConfig(format="%(asctime)s %(message)s")
 logger = logging.getLogger(__name__)

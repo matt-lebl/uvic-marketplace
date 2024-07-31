@@ -16,6 +16,3 @@ class Settings:
 
         self.database_url = \
             f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.db_host}:{self.db_port}/{self.postgres_db}"
-
-
-PST_TZ = pytz.timezone("America/Los_Angeles")
