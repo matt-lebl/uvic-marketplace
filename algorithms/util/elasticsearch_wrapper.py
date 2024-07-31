@@ -69,7 +69,8 @@ class ElasticsearchWrapper:
                         "sellerName": { "type": "text" },
                         "imageUrl": { "type": "text" },
                         "dateCreated": { "type": "date", "format": "yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd HH:mm:ss.SSSSSS" },
-                        "embedding": { "type": "dense_vector", "dims": 768 }
+                        "embedding": { "type": "dense_vector", "dims": 768 },
+                        "status": { "type": "text" }
                     }
                 }
             })
@@ -82,7 +83,8 @@ class ElasticsearchWrapper:
                                          "sellerID": { "type": "text" },
                                          "sellerName": { "type": "text" },
                                          "imageUrl": { "type": "text" },
-                                         "dateCreated": { "type": "date", "format": "yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd HH:mm:ss.SSSSSS" }
+                                         "dateCreated": { "type": "date", "format": "yyyy-MM-dd'T'HH:mm:ssZ||yyyy-MM-dd HH:mm:ss.SSSSSS" },
+                                         "status": { "type": "text" }
                                      }
                                  })
 
