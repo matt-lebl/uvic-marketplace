@@ -70,7 +70,7 @@ const Router = () => {
             <Route path="listing/:listingID" element={<Listing />} />
             <Route path="messaging" element={<Messaging />} />
             <Route path="new-listing" element={<CreateListing />} />
-            <Route path="edit-listing" element={<EditListing />} />
+            <Route path="edit-listing/:listingID" element={<EditListing />} />
             <Route path="search" element={<Search />} />
             <Route path="events" element={<Events />} />
           </>

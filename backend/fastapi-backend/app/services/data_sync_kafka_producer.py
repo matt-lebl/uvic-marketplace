@@ -1,5 +1,5 @@
 import json
-from core.schemas import Listing, NewListing, NewReview, NewUser, UpdateUser
+from core.schemas import  NewListing, NewReview, UpdateUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
@@ -58,8 +58,8 @@ class DataSyncKafkaProducer:
 
     # DELETE /api/listing/{id}
     def push_deleted_listing(self, listingID: str):
-        # TODO
-        pass
+        obj = {"listingID": listingID}
+        self.push_message("delete-listing", json.dumps(obj))
 
     # GET /api/listing/
     def push_viewed_listing(self, listingID: str, userID: str = 0):

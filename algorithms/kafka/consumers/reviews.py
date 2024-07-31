@@ -15,7 +15,7 @@ def add_review(data: dict, db: Session):
     if stars is None or not (0 <= stars <= 5):
         raise KafkaException(status_code=400, detail="Invalid stars rating")
 
-    rating_weight = (stars - 3) * 10 # Covert the stars to a interation value
+    rating_weight = (stars - 3) * 50 # Covert the stars to a interation value
 
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
     if interaction:

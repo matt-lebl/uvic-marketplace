@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
 import { useNavigate } from 'react-router-dom'
-import { APIGet, APIPost } from '../APIlink'
+import { APIGet, APIPost, APIDelete } from '../APIlink'
 
 const currentUser: User = {
   userID: localStorage.getItem('userID') || '',
@@ -102,6 +102,15 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     } else {
       setListingsPerPage(1)
     }
+  }
+
+  const handleRemoveSearchHistory = () => {
+    setTimeout(async () => {
+      await APIDelete(`/api/user/search-history`).catch((error) => {
+        console.error('Error removing search history:', error)
+        navigate('/error')
+      })
+    }, 1000)
   }
 
   useEffect(() => {
@@ -237,6 +246,13 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 variant="contained"
               >
                 Logout
+              </Button>
+              <Button
+                onClick={handleRemoveSearchHistory}
+                sx={{ alignSelf: 'flex-start' }}
+                variant="contained"
+              >
+                Clear Search History
               </Button>
             </>
           )}

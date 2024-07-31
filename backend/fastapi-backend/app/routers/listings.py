@@ -3,8 +3,6 @@ from fastapi.responses import JSONResponse
 from core.schemas import (
     Listing,
     ListingWithWrapper,
-    Location,
-    NewListing,
     NewListingWithWrapper,
     NewReview,
     UpdateListing,
