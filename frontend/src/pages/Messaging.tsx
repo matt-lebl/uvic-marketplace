@@ -53,13 +53,25 @@ const Messaging: React.FC = () => {
         '/api/messages/overview'
       )
       if (Array.isArray(fetchedThreads)) {
-        setThreads(fetchedThreads)
-        if (fetchedThreads.length > 0) {
-          setSelectedListingId(fetchedThreads[0].listing_id)
-          setReceiverId(fetchedThreads[0].other_participant.user_id)
+        const uniqueThreads = Array.from(
+          new Set(fetchedThreads.map((thread) => thread.listing_id))
+        )
+          .map((id) =>
+            fetchedThreads.find((thread) => thread.listing_id === id)
+          )
+          .filter((thread) => thread !== undefined) as MessageThread[]
+
+        uniqueThreads.sort(
+          (a, b) => b.last_message.sent_at - a.last_message.sent_at
+        )
+
+        setThreads(uniqueThreads)
+        if (uniqueThreads.length > 0) {
+          setSelectedListingId(uniqueThreads[0].listing_id)
+          setReceiverId(uniqueThreads[0].other_participant.user_id)
           await fetchMessagesForThread(
-            fetchedThreads[0].listing_id,
-            fetchedThreads[0].other_participant.user_id
+            uniqueThreads[0].listing_id,
+            uniqueThreads[0].other_participant.user_id
           )
         }
       } else {
@@ -129,7 +141,7 @@ const Messaging: React.FC = () => {
       }
     } catch (error) {
       console.error('Failed to send message', error)
-      // navigate('/error')
+      navigate('/error')
     }
   }
 
