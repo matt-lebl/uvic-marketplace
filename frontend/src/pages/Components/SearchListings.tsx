@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { useEffect, useState } from 'react'
 import { Box, Typography, Grid, Pagination } from '@mui/material'
 import ListingCard from './ListingCard'
@@ -43,6 +43,8 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
   )
   const [loading, setLoading] = useState(true)
 
+  const ref = useRef(1)
+
   const doSearch = () => {
     setTimeout(async () => {
       let res = await onSearch(searchRequest)
@@ -50,6 +52,7 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
       setTotalListingsCount(res?.totalItems ?? 0)
       setTotalPages(Math.ceil((res?.totalItems ?? 0) / parseInt(itemsPerPage)))
     }, 1000)
+    ref.current -= 1
     setLoading(false)
   }
 
@@ -62,7 +65,7 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
         Math.floor(
           ((currentPage - 1) *
             Math.min(parseInt(itemsPerPage), totalListingsCount)) /
-            parseInt(newLimit)
+          parseInt(newLimit)
         )
       )
       setItemsPerPage(newLimit)
@@ -77,6 +80,7 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
     newPage: number
   ) => {
     setLoading(true)
+    ref.current += 1
     setCurrentPage(newPage)
     searchRequest.page = newPage
     AddData(context, searchRequestID, searchRequest)
@@ -86,6 +90,7 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
   const handleChangeSorting = (sort: string | undefined) => {
     if (sort !== undefined && sort in Sort) {
       setLoading(true)
+      ref.current += 1
       var enumSort = sort as Sort
       setSorting(enumSort)
       searchRequest.sort = enumSort
@@ -96,6 +101,7 @@ const SearchListings: React.FC<props> = ({ onSearch, searchRequest }) => {
 
   //should trigger only the first time the component is rendered, and then whenever the search request is altered. Need to do it this weird complicated way, as other wise it won't detect changes made by searching when on the search page, as the search request won't update on rerender.
   useEffect(() => {
+    ref.current += 1
     doSearch()
   }, [searchRequest])
 
