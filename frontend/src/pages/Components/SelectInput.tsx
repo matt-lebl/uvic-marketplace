@@ -1,4 +1,4 @@
-import { Select, InputLabel, MenuItem, SelectChangeEvent } from '@mui/material'
+import { Select, InputLabel, MenuItem, SelectChangeEvent, Box } from '@mui/material'
 import React, { useState } from 'react'
 
 interface props {
@@ -23,7 +23,12 @@ const SelectInput: React.FC<props> = ({
   }
 
   return (
-    <div>
+    <Box
+      sx={{
+        marginTop: 1,
+        width: '90%',
+      }}
+    >
       <InputLabel
         id={label + '-select-label'}
         data-testid={label + '-select-label'}
@@ -37,6 +42,10 @@ const SelectInput: React.FC<props> = ({
         value={value}
         label={label}
         onChange={handleChange}
+        sx={{
+          bgcolor: '#B5DBFF',
+          color: 'white',
+        }}
       >
         {options.map((statusValue) => (
           <MenuItem key={statusValue} value={statusValue}>
@@ -44,7 +53,7 @@ const SelectInput: React.FC<props> = ({
           </MenuItem>
         ))}
       </Select>
-    </div>
+    </Box >
   )
 }
 export default SelectInput
