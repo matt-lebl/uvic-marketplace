@@ -1,7 +1,6 @@
 import React from 'react'
-import { List, Typography, Box, ButtonBase } from '@mui/material'
+import { List, Typography, Box } from '@mui/material'
 import MessageItem from './MessageItem'
-import ModeRoundedIcon from '@mui/icons-material/ModeRounded'
 
 export interface MessageSidebarProps {
   messages: Array<{
@@ -19,7 +18,6 @@ export interface MessageSidebarProps {
       sent_at: number
     }
   }>
-  onCreateMessage: () => void
   onSelectMessage: (listing_id: string) => void
   selectedListingId: string
 }
@@ -27,7 +25,6 @@ export interface MessageSidebarProps {
 const MessageSidebar: React.FC<MessageSidebarProps> = ({
   messages,
   onSelectMessage,
-  onCreateMessage,
   selectedListingId,
 }) => {
   return (
@@ -46,27 +43,13 @@ const MessageSidebar: React.FC<MessageSidebarProps> = ({
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'row',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           padding: 2,
           borderBottom: 1,
           borderColor: 'divider',
         }}
       >
         <Typography variant="h6">Conversations</Typography>
-        <Box border={2} borderRadius={3}>
-          <ButtonBase
-            style={{
-              display: 'flex',
-              padding: '10px',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-            onClick={onCreateMessage}
-            data-testid="create-message-button"
-          >
-            <ModeRoundedIcon />
-          </ButtonBase>
-        </Box>
       </Box>
       <List style={{ padding: 0 }}>
         {messages.map((message, index) => (
