@@ -674,3 +674,12 @@ async def delete_user_with_stuff():
     response = client.post(f"/review/{userID}", json=review)
     assert response.status_code == 200
     assert response.json()["comment"] == review["comment"]
+
+    response = client.delete(f"/user/{userID}")
+    assert response.status_code == 200
+
+    response_get = client.get(f"/user/{userID}")
+    assert response_get.status_code == 404
+
+    resp_del = client.delete(f"/user/{userID}")
+    assert resp_del.status_code == 400
