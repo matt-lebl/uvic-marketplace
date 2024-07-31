@@ -21,7 +21,8 @@ export async function APIPost<TResponse, TBody>(
   //try {
   const response: AxiosResponse<TResponse> = await instance.post(
     baseUrl + path,
-    requestBody
+    requestBody,
+    { validateStatus: (status) => status <= 500 }
   )
   switch (response.status) {
     case 200:
@@ -49,7 +50,8 @@ export async function APIGet<TResponse>(
 
   const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`
 
-  const response: AxiosResponse<TResponse> = await instance.get(url)
+  const response: AxiosResponse<TResponse> = await instance.get(url,
+    { validateStatus: (status) => status <= 500 })
   switch (response.status) {
     case 200:
     case 101:
@@ -69,7 +71,8 @@ export async function APIPatch<TResponse, TBody>(
   //try {
   const response: AxiosResponse<TResponse> = await instance.patch(
     baseUrl + path,
-    requestBody
+    requestBody,
+    { validateStatus: (status) => status <= 500 }
   )
   switch (response.status) {
     case 200:
@@ -96,7 +99,8 @@ export async function APIDelete(
 
   const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`
 
-  const response: AxiosResponse = await instance.delete(url)
+  const response: AxiosResponse = await instance.delete(url,
+    { validateStatus: (status) => status <= 500 })
   switch (response.status) {
     case 200:
       break

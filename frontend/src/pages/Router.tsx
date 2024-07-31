@@ -14,41 +14,40 @@ import EditListing from './EditListing'
 import Search from './Search'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
-import Footer from './Components/Footer'
-import { APIGet } from '../APIlink'
+import APIError, { APIGet } from '../APIlink'
+import ErrorPage from './ErrorPage'
 
 const Router = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
   const navigate = useNavigate()
 
   useEffect(() => {
-    const userID = localStorage.getItem('userID')
-    if (userID) {
-      const getUser = async () => {
-        try {
-          const response = await APIGet<string>(`/api/user/` + userID)
-          if (response) {
-            setLoggedIn(true)
-          } else {
-            localStorage.clear()
-            setLoggedIn(false)
-            navigate('/login')
-          }
-        } catch (error) {
-          localStorage.clear()
-          setLoggedIn(false)
-          navigate('/login')
+    const currentPath = window.location.pathname
+    if (
+      currentPath !== '/login' &&
+      currentPath !== '/register' &&
+      !currentPath.startsWith('/validate-email')
+    ) {
+      const userID = localStorage.getItem('userID')
+      if (userID) {
+        const getUser = async () => {
+          await APIGet<string>(`/api/user/` + userID)
+            .then((response: string) => {
+              setLoggedIn(true)
+            })
+            .catch((error: any) => {
+              if (error instanceof APIError && (error.status === 401 || error.status === 403)) {
+                localStorage.clear()
+                setLoggedIn(false)
+                navigate('/login')
+              } else {
+                navigate('/error')
+              }
+            })
         }
-      }
-      getUser()
-    } else {
-      setLoggedIn(false)
-      const currentPath = window.location.pathname
-      if (
-        currentPath !== '/login' &&
-        currentPath !== '/register' &&
-        !currentPath.startsWith('/validate-email')
-      ) {
+        getUser()
+      } else {
+        setLoggedIn(false)
         navigate('/login')
       }
     }
@@ -56,12 +55,16 @@ const Router = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<Layout loggedIn={loggedIn} />}>
+      <Route
+        path="/"
+        element={<Layout loggedIn={loggedIn}
+        />}>
         {!loggedIn ? (
           <>
             <Route path="login" element={<Login />} />
             <Route path="register" element={<Registration />} />
             <Route path="validate-email" element={<ValidateEmail />} />
+            <Route path="error" element={<ErrorPage />} />
           </>
         ) : (
           <>
@@ -73,6 +76,7 @@ const Router = () => {
             <Route path="edit-listing/:listingID" element={<EditListing />} />
             <Route path="search" element={<Search />} />
             <Route path="events" element={<Events />} />
+            <Route path="error" element={<ErrorPage />} />
           </>
         )}
       </Route>
