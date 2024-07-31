@@ -15,7 +15,7 @@ import {
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
 import { useNavigate } from 'react-router-dom'
-import { APIGet, APIPost, APIDelete } from '../APIlink'
+import { APIGet, APIDelete, APIPatch } from '../APIlink'
 
 const currentUser: User = {
   userID: localStorage.getItem('userID') || '',
@@ -57,14 +57,13 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     const updatedUser = {
       username,
       name,
-      email: user.email,
       bio,
       profilePictureUrl: user.profileUrl,
       ignoreCharityListings: false,
     }
 
     try {
-      await APIPost('/api/user/', updatedUser)
+      await APIPatch('/api/user/', updatedUser)
       localStorage.setItem('username', username)
       localStorage.setItem('name', name)
       localStorage.setItem('email', user.email)
