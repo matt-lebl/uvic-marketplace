@@ -59,7 +59,7 @@ const Listing: React.FC<ListingProps> = ({
             flexWrap: 'nowrap',
             alignItems: 'center',
             marginTop: 1,
-            width: '90%',
+            maxWidth: '90%',
           }}>
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Paper
