@@ -1,3 +1,5 @@
+import time
+import pyotp
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
@@ -6,13 +8,14 @@ from urllib.parse import unquote
 
 client = TestClient(app)
 
+userID = ""
 
-@pytest.fixture
+@pytest.fixture()
 def new_user():
     return {
-        "username": "testuser999919",
+        "username": "testuser",
         "name": "John Doe",
-        "email": "testuser12134506@uvic.ca",
+        "email": "testuser@uvic.ca",
         "password": "Testpassword123!"
     }
 
@@ -30,11 +33,15 @@ def test_totp_secret_generation(new_user):
     response_data = response.json()
     totp_secret = response_data.get("totp_secret")
     totp_uri = response_data.get("totp_uri")
+    userID = response_data.get("userID")
+
+    # Delete the user
+    response = client.delete(f"api/user/", params={"authUserID": userID})
+    print(f"Cleanup response: {response.status_code}, {response.json()}")
+    assert response.status_code == 200, f"Failed to cleanup user: {response.json()}"
 
     assert totp_secret is not None
     assert totp_uri is not None
-    # TODO: use test db or delete user so next tests will not fail due to unique error
-
 
 def test_totp_validation(new_user, auth_handler):
     # Create a new user and extract the TOTP secret
@@ -42,16 +49,26 @@ def test_totp_validation(new_user, auth_handler):
     assert response.status_code == 200
 
     response_data = response.json()
+    userID = response_data.get("userID")
     totp_secret = response_data.get("totp_secret")
 
-    # Generate a TOTP code
-    totp_code = auth_handler.generate_otp(totp_secret)
+    assert totp_secret is not None, "TOTP secret should not be None"
 
-    # Validate the TOTP code
-    is_valid = auth_handler.check_totp(totp_code, totp_secret)
+    # Encrypt the TOTP secret using the AuthHandler
+    encrypted_totp_secret = auth_handler.encrypt_secret(totp_secret)
+
+    # Generate a TOTP code using the encrypted secret
+    totp_code = pyotp.TOTP(totp_secret).now()
+
+    # Validate the TOTP code using the encrypted secret
+    is_valid = auth_handler.check_totp(totp_code, encrypted_totp_secret)
     assert is_valid
 
-
+    # Delete the user
+    response = client.delete(f"/api/user/", params={"authUserID": userID})
+    print(f"Cleanup response: {response.status_code}, {response.json()}")
+    assert response.status_code == 200, f"Failed to cleanup user: {response.json()}"
+    
 def test_generate_otp(auth_handler):
     email = "testuser@uvic.ca"
     totp_secret, uri = AuthHandler.generate_otp(email)
@@ -112,6 +129,75 @@ def test_validate_username():
     assert not UserValidator.validate_username(too_short)
     assert not UserValidator.validate_username(too_long)
     assert not UserValidator.validate_username(wrong_char)
+
+
+def test_invalid_totp_code(new_user, auth_handler):
+    # Create a new user and extract the TOTP secret
+    response = client.post("/api/user/", json=new_user)
+    assert response.status_code == 200
+
+    response_data = response.json()
+    userID = response_data.get("userID")
+    totp_secret = response_data.get("totp_secret")
+
+    assert totp_secret is not None, "TOTP secret should not be None"
+
+    # Encrypt the TOTP secret using the AuthHandler
+    encrypted_totp_secret = auth_handler.encrypt_secret(totp_secret)
+
+    # Generate an invalid TOTP code
+    invalid_totp_code = "123456"
+
+    # Validate the invalid TOTP code using the encrypted secret
+    is_valid = auth_handler.check_totp(invalid_totp_code, encrypted_totp_secret)
+    assert not is_valid
+
+    # Delete the user
+    response = client.delete(f"/api/user/", params={"authUserID": userID})
+    print(f"Cleanup response: {response.status_code}, {response.json()}")
+    assert response.status_code == 200, f"Failed to cleanup user: {response.json()}"
+
+
+def test_totp_secret_encryption_decryption(auth_handler):
+    totp_secret = "JBSWY3DPEHPK3PXP"
+
+    # Encrypt the TOTP secret
+    encrypted_totp_secret = auth_handler.encrypt_secret(totp_secret)
+
+    # Decrypt the TOTP secret
+    decrypted_totp_secret = auth_handler.decrypt_secret(encrypted_totp_secret)
+
+    # Ensure the decrypted secret matches the original secret
+    assert decrypted_totp_secret == totp_secret
+
+
+def test_expired_totp_code(new_user, auth_handler):
+    # Create a new user and extract the TOTP secret
+    response = client.post("/api/user/", json=new_user)
+    assert response.status_code == 200
+
+    response_data = response.json()
+    userID = response_data.get("userID")
+    totp_secret = response_data.get("totp_secret")
+
+    assert totp_secret is not None, "TOTP secret should not be None"
+
+    # Encrypt the TOTP secret using the AuthHandler
+    encrypted_totp_secret = auth_handler.encrypt_secret(totp_secret)
+
+    # Generate a TOTP code and wait for it to expire
+    totp_code = pyotp.TOTP(totp_secret).now()
+    time.sleep(31)  # Assuming the TOTP code expires in 30 seconds
+
+    # Validate the expired TOTP code using the encrypted secret
+    is_valid = auth_handler.check_totp(totp_code, encrypted_totp_secret)
+    assert not is_valid
+
+    # Delete the user
+    response = client.delete(f"/api/user/", params={"authUserID": userID})
+    print(f"Cleanup response: {response.status_code}, {response.json()}")
+    assert response.status_code == 200, f"Failed to cleanup user: {response.json()}"
+
 
 
 if __name__ == "__main__":
