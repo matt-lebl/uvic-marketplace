@@ -4,7 +4,7 @@ import argon2
 from faker import Faker
 import pyotp
 from cryptography.fernet import Fernet
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 
 class DataFactory:
@@ -124,7 +124,7 @@ class DataFactory:
         }
 
     def generate_charity_request(self, organizations):
-        startDate = datetime.now()
+        startDate = datetime.now(UTC).astimezone(UTC)
         return {
             "name": self.fake.name(),
             "description": self.fake.text(),
@@ -141,6 +141,9 @@ class DataFactory:
             "donated": 0,
             "receiving": receiving
         }
+
+    def generate_search(self):
+        return {"searchTerm": self.fake.text()}
 
     @classmethod
     def generate_password_reset_request(cls, email):

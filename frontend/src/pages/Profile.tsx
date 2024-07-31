@@ -15,7 +15,8 @@ import {
   Grid,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
-import { APIGet } from '../APIlink'
+import { APIDelete, APIGet } from '../APIlink'
+import { useNavigate } from 'react-router-dom'
 
 const currentUser: User = {
   userID: localStorage.getItem('userID') || '1',
@@ -108,6 +109,8 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
+  const navigate = useNavigate()
+
   const [editMode, setEditMode] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -154,6 +157,17 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
       localStorage.clear()
       window.location.href = '/'
     }
+  }
+
+  const handleRemoveSearchHistory = () => {
+    setTimeout(async () => {
+      await APIDelete(`/api/user/search-history`)
+        .catch((error) => {
+          debugger;
+          console.error('Error removing search history')
+          navigate("/error")
+        })
+    }, 1000)
   }
 
   useEffect(() => {
@@ -243,6 +257,13 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
             variant="contained"
           >
             Logout
+          </Button>
+          <Button
+            onClick={handleRemoveSearchHistory}
+            sx={{ alignSelf: 'flex-start' }}
+            variant="contained"
+          >
+            Clear Search History
           </Button>
         </Box>
       </Box>

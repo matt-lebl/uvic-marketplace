@@ -58,8 +58,8 @@ class DataSyncKafkaProducer:
 
     # DELETE /api/listing/{id}
     def push_deleted_listing(self, listingID: str):
-        # TODO
-        pass
+        obj = {"listingID": listingID}
+        self.push_message("delete-listing", json.dumps(obj))
 
     # GET /api/listing/
     def push_viewed_listing(self, listingID: str, userID: str = 0):
@@ -68,8 +68,13 @@ class DataSyncKafkaProducer:
 
     # Reviews
     # POST /api/listing/review/
-    def push_new_review(self, review: NewReview):
-        self.push_message("create-review", json.dumps(review, default=str))
+    def push_new_review(self, review: NewReview, userID: str):
+        review_dict = {
+            'userID': userID,
+            'stars': review.stars,
+            'listingID': review.listingID,
+        }
+        self.push_message("create-review", json.dumps(review_dict, default=str))
 
     # PATCH /api/listing/review/{id}
     def push_updated_review(self, review: NewReview):

@@ -11,12 +11,11 @@ from sqlmodel import (
     ARRAY,
     String,
     or_,
-    delete
+    delete, desc
 )
-from datetime import datetime
+from datetime import datetime, UTC
 from core.schemas import ListingSchema, UserProfile, ItemStatus
 from fastapi import HTTPException
-from core.config import PST_TZ
 
 
 class UserBase(SQLModel):
@@ -69,7 +68,10 @@ class User(UserBase, table=True):
         user = session.exec(statement).first()
 
         if not user:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(
+                status_code=400,
+                detail="Invalid request -- user not found. Please report this incident to the backend team.",
+            )
 
         session.delete(user)
         session.commit()
@@ -123,7 +125,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.validation_code == validation_code)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid validation code")
+            raise HTTPException(status_code=400, detail="Invalid validation code")
         else:
             setattr(user, "email_validated", True)
             session.add(user)
@@ -135,7 +137,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.email == email)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="User ID not found")
+            raise HTTPException(status_code=400, detail="User ID not found")
         else:
             return user.email_validated
 
@@ -144,7 +146,7 @@ class User(UserBase, table=True):
         statement = select(cls).where(cls.email == email)
         user = session.exec(statement).first()
         if not user:
-            raise HTTPException(status_code=401, detail="Invalid code")
+            raise HTTPException(status_code=400, detail="Invalid code")
         else:
             setattr(user, "passwordResetCode", code)
             session.add(user)
@@ -203,7 +205,10 @@ class Listing(ListingBase, table=True):
         if not listing:
             raise HTTPException(status_code=404, detail="Listing not found")
         if listing.sellerId != seller_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this listing",
+            )
         for key, value in kwargs.items():
             setattr(listing, key, value)
         if status == "SOLD" and listing.charityId:
@@ -220,10 +225,13 @@ class Listing(ListingBase, table=True):
         listing = session.exec(statement).first()
 
         if not listing:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Listing does not exist")
 
         if listing.sellerId != userId:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this listing",
+            )
 
         session.delete(listing)
         session.commit()
@@ -261,6 +269,8 @@ class Listing(ListingBase, table=True):
         reviews = self.get_reviews(session)
         data["seller_profile"] = user_profile
         data["reviews"] = reviews
+        data["dateCreated"] = data["dateCreated"].astimezone(UTC)
+        data["dateModified"] = data["dateModified"].astimezone(UTC)
         return ListingSchema(**data)
 
     def get_user_profile(self, session: Session):
@@ -299,6 +309,8 @@ class ListingReview(ListingReviewBase, table=True):
         session.add(review)
         session.commit()
         session.refresh(review)
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -308,13 +320,17 @@ class ListingReview(ListingReviewBase, table=True):
         if not review:
             raise HTTPException(status_code=404, detail="Listing not found")
         if review.userID != user_id:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to edit this review",
+            )
         for key, value in kwargs.items():
             setattr(review, key, value)
         session.add(review)
         session.commit()
         session.refresh(review)
-
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -323,10 +339,13 @@ class ListingReview(ListingReviewBase, table=True):
         review = session.exec(statement).first()
 
         if not review:
-            raise HTTPException(status_code=400, detail="Invalid request")
+            raise HTTPException(status_code=400, detail="Review does not exist")
 
         if review.userID != userID:
-            raise HTTPException(status_code=403, detail="Permissions error")
+            raise HTTPException(
+                status_code=403,
+                detail="Permissions error -- you do not have permission to delete this review",
+            )
 
         session.delete(review)
         session.commit()
@@ -504,6 +523,8 @@ class CharityTable(SQLModel, table=True):
     def convert_to_schema(self, session: Session):
         data = self.model_dump()
         data["organizations"] = OrganizationTable.get_from_list(self.organizations, session)
+        data["startDate"] = data["startDate"].astimezone(UTC)
+        data["endDate"] = data["endDate"].astimezone(UTC)
         return data
 
     @classmethod
@@ -537,13 +558,13 @@ class CharityTable(SQLModel, table=True):
 
     @classmethod
     def get_current_charity_id(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls.id).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
     @classmethod
     def get_current_charity(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
@@ -573,3 +594,29 @@ class CharityTable(SQLModel, table=True):
         session.commit()
 
         return {"message": "Charity deleted successfully"}
+
+class SearchHistoryTable(SQLModel, table=True):
+    searchID: str = Field(default=None, primary_key=True)
+    userID: str = Field(default=None, foreign_key="user.userID")
+    searchTerm: str
+    timestamp: datetime | None = Field(index=True)
+
+    @classmethod
+    def create(cls, session: Session, **kwargs):
+        history_element = cls(**kwargs)
+        session.add(history_element)
+        session.commit()
+        session.refresh(history_element)
+        return history_element
+
+    @classmethod
+    def delete(cls, userID: str, session: Session):
+        statement = delete(cls).where(cls.userID == userID)
+        session.exec(statement)
+        session.commit()
+
+    @classmethod
+    def get_history(cls, userID: str, session: Session):
+        statement = select(cls.searchID, cls.searchTerm).where(cls.userID == userID).order_by(desc(cls.timestamp))
+        result = session.exec(statement)
+        return {"searches": result.all()}
