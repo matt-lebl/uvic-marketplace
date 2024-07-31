@@ -4,7 +4,7 @@ from typing import Union
 from requests import Session
 from db.deps import get_db
 from util.charity_item_view import should_view_charity_items
-from util.schemas import ListingSummary, UserProfile, SearchResponse, SearchUserResponse, ErrorMessage
+from util.schemas import ItemSortEnum, ListingSummary, UserProfile, SearchResponse, SearchUserResponse, ErrorMessage
 from util.elasticsearch_wrapper import ElasticsearchWrapper
 from util.embedding import generate_embedding
 
@@ -67,25 +67,38 @@ async def search(*,
                 "size": limit
             }
 
-            price_filters = []
+            filters = []
             if minPrice is not None:
-                price_filters.append({"range": {"price": {"gte": minPrice}}})
+                filters.append({"range": {"price": {"gte": minPrice}}})
             if maxPrice is not None:
-                price_filters.append({"range": {"price": {"lte": maxPrice}}})
+                filters.append({"range": {"price": {"lte": maxPrice}}})
 
-            if price_filters:
-                search_body['query']['bool']['filter'].extend(price_filters)
+            print(status)
+            #filters.append({"term": {"status": status}})
+
+            if filters:
+                search_body['query']['bool']['filter'].extend(filters)
 
             if not see_charity_items:
                 search_body['query']['bool']['filter'].append({
                     "bool": {
                         "must_not": {
                             "exists": {
-                            "field": "charityId"
+                                "field": "charityId"
                             }
                         }
                     }
                 })
+
+            sort_orders = {
+                ItemSortEnum.PRICE_ASC: {"price": {"order": "asc"}},
+                ItemSortEnum.PRICE_DESC: {"price": {"order": "desc"}},
+                ItemSortEnum.LISTED_TIME_ASC: {"dateCreated": {"order": "asc"}},
+                ItemSortEnum.LISTED_TIME_DESC: {"dateCreated": {"order": "desc"}}
+            }
+            if sort != ItemSortEnum.RELEVANCE and sort in sort_orders:
+                print("Sorting by: {}".format(sort))
+                search_body['sort'] = [sort_orders[sort]]
 
             # Perform the search query
             response = es.search(index="listings_index", body=search_body)
