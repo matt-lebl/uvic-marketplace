@@ -8,11 +8,12 @@ import {
   IconButton,
   ListItemAvatar,
   Avatar,
+  CircularProgress,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
-import { MessageThread, Message } from '../interfaces'
+import { MessageThread, Message, NewMessage } from '../interfaces'
 import { APIGet, APIPost } from '../APIlink'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,11 +21,13 @@ const Messaging: React.FC = () => {
   const navigate = useNavigate()
 
   const [selectedListingId, setSelectedListingId] = useState<string>('')
+  const [receiverId, setReceiverId] = useState<string>('')
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>([])
   const [messages, setMessages] = useState<Record<string, Message[]>>({})
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     const userIdFromStorage = localStorage.getItem('userID')
@@ -38,12 +41,13 @@ const Messaging: React.FC = () => {
   }, [userId])
 
   useEffect(() => {
-    if (selectedListingId) {
+    if (selectedListingId && receiverId) {
       scrollToBottom()
     }
-  }, [selectedListingId, messages[selectedListingId]])
+  }, [selectedListingId, receiverId, messages[selectedListingId]])
 
   const fetchMessageThreads = async () => {
+    setLoading(true)
     try {
       const fetchedThreads = await APIGet<MessageThread[]>(
         '/api/messages/overview'
@@ -52,35 +56,40 @@ const Messaging: React.FC = () => {
         setThreads(fetchedThreads)
         if (fetchedThreads.length > 0) {
           setSelectedListingId(fetchedThreads[0].listing_id)
-          fetchMessagesForThread(fetchedThreads[0].listing_id)
+          setReceiverId(fetchedThreads[0].other_participant.user_id)
+          await fetchMessagesForThread(
+            fetchedThreads[0].listing_id,
+            fetchedThreads[0].other_participant.user_id
+          )
         }
       } else {
-        debugger
         console.error('Fetched threads is not an array')
         navigate('/error')
       }
     } catch (error) {
-      debugger
-      console.error('Failed to fetch message threads')
+      console.error('Failed to fetch message threads', error)
       navigate('/error')
+    } finally {
+      setLoading(false)
     }
   }
 
-  const fetchMessagesForThread = async (listing_id: string) => {
+  const fetchMessagesForThread = async (
+    listing_id: string,
+    receiver_id: string
+  ) => {
     if (!userId) return
     try {
       const fetchedMessages = await APIGet<Message[]>(
-        '/api/messages/thread/' + listing_id + '/' + userId
+        '/api/messages/thread/' + listing_id + '/' + receiver_id
       )
+
       setMessages((prevMessages) => ({
         ...prevMessages,
         [listing_id]: fetchedMessages,
       }))
     } catch (error) {
-      debugger;
-      console.error(
-        'Failed to fetch messages for thread ' + listing_id
-      )
+      console.error('Failed to fetch messages for thread ' + listing_id, error)
       navigate('/error')
     }
   }
@@ -89,38 +98,38 @@ const Messaging: React.FC = () => {
     if (!messageInput || !selectedListingId || !userId) {
       return
     }
-    const newMessage: Message = {
-      sender_id: userId,
-      receiver_id: selectedListingId.split('-')[1],
+    const newMessage: NewMessage = {
+      receiver_id: receiverId,
       listing_id: selectedListingId,
       content: messageInput,
-      sent_at: Date.now(),
     }
+
     try {
-      await APIPost<Message, Message>(
-        '/api/messages/thread/' + selectedListingId + '/' + userId,
+      const responseMessage = await APIPost<Message, NewMessage>(
+        '/api/messages',
         newMessage
       )
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [selectedListingId]: [
-          ...(prevMessages[selectedListingId] || []),
-          newMessage,
-        ],
-      }))
-      const updatedThreads = threads.map((thread) =>
-        thread.listing_id === selectedListingId
-          ? { ...thread, last_message: newMessage }
-          : thread
-      )
-      setThreads(updatedThreads)
-      setMessageInput('')
-      sortThreads()
-      scrollToBottom()
+      if (responseMessage) {
+        setMessages((prevMessages) => ({
+          ...prevMessages,
+          [selectedListingId]: [
+            ...(prevMessages[selectedListingId] || []),
+            responseMessage,
+          ],
+        }))
+        const updatedThreads = threads.map((thread) =>
+          thread.listing_id === selectedListingId
+            ? { ...thread, last_message: responseMessage }
+            : thread
+        )
+        setThreads(updatedThreads)
+        setMessageInput('')
+        sortThreads()
+        scrollToBottom()
+      }
     } catch (error) {
-      debugger
-      console.error('Failed to send message')
-      navigate('/error')
+      console.error('Failed to send message', error)
+      // navigate('/error')
     }
   }
 
@@ -134,9 +143,13 @@ const Messaging: React.FC = () => {
   }
 
   const handleSelectMessage = (listing_id: string) => {
-    setSelectedListingId(listing_id)
-    if (!messages[listing_id]) {
-      fetchMessagesForThread(listing_id)
+    const thread = threads.find((thread) => thread.listing_id === listing_id)
+    if (thread) {
+      setSelectedListingId(listing_id)
+      setReceiverId(thread.other_participant.user_id)
+      if (!messages[listing_id]) {
+        fetchMessagesForThread(listing_id, thread.other_participant.user_id)
+      }
     }
   }
 
@@ -150,13 +163,27 @@ const Messaging: React.FC = () => {
   const selectedConversation = Array.isArray(threads)
     ? threads.find((thread) => thread.listing_id === selectedListingId)
     : null
-  console.log('Selected Conversation:', selectedConversation)
 
   const sortThreads = () => {
     setThreads((prevThreads) =>
       [...prevThreads].sort(
         (a, b) => b.last_message.sent_at - a.last_message.sent_at
       )
+    )
+  }
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <CircularProgress />
+      </Box>
     )
   }
 
