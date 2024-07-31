@@ -640,3 +640,37 @@ async def test_clear_history():
     response = client.get(f"/search-history/{userID2}")
     assert response.status_code == 200
     assert len(response.json()["searches"]) == 10
+
+
+@pytest.mark.asyncio
+async def delete_user_with_stuff():
+    user = data_factory.generate_user()
+    response = client.post("/user/", json=user)
+    assert response.status_code == 200
+    assert response.json()["username"] == user["username"]
+
+    userID = response.json()["userID"]
+    search_term = data_factory.generate_search()
+
+    response = client.post(f"/search-history/{userID}", json=search_term)
+    assert response.status_code == 200
+
+    user2 = data_factory.generate_user()
+    response = client.post("/user/", json=user2)
+    assert response.status_code == 200
+    user2_id = response.json()["userID"]
+
+    listing = data_factory.generate_listing()
+    response = client.post(f"/listing/{userID}", json=listing)
+    assert response.status_code == 200
+    listingID = response.json()["listingID"]
+
+    message = data_factory.generate_message(listingID, userID, user2_id)
+    response = client.post("/messages/", json=message)
+    assert response.status_code == 200
+    assert response.json()["content"] == message["content"]
+
+    review = data_factory.generate_listing_review(listingID)
+    response = client.post(f"/review/{userID}", json=review)
+    assert response.status_code == 200
+    assert response.json()["comment"] == review["comment"]
