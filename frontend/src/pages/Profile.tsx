@@ -129,7 +129,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
         const fetchedListings = await APIGet<ListingSummary[]>('/api/listing')
         console.log(fetchedListings)
 
-        setListings(fetchedListings)
+        setListings(Array.isArray(fetchedListings) ? fetchedListings : [])
       } catch (error) {
         console.error('Failed to fetch listings:', error)
       } finally {
