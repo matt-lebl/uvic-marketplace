@@ -11,8 +11,10 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  CardActionArea,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
+import { useNavigate } from 'react-router-dom'
 import { APIGet, APIPost } from '../APIlink'
 
 const currentUser: User = {
@@ -37,6 +39,8 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const [username, setUsername] = useState(user.username)
   const [name, setName] = useState(user.name)
   const [bio, setBio] = useState(user.bio)
+
+  const navigate = useNavigate()
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -286,45 +290,59 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                     marginBottom: 2,
                     width: '40vh',
                     height: '30vh',
-                    padding: '16px',
                     borderRadius: '16px',
                     boxSizing: 'border-box',
                     background: '#B5DBFF',
                   }}
                 >
-                  <Box
+                  <CardActionArea
+                    onClick={() => {
+                      navigate(`/listing/${listing.listingID}`)
+                    }}
                     sx={{
-                      width: '100%',
-                      height: '60%',
-                      overflow: 'hidden',
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      justifyContent: 'space-between',
+                      height: '100%',
+                      width: '100%',
+                      padding: '16px',
                     }}
                   >
-                    <CardMedia
-                      component="img"
+                    <Box
                       sx={{
-                        height: '100%',
-                        width: 'auto',
-                        objectFit: 'fill',
-                        borderRadius: '10px',
+                        width: '100%',
+                        height: '60%',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                       }}
-                      image={listing.imageUrl}
-                      alt={listing.title}
-                    />
-                  </Box>
-                  <CardContent sx={{ width: '100%' }}>
-                    <Typography component="h5" variant="h5">
-                      {listing.title}
-                    </Typography>
-                    <Typography variant="subtitle1" color="textSecondary">
-                      ${listing.price}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {listing.description}
-                    </Typography>
-                  </CardContent>
+                    >
+                      <CardMedia
+                        component="img"
+                        sx={{
+                          height: '100%',
+                          width: 'auto',
+                          objectFit: 'fill',
+                          borderRadius: '10px',
+                        }}
+                        image={listing.imageUrl}
+                        alt={listing.title}
+                      />
+                    </Box>
+                    <CardContent sx={{ width: '100%' }}>
+                      <Typography component="h5" variant="h5">
+                        {listing.title}
+                      </Typography>
+                      <Typography variant="subtitle1" color="textSecondary">
+                        ${listing.price}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        {listing.description}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
                 </Card>
               </Grid>
             ))
