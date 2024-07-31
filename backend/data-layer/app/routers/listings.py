@@ -37,7 +37,9 @@ def update_listing(
     listing: UpdateListing,
     session: Session = Depends(get_session),
 ):
-    listing_data = Listing.convert_to_db_object(listing.listing.model_dump(), seller_id, session)
+    listing_data = Listing.convert_to_db_object(
+        listing.listing.model_dump(), seller_id, session
+    )
     status = listing.status
     listing_data["listingID"] = listingID
     listing_data["dateModified"] = datetime.now(PST_TZ)
@@ -52,7 +54,12 @@ def update_listing(
 @router.get("/user/{seller_id}", response_model=list[ListingSchema])
 def get_user_listings(seller_id: str, session: Session = Depends(get_session)):
     listings = Listing.get_by_seller_id(session, seller_id)
-    return [listing.convert_to_schema(session) for listing in listings]
+    if len(listings) > 0:
+        user_profile = listings[0].get_user_profile(session)
+        return [
+            listing.convert_to_schema(session, user_profile) for listing in listings
+        ]
+    return []
 
 
 @router.get("/{listingID}", response_model=ListingSchema)
