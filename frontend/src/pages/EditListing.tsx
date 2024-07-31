@@ -1,9 +1,14 @@
-import React, { FormEvent, useEffect } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import './App.css'
-import { Typography, Box, Paper, InputBase, Button } from '@mui/material'
-import PhotoPreviewList from './Components/PhotoPreviewList'
-import { useState } from 'react'
-import { ChangeEvent } from 'react'
+import {
+  Typography,
+  Box,
+  Paper,
+  Button,
+  FormControl,
+  FormHelperText,
+  TextField,
+} from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ListingEntity, ListingResponse, PatchListing } from '../interfaces'
 import { APIGet, APIPatch } from '../APIlink'
@@ -12,22 +17,31 @@ function EditListing() {
   const [title, setTitle] = useState<string>('')
   const [desc, setDesc] = useState<string>('')
   const [price, setPrice] = useState<number>(0)
-  const [imageNames, setImageNames] = useState<Array<string>>([])
-  const [imageURLs, setImageURLs] = useState<Array<string>>([])
   const [latitude, setLatitude] = useState<number | undefined>()
   const [longitude, setLongitude] = useState<number | undefined>()
-  const [geolocationError, setGeolocationError] = useState<string | null>(null)
-  const [titleError, setTitleError] = useState<boolean>(false)
-  const [priceError, setPriceError] = useState<boolean>(false)
+  const [images, setImages] = useState<{ url: string }[]>([])
+  const [titleError, setTitleError] = useState<string | null>(null)
+  const [priceError, setPriceError] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(true)
   const navigate = useNavigate()
 
-  const { listingID } = useParams();
+  const { listingID } = useParams()
+
+  useEffect(() => {
+    fetchListing()
+  }, [])
 
   const fetchListing = async () => {
     try {
       const listingURL: string = `/api/listing/${listingID}`
-
       const response: ListingEntity = await APIGet(listingURL)
+
+      const userID = localStorage.getItem('userID')
+      if (response.seller_profile.userID !== userID) {
+        navigate(`/listing/${listingID}`)
+        return
+      }
 
       if (response) {
         setTitle(response.title)
@@ -35,53 +49,80 @@ function EditListing() {
         setPrice(response.price)
         setLatitude(response.location.latitude)
         setLongitude(response.location.longitude)
+        setImages(response.images)
       }
     } catch (error) {
       console.log(error)
+      setErrorMessage('Failed to load listing data.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  async function patchListing() {
+  const validateTitle = (title: string) => {
+    if (!title) return 'Title is required.'
+    if (title.length < 3) return 'Title must be at least 3 characters long.'
+    return null
+  }
 
+  const validatePrice = (price: number) => {
+    if (price <= 0) return 'Price must be greater than zero.'
+    return null
+  }
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+
+    const titleError = validateTitle(title)
+    const priceError = validatePrice(price)
+
+    if (titleError || priceError) {
+      setTitleError(titleError)
+      setPriceError(priceError)
+      return
+    }
+
+    patchListing()
+  }
+
+  async function patchListing() {
     if (latitude === undefined || longitude === undefined) {
       alert('Location is not available.')
       return
     }
 
-    const listingData : PatchListing = {
+    const listingData: PatchListing = {
       listing: {
         title,
         description: desc,
         price,
         location: { latitude, longitude },
-        images: imageURLs.map((url) => ({ url })),
-        markedForCharity: false
+        markedForCharity: false,
+        images,
       },
-      status: "AVAILABLE"
+      status: 'AVAILABLE',
     }
     const listingURL: string = `/api/listing/${listingID}`
 
     try {
-      const response: ListingResponse | undefined = await APIPatch(listingURL, listingData)
+      const response: ListingResponse | undefined = await APIPatch(
+        listingURL,
+        listingData
+      )
       console.log(response)
       navigate(`/listing/${listingID}`)
     } catch (error) {
       console.log(error)
-      console.log(listingData)
-      console.log(title)
+      setErrorMessage('Failed to update listing. Please try again.')
     }
-
   }
 
-  useEffect(() => {
-    fetchListing()
-  }, [])
+  if (loading) {
+    return <div>Loading...</div>
+  }
 
-
-  const handleSubmit = (event: FormEvent) => {
-    event.preventDefault()
-
-    patchListing()
+  if (errorMessage) {
+    return <div>{errorMessage}</div>
   }
 
   return (
@@ -91,75 +132,71 @@ function EditListing() {
           component="form"
           sx={{ display: 'flex', flexDirection: 'row', height: '85vh' }}
           onSubmit={handleSubmit}
+          onReset={() => navigate(`/listing/${listingID}`)}
         >
           <Paper
             sx={{
               width: '85vw',
-              hieght: 200,
-              backgroundColor: '#656565',
               maxHeight: '85vh',
               overflow: 'auto',
               p: '20px',
             }}
           >
-            <Typography variant="h2">Edit Listing</Typography>
-            <Paper
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                p: '20px',
-                m: '20px 0px 10px 0px',
-              }}
-            >
-              <InputBase
+            <Typography variant="h2" sx={{ color: '#000000' }}>
+              Edit Listing
+            </Typography>
+            <FormControl fullWidth margin="normal" error={Boolean(titleError)}>
+              <TextField
                 id="Listing-Title"
-                fullWidth={true}
-                multiline={true}
-                sx={{ fontWeight: 600 }}
-                onChange={(e) => setTitle(e.target.value)}
-                defaultValue={title}
-              ></InputBase>
-            </Paper>
-            <Paper
-              sx={{
-                flexGrow: 1,
-                display: 'flex',
-                alignItems: 'center',
-                p: '20px',
-                m: '10px 0px 10px 0px',
-              }}
-            >$
-              <InputBase
-                id="Listing-Title"
-                fullWidth={true}
-                multiline={true}
-                sx={{ ml: '5px' }}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                defaultValue={price}
-              ></InputBase>
-            </Paper>
-            <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
-              <InputBase
-                id="Listing-Description"
-                placeholder="Listing Description"
-                fullWidth={true}
-                multiline={true}
-                sx={{ pb: '100px' }}
-                onChange={(e) => setDesc(e.target.value)}
-                defaultValue={desc}
+                label="Title"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value)
+                  setTitleError(validateTitle(e.target.value))
+                }}
+                error={Boolean(titleError)}
               />
-            </Paper>
-            <Paper sx={{ flexGrow: 1, p: '20px', m: '10px 0px 10px 0px' }}>
-              <Box>
-                <Typography>Photos (max 8)</Typography>
-                <PhotoPreviewList />
-              </Box>
-            </Paper>
-
+              <FormHelperText>{titleError}</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth margin="normal" error={Boolean(priceError)}>
+              <TextField
+                id="Listing-Price"
+                label="Price"
+                type="number"
+                value={price}
+                onChange={(e) => {
+                  const value = Number(e.target.value)
+                  setPrice(value)
+                  setPriceError(validatePrice(value))
+                }}
+                error={Boolean(priceError)}
+              />
+              <FormHelperText>{priceError}</FormHelperText>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <TextField
+                id="Listing-Description"
+                label="Description"
+                multiline
+                rows={4}
+                value={desc}
+                onChange={(e) => setDesc(e.target.value)}
+              />
+            </FormControl>
             <Box display={'flex'} flexDirection={'row-reverse'}>
-              <Button variant="contained" type="submit">
+              <Button
+                variant="contained"
+                type="submit"
+                sx={{ backgroundColor: '#1976d2' }}
+              >
                 Submit
+              </Button>
+              <Button
+                variant="contained"
+                type="reset"
+                sx={{ marginRight: 2, backgroundColor: '#1976d2' }}
+              >
+                Cancel
               </Button>
             </Box>
           </Paper>

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import { Typography, Box, Paper } from '@mui/material'
+import { Typography, Box, Paper, Button } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
-import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
-
+import { useParams, useNavigate } from 'react-router-dom'
 
 interface ListingProps {
   listingData?: ListingEntity
@@ -20,6 +19,9 @@ const Listing: React.FC<ListingProps> = ({
     initialListingData
   )
   const [loading, setLoading] = useState(!initialListingData)
+  const [userListing, setUserListing] = useState<boolean>(false)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchListing() {
@@ -31,6 +33,7 @@ const Listing: React.FC<ListingProps> = ({
         const response = (await APIGet(listingURL)) as ListingEntity
         if (response) {
           setListingData(response)
+          checkUserListing(response)
         }
       } catch (error) {
         console.log('Request Error', error)
@@ -41,6 +44,15 @@ const Listing: React.FC<ListingProps> = ({
 
     fetchListing()
   }, [listingID, initialListingData])
+
+  const checkUserListing = (listing: ListingEntity) => {
+    const userID = localStorage.getItem('userID')
+    if (userID === listing.seller_profile.userID) {
+      setUserListing(true)
+    } else {
+      setUserListing(false)
+    }
+  }
 
   if (loading) {
     return <div>Loading...</div>
@@ -53,14 +65,16 @@ const Listing: React.FC<ListingProps> = ({
   return (
     <div className="Listing">
       <header className="App-header">
-        <Box sx={{
+        <Box
+          sx={{
             display: 'flex',
             flexDirection: 'column',
             flexWrap: 'nowrap',
             alignItems: 'center',
             marginTop: 1,
             width: '90%',
-          }}>
+          }}
+        >
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Paper
               sx={{
@@ -78,10 +92,29 @@ const Listing: React.FC<ListingProps> = ({
                 ml: 5,
                 backgroundColor: '#656565',
                 height: '85vh',
-                overflow: 'auto',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '20px',
+              }}
+              component="form"
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (userListing) {
+                  navigate(`/edit-listing/${listingID}`)
+                }
               }}
             >
-              <SellerCard data={listingData} />
+              <Box>
+                <SellerCard data={listingData} />
+              </Box>
+              {userListing && (
+                <Box display={'flex'} flexDirection={'row-reverse'}>
+                  <Button variant="contained" type="submit">
+                    Edit
+                  </Button>
+                </Box>
+              )}
             </Paper>
           </Box>
         </Box>
