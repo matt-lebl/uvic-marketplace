@@ -1181,6 +1181,24 @@
 									"body": "{\n  \"error\": \"<string>\"\n}"
 								}
 							]
+						},
+						{
+							"name": "Get user's listings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/listing",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"listing"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -1216,7 +1234,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"code\" : \"08b4c81a-bd41-456d-8f7b-df598b92d0a4\"\n}",
+											"raw": "{\n    \"code\" : \"bb292a1f-4ad1-41e2-92ac-bf3956508684\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
@@ -1261,7 +1279,7 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"email\": \"rahuln@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"totp_code\": \"680714\"\n}",
+											"raw": "{\n  \"email\": \"rahuln@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"totp_code\": \"274016\"\n}",
 											"options": {
 												"raw": {
 													"headerFamily": "json",
