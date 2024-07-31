@@ -105,14 +105,4 @@ describe('Messaging Component', () => {
     const messageElements = await screen.findAllByText('New message')
     expect(messageElements.length).toBeGreaterThan(0)
   })
-
-  test('dialog opens on starting a new conversation', async () => {
-    render(<Messaging />)
-
-    fireEvent.click(screen.getByTestId('create-message-button'))
-
-    const dialogTitle = await screen.findByText('New Conversation')
-
-    expect(dialogTitle).toBeInTheDocument()
-  })
 })

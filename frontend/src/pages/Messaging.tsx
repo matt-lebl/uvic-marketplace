@@ -6,24 +6,13 @@ import {
   List,
   TextField,
   IconButton,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   ListItemAvatar,
   Avatar,
-  Alert,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
 } from '@mui/material'
 import MessageSidebar from './Components/MessageSidebar'
 import MessageBubble from './Components/MessageBubble'
 import SendIcon from '@mui/icons-material/Send'
-import { MessageThread, Message, User, ListingSummary } from '../interfaces'
+import { MessageThread, Message } from '../interfaces'
 import { APIGet, APIPost } from '../APIlink'
 
 const Messaging: React.FC = () => {
@@ -31,11 +20,6 @@ const Messaging: React.FC = () => {
   const [messageInput, setMessageInput] = useState<string>('')
   const [threads, setThreads] = useState<MessageThread[]>([])
   const [messages, setMessages] = useState<Record<string, Message[]>>({})
-  const [open, setOpen] = useState<boolean>(false)
-  const [newParticipant, setNewParticipant] = useState<string>('')
-  const [userListings, setUserListings] = useState<ListingSummary[]>([])
-  const [selectedUserListingId, setSelectedUserListingId] = useState<string>('')
-  const [searchError, setSearchError] = useState<string | null>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const [userId, setUserId] = useState<string | null>(null)
 
@@ -90,57 +74,6 @@ const Messaging: React.FC = () => {
         'Failed to fetch messages for thread ' + listing_id + ':',
         error
       )
-    }
-  }
-
-  const handleNewConversation = () => {
-    setOpen(true)
-  }
-
-  const handleCreateNewConversation = async () => {
-    if (!newParticipant || !userId || !selectedUserListingId) return
-
-    try {
-      const user = await APIGet<User>('/api/user/' + newParticipant)
-      if (!user) {
-        setSearchError('User not found')
-        return
-      }
-
-      const initialMessage: Message = {
-        sender_id: userId,
-        receiver_id: user.userID,
-        listing_id: selectedUserListingId,
-        content: 'Start of conversation with ' + user.name,
-        sent_at: Date.now(),
-      }
-
-      await APIPost<Message, Message>('/messages/', initialMessage)
-
-      const newThread: MessageThread = {
-        listing_id: initialMessage.listing_id,
-        other_participant: {
-          user_id: user.userID,
-          name: user.name,
-          profilePicture: user.profileUrl,
-        },
-        last_message: initialMessage,
-      }
-
-      setThreads([newThread, ...threads])
-      setSelectedListingId(newThread.listing_id)
-      setOpen(false)
-      setNewParticipant('')
-      setSearchError(null)
-      setSelectedUserListingId('')
-
-      setMessages((prevMessages) => ({
-        ...prevMessages,
-        [newThread.listing_id]: [initialMessage],
-      }))
-      scrollToBottom()
-    } catch (error) {
-      console.error('Failed to create new conversation:', error)
     }
   }
 
@@ -204,29 +137,6 @@ const Messaging: React.FC = () => {
     }
   }
 
-  const fetchUserListings = async (userId: string) => {
-    try {
-      const fetchedListings = await APIGet<ListingSummary[]>(
-        '/api/listings/user/' + userId
-      )
-      if (Array.isArray(fetchedListings)) {
-        setUserListings(fetchedListings)
-      } else {
-        console.error('Fetched listings is not an array')
-        setSearchError('Failed to find user')
-      }
-    } catch (error) {
-      console.error('Failed to fetch user listings:', error)
-      setSearchError('Failed to find user')
-    }
-  }
-
-  useEffect(() => {
-    if (newParticipant) {
-      fetchUserListings(newParticipant)
-    }
-  }, [newParticipant])
-
   const selectedConversation = Array.isArray(threads)
     ? threads.find((thread) => thread.listing_id === selectedListingId)
     : null
@@ -246,7 +156,6 @@ const Messaging: React.FC = () => {
         <Grid item xs={3} sx={{ height: '100%', maxHeight: '100vh' }}>
           <MessageSidebar
             selectedListingId={selectedListingId}
-            onCreateMessage={handleNewConversation}
             messages={threads}
             onSelectMessage={handleSelectMessage}
           />
@@ -337,63 +246,11 @@ const Messaging: React.FC = () => {
                 }}
               >
                 <Typography variant="h6">No conversations yet.</Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleNewConversation}
-                  sx={{ mt: 2 }}
-                >
-                  Start a New Conversation
-                </Button>
               </Box>
             )}
           </Box>
         </Grid>
       </Grid>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <DialogTitle>New Conversation</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Enter the name of the participant to start a new conversation.
-          </DialogContentText>
-          {searchError && (
-            <Alert severity="error" onClose={() => setSearchError(null)}>
-              {searchError}
-            </Alert>
-          )}
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Participant Name"
-            fullWidth
-            value={newParticipant}
-            onChange={(e) => setNewParticipant(e.target.value)}
-          />
-          {Array.isArray(userListings) && userListings.length > 0 && (
-            <FormControl fullWidth margin="dense">
-              <InputLabel id="select-listing-label">Select Listing</InputLabel>
-              <Select
-                labelId="select-listing-label"
-                value={selectedUserListingId}
-                label="Select Listing"
-                onChange={(e) =>
-                  setSelectedUserListingId(e.target.value as string)
-                }
-              >
-                {userListings.map((listing) => (
-                  <MenuItem key={listing.listingID} value={listing.listingID}>
-                    {listing.title}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleCreateNewConversation}>Create</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   )
 }
