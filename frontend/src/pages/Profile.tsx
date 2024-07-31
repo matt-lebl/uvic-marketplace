@@ -53,17 +53,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     setEditMode(!editMode)
   }
 
-  const handleLogout = async () => {
-    try {
-      await APIPost('/api/user/logout')
-      localStorage.clear()
-      window.location.href = '/'
-    } catch (error) {
-      console.error('Failed to logout:', error)
-      alert('Logout failed. Please try again.')
-    }
-  }
-
   const handleSave = async () => {
     const updatedUser = {
       username,
@@ -106,9 +95,9 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
   const handleLogout = async () => {
     await APIGet<boolean>(`/api/user/logout`)
-      .catch((error: any) => {
-        debugger;
-        console.error("Could not logout")
+      .catch((error: unknown) => {
+        debugger
+        console.error('Could not logout', error)
       })
       .finally(() => {
         alert('Logged out successfully. See you later!')
@@ -119,12 +108,11 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
 
   const handleRemoveSearchHistory = () => {
     const func = async () => {
-      await APIDelete(`/api/user/search-history`)
-        .catch((error) => {
-          debugger;
-          console.error('Error removing search history')
-          navigate("/error")
-        })
+      await APIDelete(`/api/user/search-history`).catch((error) => {
+        debugger
+        console.error('Error removing search history', error)
+        navigate('/error')
+      })
     }
     func()
   }
