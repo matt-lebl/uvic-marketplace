@@ -40,7 +40,7 @@ const EventCard: React.FC<Props> = ({ eventData }) => {
                 Funding: ${eventData?.funds}
               </Typography>
               <Typography>
-                Start:{eventData?.startDate} End:{eventData?.endDate}
+                Start:{(eventData??.startDate ?? '') !== '' ? new Date(eventData.startDate).toLocaleString() : ''} End:{(eventData??.endDate ?? '') !== '' ? new Date(eventData.endDate).toLocaleString() : ''}
               </Typography>
             </Paper>
 
