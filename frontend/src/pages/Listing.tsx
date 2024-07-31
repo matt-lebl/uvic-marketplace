@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import './App.css'
-import { Typography, Box, Paper, Button } from '@mui/material'
+import { Typography, Box, Paper, Button, TextField } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
-import { APIGet } from '../APIlink'
-import { ListingEntity } from '../interfaces'
+import { APIGet, APIPost } from '../APIlink'
+import { ListingEntity, Message, NewMessage } from '../interfaces'
 import { useParams, useNavigate } from 'react-router-dom'
 import Reviews from './Components/Reviews'
 
@@ -21,6 +21,9 @@ const Listing: React.FC<ListingProps> = ({
   )
   const [loading, setLoading] = useState(!initialListingData)
   const [userListing, setUserListing] = useState<boolean>(false)
+  const [customMessage, setCustomMessage] = useState<string>(
+    'Hello, I am interested in your listing!'
+  )
 
   const navigate = useNavigate()
 
@@ -53,6 +56,26 @@ const Listing: React.FC<ListingProps> = ({
       setUserListing(true)
     } else {
       setUserListing(false)
+    }
+  }
+
+  const handleSendMessage = async () => {
+    if (!listingData) return
+
+    const receiverId = listingData.seller_profile.userID
+    const listingId = listingData.listingID
+
+    const initialMessage: NewMessage = {
+      receiver_id: receiverId,
+      listing_id: listingId,
+      content: customMessage,
+    }
+
+    try {
+      await APIPost<NewMessage, NewMessage>('/api/messages', initialMessage)
+      navigate('/messaging')
+    } catch (error) {
+      console.error('Failed to send message:', error)
     }
   }
 
@@ -114,11 +137,51 @@ const Listing: React.FC<ListingProps> = ({
                   initialReviews={listingData?.reviews ?? []}
                 />
               </Box>
-              {userListing && (
+              {userListing ? (
                 <Box display={'flex'} flexDirection={'row-reverse'}>
                   <Button variant="contained" type="submit">
                     Edit
                   </Button>
+                </Box>
+              ) : (
+                <Box>
+                  <TextField
+                    fullWidth
+                    label="Message"
+                    value={customMessage}
+                    onChange={(e) => setCustomMessage(e.target.value)}
+                    margin="normal"
+                    InputProps={{
+                      style: {
+                        color: 'white',
+                        borderColor: 'white',
+                      },
+                    }}
+                    InputLabelProps={{
+                      style: {
+                        color: 'white',
+                      },
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                          borderColor: 'white',
+                        },
+                        '&:hover fieldset': {
+                          borderColor: 'white',
+                        },
+                        '&.Mui-focused fieldset': {
+                          borderColor: 'white',
+                        },
+                      },
+                    }}
+                  />
+
+                  <Box display={'flex'} flexDirection={'row-reverse'}>
+                    <Button variant="contained" onClick={handleSendMessage}>
+                      Send Message
+                    </Button>
+                  </Box>
                 </Box>
               )}
             </Paper>
