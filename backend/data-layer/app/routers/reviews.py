@@ -1,10 +1,9 @@
 import uuid
 from core.sql_models import ListingReview
-from core.config import PST_TZ
 from fastapi import APIRouter, Depends, HTTPException
 from core.dependencies import get_session
 from core.schemas import NewReview, ReviewSchema
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
 
 from sqlmodel import Session
@@ -22,7 +21,7 @@ router = APIRouter(
 def create_review(userID: str, review: NewReview, session: Session = Depends(get_session)):
     review_data = review.model_dump()
     review_data["listing_review_id"] = str(uuid.uuid4())
-    review_data["dateCreated"] = datetime.now(PST_TZ)
+    review_data["dateCreated"] = datetime.now(UTC).astimezone(UTC)
     review_data["dateModified"] = review_data["dateCreated"]
     review_data["userID"] = userID
     logger.info(f"review creation {review}")
@@ -48,7 +47,7 @@ def get_review(listing_review_id: str, session: Session = Depends(get_session)):
 def update_review(listing_review_id: str, userID: str, review: NewReview, session: Session = Depends(get_session)):
     review_data = review.model_dump()
     review_data["listing_review_id"] = listing_review_id
-    review_data["dateModified"] = datetime.now(PST_TZ)
+    review_data["dateModified"] = datetime.now(UTC).astimezone(UTC)
     review_data["userID"] = userID
     logger.info(f"listing updated: {listing_review_id}")
     updated_review = ListingReview.update(user_id=userID, session=session, **review_data)
@@ -64,7 +63,3 @@ def delete_review(listing_review_id: str, userID: str, session: Session = Depend
         logger.error(str(e))
         raise e
 
-# Deprecated
-# @router.get("/", response_model=list[ListingReview])
-# def get_all_listing(session: Session = Depends(get_session)):
-#     return ListingReview.get_all(session)

@@ -7,7 +7,7 @@ import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 import Reviews from './Components/Reviews'
-import ListingMap from './Components/ListingMap'
+
 
 interface ListingProps {
   listingData?: ListingEntity

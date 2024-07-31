@@ -1,12 +1,10 @@
 import uuid
 from core.sql_models import SearchHistoryTable
-from core.config import PST_TZ
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from core.dependencies import get_session
 from core.schemas import Search, SearchHistory, SearchRequest
-from datetime import datetime
+from datetime import datetime, UTC
 import logging
-
 from sqlmodel import Session
 
 logging.basicConfig(format="%(asctime)s %(message)s")
@@ -21,7 +19,7 @@ router = APIRouter(
 @router.post("/{userID}")
 def add_history_item(userID: str, search: SearchRequest, session: Session = Depends(get_session)):
 
-    search_data = {"userID": userID, "timestamp": datetime.now(PST_TZ),
+    search_data = {"userID": userID, "timestamp": datetime.now(UTC),
                    "searchID": str(uuid.uuid4()), "searchTerm": search.model_dump()["searchTerm"]}
 
     logger.info(f"search performed {search_data}")
