@@ -34,6 +34,8 @@ def create_listing(data: dict, db: Session):
     if 'images' in listing_data and len(listing_data['images']) > 0:
         listing_data['imageUrl'] = listing_data['images'][0]['url']
 
+    listing_data["status"] = listing_data.get("status", ItemStatusEnum.AVAILABLE).value
+
     # Add the listing to Elasticsearch
     response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
     print(f'Added/updated ES database: {response}')
