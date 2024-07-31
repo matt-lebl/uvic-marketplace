@@ -176,6 +176,12 @@ export interface Message {
   sent_at: number
 }
 
+export interface NewMessage {
+  receiver_id: string
+  listing_id: string
+  content: string
+}
+
 export interface ListingPatchRequest {
   listing: NewListing
   status: ItemStatus
