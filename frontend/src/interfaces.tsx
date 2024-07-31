@@ -143,12 +143,11 @@ export interface SearchResultsResponse {
 }
 
 export interface SearchHistoryResponse {
-  searches: [
-    {
-      searchTerm: string
-      searchID: string
-    },
-  ]
+  searches: Search[]
+}
+export interface Search {
+  searchTerm: string
+  searchID: string
 }
 
 export interface UserProfile {
@@ -166,13 +165,7 @@ export interface MessageThread {
     name: string
     profilePicture: string
   }
-  last_message: {
-    sender_id: string
-    receiver_id: string
-    listing_id: string
-    content: string
-    sent_at: number
-  }
+  last_message: Message
 }
 
 export interface Message {
