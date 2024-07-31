@@ -14,7 +14,6 @@ import EditListing from './EditListing'
 import Search from './Search'
 import ValidateEmail from './ValidateEmail'
 import Events from './Events'
-import Footer from './Components/Footer'
 import { APIGet } from '../APIlink'
 
 const Router = () => {
