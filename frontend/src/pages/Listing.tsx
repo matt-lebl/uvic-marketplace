@@ -6,7 +6,7 @@ import SellerCard from './Components/SellerCard'
 import { useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
-import ListingMap from './Components/ListingMap'
+
 
 interface ListingProps {
   listingData?: ListingEntity
