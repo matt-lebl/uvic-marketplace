@@ -1,5 +1,5 @@
 import json
-from core.schemas import Listing, NewListing, NewReview, NewUser, UpdateUser
+from core.schemas import  NewListing, NewReview, UpdateUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
