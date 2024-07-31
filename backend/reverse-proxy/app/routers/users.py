@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Response, Request, HTTPException
 from core.schemas import (
-    NewUser,
     LoginRequest,
     NewUserReq,
-    User,
     ValidationRequest,
     SendEmailRequest,
 )

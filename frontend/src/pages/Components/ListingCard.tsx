@@ -36,7 +36,7 @@ export default function ListingCard(listing: ListingSummary) {
             variant="h6"
             alignSelf={'flex-start'}
             onClick={() => {
-              navigate('listing/' + listing.listingID)
+              navigate('/listing/' + listing.listingID)
             }}
           >
             {listing.title}
