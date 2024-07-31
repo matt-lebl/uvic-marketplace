@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { APIGet } from '../../APIlink'
+import APIError, { APIGet } from '../../APIlink'
 import { CharityEntity } from '../../interfaces'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
+import { useNavigate } from 'react-router-dom'
 
 const AnnouncementHeader: React.FC = () => {
+  const navigate = useNavigate()
   const [charity, setCharity] = useState<CharityEntity | null>(null)
 
   useEffect(() => {
@@ -12,11 +14,14 @@ const AnnouncementHeader: React.FC = () => {
       try {
         const data = await APIGet<CharityEntity>('/api/charities/current')
         setCharity(data)
-      } catch (error) {
-        console.error('Failed to fetch current charity', error)
+      } catch (error: any) {
+        debugger;
+        console.error('Failed to fetch current charity')
+        if (!(error instanceof APIError && error.status === 404)) {
+          navigate('/error')
+        }
       }
     }
-
     fetchCurrentCharity()
   }, [])
 

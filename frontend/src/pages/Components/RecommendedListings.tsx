@@ -6,6 +6,7 @@ import { ChangeEvent } from 'react'
 import { ListingSummary } from '../../interfaces'
 import { APIGet, APIPost } from '../../APIlink'
 import SelectInput from './SelectInput'
+import { useNavigate } from 'react-router-dom'
 
 
 const BASESEARCHLIMIT: number = parseInt(process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? "20"); // ?? "0" only exists to prevent type errors. It should never be reached.
@@ -14,6 +15,7 @@ const LISTINGLIMITPERPAGE: string[] = ["1", "5", "10", BASESEARCHLIMIT.toString(
 
 // TODO: Implement hooks for fetching recommended listings, and dynamically render them
 export default function RecommendedListings() {
+  const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState<string>(BASESEARCHLIMIT.toString());
   const [recommendedListings, setRecommendedListings] = useState<ListingSummary[]>([])
@@ -21,17 +23,20 @@ export default function RecommendedListings() {
   const [loading, setLoading] = useState(true)
 
   const getRecommendations = () => {
-    setTimeout(async () => {
+    const func = async () => {
       try {
         const res = await APIGet<ListingSummary[]>(`/api/recommendations`, [['page', currentPage], ['limit', itemsPerPage]])
         if (res) {
           setRecommendedListings(res)
         }
       } catch (error) {
-        console.log('Error fetching recommended listings:', error)
+        debugger
+        console.error('Error fetching recommended listings:', error)
+        navigate('/error')
       }
       console.log('Recommended listings:', recommendedListings)
-    }, 1000)
+    }
+    func()
     setLoading(false)
   }
 
@@ -66,7 +71,9 @@ export default function RecommendedListings() {
         setRecommendedListings(recommendedListings.filter((listing) => listing.listingID !== listingID))
       }
     } catch (error) {
-      console.log('Error removing recommendation:', error)
+      debugger
+      console.log('Error removing recommendation')
+      navigate('/error')
     }
   }
 
