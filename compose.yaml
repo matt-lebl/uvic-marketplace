@@ -35,6 +35,8 @@ services:
     depends_on:
       backend-fastapi-backend:
         condition: service_started
+    volumes:
+      - ./images:/app/images
   backend-fastapi-backend:
     build:
       context: backend/fastapi-backend

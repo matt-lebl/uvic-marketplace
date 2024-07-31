@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
 import { ListingEntity, ListingResponse } from '../interfaces'
-import { APIPost } from '../APIlink'
+import { APIPost, APIUploadImage } from '../APIlink'
 import { useNavigate } from 'react-router-dom'
 
 function CreateListing() {
@@ -19,12 +19,12 @@ function CreateListing() {
   const [price, setPrice] = useState<number>(0)
   const [imageNames, setImageNames] = useState<Array<string>>([])
   const [imageURLs, setImageURLs] = useState<Array<string>>([])
+  const [uploadedImageURLs, setUploadedImageURLs] = useState<Array<string>>([])
   const [latitude, setLatitude] = useState<number | null>(null)
   const [longitude, setLongitude] = useState<number | null>(null)
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
-  const [listingId, setListingId] = useState<string>();
   const navigate = useNavigate()
 
   async function apiSubmit(listing: Partial<ListingEntity>) {
@@ -41,7 +41,6 @@ function CreateListing() {
       console.error('Failed to create listing')
       navigate('/error')
     }
-
   }
 
   useEffect(() => {
@@ -62,24 +61,30 @@ function CreateListing() {
     }
   }, [])
 
-  const handlePhotoUpload = (event: ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoAdd = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files as FileList
 
-    if (files.length + imageURLs.length > 8) {
+    if (files.length + uploadedImageURLs.length > 8) {
       alert('Too many files')
       return
     }
 
     const names = Array.from(files).map((file) => file.name)
-    const urls = Array.from(files).map((file) => URL.createObjectURL(file))
-
-    setImageNames(imageNames.concat(names))
-    setImageURLs(imageURLs.concat(urls))
+    
+    Array.from(files).map(async file => {
+      const name = file.name
+      const url = await APIUploadImage(file)
+      if (url) {
+        setImageNames((prevNames : string[]) => prevNames.concat(name))
+        setUploadedImageURLs((prevURLs: string[]) => prevURLs.concat(url))
+      }
+    })
   }
 
   const handleRemoveAll = () => {
     setImageNames([])
     setImageURLs([])
+    setUploadedImageURLs([])
   }
 
   const handleSubmit = (event: FormEvent) => {
@@ -102,14 +107,11 @@ function CreateListing() {
       description: desc,
       price,
       location: { latitude, longitude },
-      images: imageURLs.map((url) => ({ url })),
+      images: uploadedImageURLs,
       markedForCharity: false,
     }
 
     apiSubmit(submitListing)
-
-
-
   }
 
   return (
@@ -198,7 +200,7 @@ function CreateListing() {
                   type="file"
                   multiple={true}
                   accept="image/*"
-                  onChange={handlePhotoUpload}
+                  onChange={handlePhotoAdd}
                 />
                 <Button
                   variant="contained"
