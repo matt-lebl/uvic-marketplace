@@ -74,7 +74,7 @@ async def search(*,
                 filters.append({"range": {"price": {"lte": maxPrice}}})
 
             print(status)
-            #filters.append({"term": {"status": status}})
+            filters.append({"match": {"status": status}})
 
             if filters:
                 search_body['query']['bool']['filter'].extend(filters)
