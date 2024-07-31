@@ -15,7 +15,8 @@ import {
   Grid,
 } from '@mui/material'
 import { User, ListingSummary } from '../interfaces'
-import { APIGet } from '../APIlink'
+import { APIDelete, APIGet } from '../APIlink'
+import { useNavigate } from 'react-router-dom'
 
 const currentUser: User = {
   userID: localStorage.getItem('userID') || '1',
@@ -108,6 +109,8 @@ interface ProfileProps {
 }
 
 const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
+  const navigate = useNavigate()
+
   const [editMode, setEditMode] = useState(false)
   const [activeTab, setActiveTab] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -145,15 +148,28 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
   }
 
   const handleLogout = async () => {
-    try {
-      const logoutResponse = await APIGet<boolean>(`/api/user/logout`)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      alert('Logged out successfully. See you later!')
-      localStorage.clear()
-      window.location.href = '/'
+    await APIGet<boolean>(`/api/user/logout`)
+      .catch((error: any) => {
+        debugger;
+        console.error("Could not logout")
+      })
+      .finally(() => {
+        alert('Logged out successfully. See you later!')
+        localStorage.clear()
+        window.location.href = '/'
+      })
+  }
+
+  const handleRemoveSearchHistory = () => {
+    const func = async () => {
+      await APIDelete(`/api/user/search-history`)
+        .catch((error) => {
+          debugger;
+          console.error('Error removing search history')
+          navigate("/error")
+        })
     }
+    func()
   }
 
   useEffect(() => {
@@ -243,6 +259,13 @@ const Profile: React.FC<ProfileProps> = ({ user, listings }) => {
             variant="contained"
           >
             Logout
+          </Button>
+          <Button
+            onClick={handleRemoveSearchHistory}
+            sx={{ alignSelf: 'flex-start' }}
+            variant="contained"
+          >
+            Clear Search History
           </Button>
         </Box>
       </Box>

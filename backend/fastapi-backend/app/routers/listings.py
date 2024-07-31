@@ -3,8 +3,6 @@ from fastapi.responses import JSONResponse
 from core.schemas import (
     Listing,
     ListingWithWrapper,
-    Location,
-    NewListing,
     NewListingWithWrapper,
     NewReview,
     UpdateListing,
@@ -22,6 +20,14 @@ listingsRouter = APIRouter(
     tags=["listings"],
     responses={404: {"description": "Not found"}},
 )
+
+
+@listingsRouter.get("")
+async def get_user_listings(authUserID: str, returnResponse: Response):
+    path = "listing/user/" + authUserID
+    response = await send_request_to_data_layer(path, "GET")
+    returnResponse.status_code = response.status_code
+    return response.json()
 
 
 @listingsRouter.get("/{id}")

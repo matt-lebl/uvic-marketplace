@@ -1,13 +1,16 @@
 import * as React from 'react'
-import { Paper, IconButton, InputBase, Menu, MenuItem } from '@mui/material'
+import { Paper, IconButton, InputBase, Menu, MenuItem, Typography, Grid } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { SxProps } from '@mui/material'
 import { useState } from 'react'
 import { ChangeEvent, FormEvent } from 'react'
-import { ItemStatus, SearchRequest, SearchType, Sort } from '../../interfaces'
+import { ItemStatus, Search, SearchHistoryResponse, SearchRequest, SearchType, Sort } from '../../interfaces'
 import { FilterAlt } from '@mui/icons-material'
 import NumericInput from './NumericOnlyInput'
 import SelectInput from './SelectInput'
+import { APIGet } from '../../APIlink'
+import { useNavigate } from 'react-router-dom'
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 
 interface Props {
   id: string
@@ -24,11 +27,14 @@ const Searchbox: React.FC<Props> = ({
   submit,
   previousSearchRequest,
 }) => {
+  const navigate = useNavigate()
+
   const BASELAT: string = process.env.REACT_APP_BASE_LATITUDE ?? '48.4631' // ?? "" only exists to prevent type errors. It should never be reached.
   const BASELONG: string = process.env.REACT_APP_BASE_LONGITUDE ?? '123.3122' // ?? "" only exists to prevent type errors. It should never be reached.
   const BASESEARCHLIMIT: number = parseInt(
     process.env.REACT_APP_DEFAULT_BULK_RETURN_LIMIT ?? '20'
   ) // ?? "0" only exists to prevent type errors. It should never be reached.
+  const BASESEARCHHISTORYLIMIT: number = 5;
 
   const [query, setQuery] = useState<string | undefined>(
     previousSearchRequest?.query ?? ''
@@ -52,6 +58,7 @@ const Searchbox: React.FC<Props> = ({
     previousSearchRequest?.longitude?.toString() ?? BASELONG
   )
   const [hasError, setHasError] = useState<number>(0)
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -79,7 +86,6 @@ const Searchbox: React.FC<Props> = ({
       submit(newQuery)
     }
   }
-
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const handleMenuButtonClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -87,6 +93,38 @@ const Searchbox: React.FC<Props> = ({
   }
   const handleMenuClose = () => {
     setAnchorEl(null)
+  }
+  const [searchHistoryAnchorEl, setSearchHistoryAnchorEl] = React.useState<null | HTMLElement>(null);
+  const openSearchHistory = Boolean(searchHistoryAnchorEl);
+
+  // React.useEffect(() => {
+  //   document.addEventListener('click', (e) => {
+  //     debugger;
+  //     handleSearchClick(e)
+  //   })
+  //   // return () => {
+  //   //   document.removeEventListener('click', (e) => handleSearchClick)
+  //   // }
+  // }, [searchHistoryAnchorEl]);
+
+  React.useEffect(() => {
+    const func = async () => {
+      await APIGet<SearchHistoryResponse>('/api/user/search-history')
+        .then((data) => setSearchHistory(data?.searches.map((value) => value.searchTerm) ?? [] as string[]))
+        .catch((error) => {
+          debugger;
+          console.error('Failed to get search history')
+          navigate('/error')
+        })
+    }
+    func()
+  }, [navigate])
+
+  const handleSearchClick = (event: React.MouseEvent<HTMLElement>) => {
+    setSearchHistoryAnchorEl(event.currentTarget);
+  }
+  const handleSearchClose = () => {
+    setSearchHistoryAnchorEl(null)
   }
 
   const onInvalidInputs = (value: boolean) => {
@@ -103,6 +141,44 @@ const Searchbox: React.FC<Props> = ({
         value={query ?? undefined}
         onChange={handleChange}
       />
+      <IconButton
+        aria-label="search-history-button"
+        id="search-history-button"
+        aria-controls={openSearchHistory ? 'search-history-menu' : undefined}
+        aria-expanded={openSearchHistory ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleSearchClick}
+      >
+        <FormatAlignLeftIcon />
+      </IconButton>
+      <Menu
+        id="search-history-menu"
+        anchorEl={searchHistoryAnchorEl}
+        keepMounted
+        open={openSearchHistory}
+        onClose={handleSearchClose}
+      >
+        {searchHistory.length === 0 ? (
+          <MenuItem>
+            <Typography variant="h6" align="center" mt={3}>
+              No search history.
+            </Typography>
+          </MenuItem>) : (
+            searchHistory.filter((value, index, array) => array.indexOf(value) === index).slice(0, BASESEARCHHISTORYLIMIT)).map((searchValue, index) => (
+              <MenuItem>
+                <Typography
+                  variant="body2"
+                  fontSize={13}
+                  align="left"
+                  mt={1}
+                  sx={{ textDecoration: 'underline', cursor: 'pointer' }}
+                  onClick={() => setQuery(searchValue)}
+                >
+                  {searchValue}
+                </Typography>
+              </MenuItem>
+            ))}
+      </Menu >
       <IconButton
         aria-label="filters"
         id="filter-button"
@@ -191,7 +267,7 @@ const Searchbox: React.FC<Props> = ({
       >
         <SearchIcon />
       </IconButton>
-    </Paper>
+    </Paper >
   )
 }
 

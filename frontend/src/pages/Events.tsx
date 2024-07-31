@@ -4,8 +4,10 @@ import { Box, Grid, Typography } from '@mui/material'
 import { useState, useEffect } from 'react'
 import { APIGet } from '../APIlink'
 import { CharityEntity, OrgEntity } from '../interfaces'
+import { useNavigate } from 'react-router-dom'
 
 export default function Events() {
+  const navigate = useNavigate()
   const [curCharityEvent, setCurCharityEvent] = useState<CharityEntity>()
   const [charityEvents, setCharityEvents] = useState<Array<CharityEntity>>([])
 
@@ -14,7 +16,9 @@ export default function Events() {
       const response: CharityEntity = await APIGet('/api/charities/current')
       setCurCharityEvent(response)
     } catch (error) {
-      console.log(error)
+      debugger
+      console.error("Failed to get Current Charaity Event")
+      navigate('/error')
     }
   }
 
@@ -23,7 +27,9 @@ export default function Events() {
       const response: Array<CharityEntity> = await APIGet('/api/charities')
       setCharityEvents(response)
     } catch (error) {
-      console.log(error)
+      debugger
+      console.error("Failed to get all charity events")
+      navigate('/error')
     }
   }
 

@@ -13,10 +13,9 @@ from sqlmodel import (
     or_,
     delete, desc
 )
-from datetime import datetime
+from datetime import datetime, UTC
 from core.schemas import ListingSchema, UserProfile, ItemStatus
 from fastapi import HTTPException
-from core.config import PST_TZ
 
 
 class UserBase(SQLModel):
@@ -42,6 +41,7 @@ class User(UserBase, table=True):
                                                   sa_relationship_kwargs={"foreign_keys": "[Message.sender_id]"})
     received_messages: list["Message"] = Relationship(back_populates="receiver",
                                                       sa_relationship_kwargs={"foreign_keys": "[Message.receiver_id]"})
+    search_history: "SearchHistoryTable" = Relationship(back_populates="searcher")
 
     @classmethod
     def create(cls, session: Session, **kwargs):
@@ -250,6 +250,11 @@ class Listing(ListingBase, table=True):
         return session.exec(statement).all()
 
     @classmethod
+    def get_by_seller_id(cls, session: Session, seller_id: str):
+        statement = select(cls).where(cls.sellerId == seller_id)
+        return session.exec(statement).all()
+
+    @classmethod
     def convert_to_db_object(cls, listing_data: dict, seller_id: str, session: Session):
         listing_data["sellerId"] = seller_id
         listing_data["latitude"] = float(listing_data["location"]["latitude"])
@@ -270,6 +275,8 @@ class Listing(ListingBase, table=True):
         reviews = self.get_reviews(session)
         data["seller_profile"] = user_profile
         data["reviews"] = reviews
+        data["dateCreated"] = data["dateCreated"].astimezone(UTC)
+        data["dateModified"] = data["dateModified"].astimezone(UTC)
         return ListingSchema(**data)
 
     def get_user_profile(self, session: Session):
@@ -308,6 +315,8 @@ class ListingReview(ListingReviewBase, table=True):
         session.add(review)
         session.commit()
         session.refresh(review)
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -326,7 +335,8 @@ class ListingReview(ListingReviewBase, table=True):
         session.add(review)
         session.commit()
         session.refresh(review)
-
+        review.dateCreated = review.dateCreated.astimezone(UTC)
+        review.dateModified = review.dateModified.astimezone(UTC)
         return review
 
     @classmethod
@@ -519,6 +529,8 @@ class CharityTable(SQLModel, table=True):
     def convert_to_schema(self, session: Session):
         data = self.model_dump()
         data["organizations"] = OrganizationTable.get_from_list(self.organizations, session)
+        data["startDate"] = data["startDate"].astimezone(UTC)
+        data["endDate"] = data["endDate"].astimezone(UTC)
         return data
 
     @classmethod
@@ -552,13 +564,13 @@ class CharityTable(SQLModel, table=True):
 
     @classmethod
     def get_current_charity_id(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls.id).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
     @classmethod
     def get_current_charity(cls, session: Session):
-        now = datetime.now(PST_TZ)
+        now = datetime.now(UTC)
         statement = select(cls).where(and_(cls.startDate <= now, cls.endDate >= now))
         return session.exec(statement).first()
 
@@ -589,12 +601,14 @@ class CharityTable(SQLModel, table=True):
 
         return {"message": "Charity deleted successfully"}
 
-
-class SearchHistoryTable(SQLModel, table=True):
+class SearchHistoryBase(SQLModel):
     searchID: str = Field(default=None, primary_key=True)
     userID: str = Field(default=None, foreign_key="user.userID")
     searchTerm: str
     timestamp: datetime | None = Field(index=True)
+
+class SearchHistoryTable(SearchHistoryBase, table=True):
+    searcher: User = Relationship(back_populates="search_history")
 
     @classmethod
     def create(cls, session: Session, **kwargs):

@@ -11,7 +11,7 @@ USER_ID_FIELD = "authUserID"
 
 async def perform_http_request(method: str, url: str, data: dict | None = None):
     async with httpx.AsyncClient() as client:
-        print(url)
+        print(f"REVERSE-PROXY: Sending to backend URL: {url}")
         return await client.request(method, url, json=data)
 
 

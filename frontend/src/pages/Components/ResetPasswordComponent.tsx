@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { APIGet, APIPost } from '../../APIlink'
 import { Formik, FormikHelpers, FormikErrors } from 'formik'
 import {
@@ -11,6 +11,7 @@ import {
 } from '@mui/material'
 
 export default function ResetPasswordComponent() {
+  const navigate = useNavigate()
   const handleResetPassword = async (email: string) => {
     try {
       const resetPasswordURL = '/api/user/reset-password'
@@ -19,12 +20,13 @@ export default function ResetPasswordComponent() {
         { email: email }
       )
       if (resetPasswordResponse) {
-        console.log(resetPasswordResponse)
         alert('Your password has been reset and emailed to you.')
         window.location.reload()
       }
     } catch (error) {
-      alert('An error occurred when resetting your password: ' + error)
+      debugger;
+      console.error('An error occurred when resetting your password')
+      navigate('/error')
     }
   }
 

@@ -28,7 +28,7 @@ def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
         if not listing_ids:
             return {"message": "No Interactions added, no listings found", "userID": user_id}
 
-        if len(listing_ids) < 10:
+        if len(listing_ids) < 4:
             return {"message": "No Interactions added, too few listings", "userID": user_id}
             
         # Calculate the average number of interactions per listing
@@ -46,11 +46,11 @@ def add_cold_start_interactions(user_id: str, db: Session = Depends(get_db)):
             avg_interactions_per_listing[listing_id] = avg_interaction_count
 
         # Select the top x listings based on the number of interactions
-        x = 10
+        x = 3
         top_interaction_listings = sorted(avg_interactions_per_listing.items(), key=lambda x: x[1], reverse=True)[:x]
 
         # Select y listings from the end of the list (proxy for more recently added)
-        y = 5
+        y = 1
         recent_listings = sorted(avg_interactions_per_listing.items(), key=lambda x: x[1])[-y:]
 
         # Add interactions for the user based top avg interactions and recent listings

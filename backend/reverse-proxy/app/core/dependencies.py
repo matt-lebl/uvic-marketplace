@@ -1,4 +1,4 @@
-# TODO: add dependecies https://fastapi.tiangolo.com/tutorial/dependencies/
+# https://fastapi.tiangolo.com/tutorial/dependencies/
 
 from core.auth import JWTBearer
 
