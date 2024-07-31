@@ -34,7 +34,7 @@ describe("Login", () => {
       .should("have.been.calledOnce")
       .and(
         "have.been.calledWith",
-        "Login failed: Error: Request failed with status code 500"
+        "Login failed: Error: Request failed with status code 400"
       );
   });
  
