@@ -1,6 +1,6 @@
 import * as React from 'react'
-import { LatLngTuple } from 'leaflet'
-import { MapContainer, TileLayer, useMap, Marker, Popup, Circle } from 'react-leaflet'
+import type { LatLngExpression } from 'leaflet'
+import { MapContainer, TileLayer, Circle } from 'react-leaflet'
 import './MapStyle.css'
 
 interface LocationProps {
@@ -11,7 +11,7 @@ interface LocationProps {
 const ListingMap: React.FC<LocationProps> = ({ lat, long }) => {
     const latitude = Math.round(lat * 1000) / 1000
     const longitude = Math.round(long * 1000) / 1000
-    const position: LatLngTuple = [latitude, longitude]
+    const position: LatLngExpression = [latitude, longitude]
 
     return (
         <MapContainer id='map' center={position} zoom={14} scrollWheelZoom={false}>
