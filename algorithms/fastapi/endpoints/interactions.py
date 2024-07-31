@@ -15,15 +15,19 @@ def record_click(data: Dict = Body(...), db: Session = Depends(get_db)):
     listing_id = data['listingID']
     
     if user_id is None:
+        print("No userID in request")
         raise HTTPException(status_code=401, detail="No userID in request")
     if listing_id is None:
+        print("No listingID in request")
         raise HTTPException(status_code=401, detail="No listingID in request")
     
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
+
+    interaction_weight = 10
     if interaction:
-        interaction.interaction_count += 1
+        interaction.interaction_count += interaction_weight
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=1)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=interaction_weight)
 
     try:
         db.add(interaction)
@@ -47,7 +51,7 @@ def record_review(data: Dict = Body(...), db: Session = Depends(get_db)):
     if stars is None or not (0 <= stars <= 5):
         raise HTTPException(status_code=400, detail="Invalid stars rating")
 
-    rating_weight = (stars - 3) * 10 # Covert the stars to a interation value
+    rating_weight = (stars - 3) * 50 # Covert the stars to a interation value
 
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
     if interaction:
@@ -92,10 +96,11 @@ def stop_suggesting_item_type(data: Dict = Body(...), db: Session = Depends(get_
 
     # decrease item interaction score
     interaction = db.query(DB_Interaction).filter(DB_Interaction.user_id == user_id, DB_Interaction.listing_id == listing_id).first()
+    interaction_weight = -100 # Negative influence
     if interaction:
-        interaction.interaction_count = -30  # Negative influence
+        interaction.interaction_count = interaction_weight
     else:
-        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=-30)
+        interaction = DB_Interaction(user_id=user_id, listing_id=listing_id, interaction_count=interaction_weight)
 
     try:
         db.add(interaction)
