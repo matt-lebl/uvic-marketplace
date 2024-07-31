@@ -10,6 +10,7 @@ import NumericInput from './NumericOnlyInput'
 import SelectInput from './SelectInput'
 import { APIGet } from '../../APIlink'
 import { useNavigate } from 'react-router-dom'
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
 
 interface Props {
   id: string
@@ -57,7 +58,7 @@ const Searchbox: React.FC<Props> = ({
     previousSearchRequest?.longitude?.toString() ?? BASELONG
   )
   const [hasError, setHasError] = useState<number>(0)
-  const [searchHistory, setSearchHistory] = useState<Search[]>([])
+  const [searchHistory, setSearchHistory] = useState<string[]>([])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value)
@@ -107,27 +108,23 @@ const Searchbox: React.FC<Props> = ({
   // }, [searchHistoryAnchorEl]);
 
   React.useEffect(() => {
-    const getSearchHistory = async () => {
+    const func = async () => {
       await APIGet<SearchHistoryResponse>('/api/user/search-history')
+        .then((data) => setSearchHistory(data?.searches.map((value) => value.searchTerm) ?? [] as string[]))
         .catch((error) => {
           debugger;
           console.error('Failed to get search history')
+          navigate('/error')
         })
-        .then((data) => setSearchHistory(data?.searches ?? [] as Search[]))
     }
-    getSearchHistory()
+    func()
+  }, [navigate])
 
-  }, [])
-
-  const ref = React.useRef<HTMLFormElement>(null);
   const handleSearchClick = (event: React.MouseEvent<HTMLElement>) => {
-    debugger;
-    if (ref.current && !ref.current.contains(event.target as Node)) {
-      setSearchHistoryAnchorEl(null);
-    }
-    else {
-      setSearchHistoryAnchorEl(event.currentTarget);
-    }
+    setSearchHistoryAnchorEl(event.currentTarget);
+  }
+  const handleSearchClose = () => {
+    setSearchHistoryAnchorEl(null)
   }
 
   const onInvalidInputs = (value: boolean) => {
@@ -135,7 +132,7 @@ const Searchbox: React.FC<Props> = ({
   }
 
   return (
-    <Paper component="form" sx={sx} id={id} onSubmit={handleSubmit} ref={ref}>
+    <Paper component="form" sx={sx} id={id} onSubmit={handleSubmit}>
       <InputBase
         id="Search Field"
         data-testid="search-field"
@@ -143,13 +140,23 @@ const Searchbox: React.FC<Props> = ({
         sx={{ ml: 1, flex: 1 }}
         value={query ?? undefined}
         onChange={handleChange}
-        onClick={handleSearchClick}
       />
+      <IconButton
+        aria-label="search-history-button"
+        id="search-history-button"
+        aria-controls={openSearchHistory ? 'search-history-menu' : undefined}
+        aria-expanded={openSearchHistory ? 'true' : undefined}
+        aria-haspopup="true"
+        onClick={handleSearchClick}
+      >
+        <FormatAlignLeftIcon />
+      </IconButton>
       <Menu
         id="search-history-menu"
         anchorEl={searchHistoryAnchorEl}
         keepMounted
         open={openSearchHistory}
+        onClose={handleSearchClose}
       >
         {searchHistory.length === 0 ? (
           <MenuItem>
@@ -157,7 +164,7 @@ const Searchbox: React.FC<Props> = ({
               No search history.
             </Typography>
           </MenuItem>) : (
-            searchHistory.slice(0, BASESEARCHHISTORYLIMIT)).map((searchValue, index) => (
+            searchHistory.filter((value, index, array) => array.indexOf(value) === index).slice(0, BASESEARCHHISTORYLIMIT)).map((searchValue, index) => (
               <MenuItem>
                 <Typography
                   variant="body2"
@@ -165,9 +172,9 @@ const Searchbox: React.FC<Props> = ({
                   align="left"
                   mt={1}
                   sx={{ textDecoration: 'underline', cursor: 'pointer' }}
-                  onClick={() => setQuery(searchValue.searchTerm)}
+                  onClick={() => setQuery(searchValue)}
                 >
-                  {searchValue.searchTerm}
+                  {searchValue}
                 </Typography>
               </MenuItem>
             ))}

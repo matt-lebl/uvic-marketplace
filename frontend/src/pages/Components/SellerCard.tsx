@@ -2,6 +2,7 @@ import React from 'react'
 import { Typography, Box, Paper, List, ListItem } from '@mui/material'
 import ProfileIcon from './ProfileIcon'
 import { ListingEntity } from '../../interfaces'
+import ListingMap from './ListingMap'
 
 
 interface SellerCardProps {
@@ -19,6 +20,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
           flexDirection: 'row',
           p: '20px 50px 20px 80px',
           flexGrow: 1,
+          maxWidth:'100%'
         }}
       >
         <ProfileIcon
@@ -36,7 +38,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
         </Paper>
       </Box>
       <Box sx={{ px: '50px' }}>
-
+        <ListingMap lat={data.location.latitude} long={data.location.longitude}/>
 
         <Box display='flex' flexDirection='row' m='20px 0'>
           <Typography variant='h2' sx={{ p: '5px', mr:'40px'}}>{data.title}</Typography>
@@ -45,7 +47,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
         </Box>
 
         <Paper sx={{ p: '5px', m: '10px 0px' }}>
-          <Typography>{data.description}</Typography>
+          <Typography sx={{overflow:'wrap', maxWidth:'100%'}}>{data.description}</Typography>
         </Paper>
       </Box>
     </div>

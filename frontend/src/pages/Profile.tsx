@@ -104,13 +104,29 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     }
   }
 
-  const handleRemoveSearchHistory = () => {
-    setTimeout(async () => {
-      await APIDelete(`/api/user/search-history`).catch((error) => {
-        console.error('Error removing search history:', error)
-        navigate('/error')
+  const handleLogout = async () => {
+    await APIGet<boolean>(`/api/user/logout`)
+      .catch((error: any) => {
+        debugger;
+        console.error("Could not logout")
       })
-    }, 1000)
+      .finally(() => {
+        alert('Logged out successfully. See you later!')
+        localStorage.clear()
+        window.location.href = '/'
+      })
+  }
+
+  const handleRemoveSearchHistory = () => {
+    const func = async () => {
+      await APIDelete(`/api/user/search-history`)
+        .catch((error) => {
+          debugger;
+          console.error('Error removing search history')
+          navigate("/error")
+        })
+    }
+    func()
   }
 
   useEffect(() => {

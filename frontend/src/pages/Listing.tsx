@@ -3,7 +3,7 @@ import './App.css'
 import { Typography, Box, Paper } from '@mui/material'
 import PhotoGallery from './Components/PhotoGallery'
 import SellerCard from './Components/SellerCard'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { APIGet } from '../APIlink'
 import { ListingEntity } from '../interfaces'
 import Reviews from './Components/Reviews'
@@ -14,6 +14,7 @@ interface ListingProps {
 }
 
 const Listing: React.FC<ListingProps> = ({ listingData: initialListingData, }) => {
+  const navigate = useNavigate()
   const { listingID } = useParams<string>()
   const [listingData, setListingData] = useState<ListingEntity | undefined>(
     initialListingData
@@ -32,7 +33,9 @@ const Listing: React.FC<ListingProps> = ({ listingData: initialListingData, }) =
           setListingData(response)
         }
       } catch (error) {
-        console.log('Request Error', error)
+        debugger
+        console.log('Request Error')
+        navigate('/error')
       } finally {
         setLoading(false)
       }
