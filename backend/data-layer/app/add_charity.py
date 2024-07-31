@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import datetime, UTC, timedelta
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
@@ -47,19 +47,22 @@ def main():
     To use, add the organization data in the org_data list of tuples, can add any number of tuples, but one of them
     should have receiving=True.
     To create the charity add the name and description into the charity_request_data
-    TODO Add details regarding the datetime, this will be fixed in an upcoming patch
     :return:
     """
     org_data = [
-        ("NAME", "LOGOURL", False),
-        ("NAME", "LOGOURL", False),
-        ("NAME", "LOGOURL", False),
-        ("NAME", "LOGOURL", True)
+        ("Test Corp", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
+        ("Test Corp 2", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
+        ("Test Corp 3", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
+        ("Test Corp 4", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", True)
     ]
 
     orgs = [generate_organization(org[0], org[1], org[2]) for org in org_data]
 
-    charity_request_data = ("NAME", "DESCRIPTION", datetime.now().isoformat(), datetime.now().isoformat(), "IMAGE_URL", orgs)
+    charity_request_data = ("Giving Charity", "A good charity for charitying",
+                            datetime.now(UTC).isoformat(),
+                            (datetime.now(UTC) + timedelta(days=30)).isoformat(),
+                            "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg",
+                            orgs)
 
     charity_request = generate_charity_request(charity_request_data[0], charity_request_data[1],
                                                charity_request_data[2], charity_request_data[3],
