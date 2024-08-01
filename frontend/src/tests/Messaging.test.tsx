@@ -125,7 +125,7 @@ describe('Messaging Component', () => {
       )
     )
 
-    const messageElements = await screen.findAllByText((content, element) => {
+    const messageElements = await screen.findAllByText((content) => {
       return content === 'New message'
     })
     expect(messageElements.length).toBeGreaterThan(0)
