@@ -24,7 +24,6 @@ export default function ResetPasswordComponent() {
         window.location.reload()
       }
     } catch (error) {
-      debugger;
       console.error('An error occurred when resetting your password')
       navigate('/error')
     }

@@ -2,6 +2,8 @@ import axios, { AxiosResponse, AxiosInstance } from 'axios'
 
 export const baseUrl = process.env.REACT_APP_BASEURL ?? 'https://market.lebl.ca'
 
+export function validateReturn(status: number): boolean { return status <= 500 };
+
 var instance = axios.create({ baseURL: baseUrl, withCredentials: true })
 export default class APIError extends Error {
   status: number
@@ -22,7 +24,7 @@ export async function APIPost<TResponse, TBody>(
   const response: AxiosResponse<TResponse> = await instance.post(
     baseUrl + path,
     requestBody,
-    { validateStatus: (status) => status <= 500 }
+    { validateStatus: validateReturn }
   )
   switch (response.status) {
     case 200:
@@ -51,7 +53,7 @@ export async function APIGet<TResponse>(
   const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`
 
   const response: AxiosResponse<TResponse> = await instance.get(url,
-    { validateStatus: (status) => status <= 500 })
+    { validateStatus: validateReturn })
   switch (response.status) {
     case 200:
     case 101:
@@ -72,7 +74,7 @@ export async function APIPatch<TResponse, TBody>(
   const response: AxiosResponse<TResponse> = await instance.patch(
     baseUrl + path,
     requestBody,
-    { validateStatus: (status) => status <= 500 }
+    { validateStatus: validateReturn }
   )
   switch (response.status) {
     case 200:
@@ -100,7 +102,7 @@ export async function APIDelete(
   const url = `${baseUrl}${path}${queryString ? '?' + queryString : ''}`
 
   const response: AxiosResponse = await instance.delete(url,
-    { validateStatus: (status) => status <= 500 })
+    { validateStatus: validateReturn })
   switch (response.status) {
     case 200:
       break

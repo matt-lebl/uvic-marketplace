@@ -8,8 +8,8 @@ const eventDataMock: CharityEntity = {
   id: '1',
   name: 'Sample Event',
   funds: 10000,
-  startDate: '2024-07-15',
-  endDate: '2024-07-20',
+  startDate: new Date('2024-07-15').toISOString(),
+  endDate: new Date('2024-07-20').toISOString(),
   imageUrl: 'sample_image_url',
   description: 'Sample event description.',
   organizations: [],
@@ -25,7 +25,7 @@ describe('EventCard component', () => {
     expect(screen.getByText('Funding: $10000')).toBeInTheDocument()
 
     const startText = screen.getByText((content) => {
-      const regex = /2024-07-15/
+      const regex = new RegExp("14/07/2024, 17:00:00")///2024-07-15, 17:00:00/
       const hasText = regex.test(content)
 
       return hasText
@@ -34,7 +34,7 @@ describe('EventCard component', () => {
     expect(startText).toBeInTheDocument()
 
     const endText = screen.getByText((content) => {
-      const regex = /2024-07-20/
+      const regex = new RegExp("19/07/2024, 17:00:00")///2024-07-20, 17:00:00/
       const hasText = regex.test(content)
 
       return hasText

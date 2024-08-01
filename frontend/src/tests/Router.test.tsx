@@ -11,10 +11,17 @@ import APIError, {
   APIDelete,
   SetAxios,
 } from '../APIlink'
+import { DataProvider } from '../DataContext'
 
 jest.mock('../APIlink', () => ({
   APIGet: jest.fn(),
 }))
+jest.mock('react-leaflet', () => jest.fn());
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
+jest.mock('../pages/Components/RecommendedListings', () => jest.fn())
 
 const mockAPIGet = APIGet as jest.MockedFunction<typeof APIGet>
 
@@ -28,13 +35,15 @@ describe('Testing basic routes', () => {
 
   test('Homepage Navigation when logged in', async () => {
     localStorage.setItem('userID', 'A12334B345')
-    mockAPIGet.mockResolvedValueOnce({ userID: 'A12334B345' })
+    mockAPIGet.mockResolvedValue({ userID: 'A12334B345' })
     let container: HTMLElement
     await act(async () => {
       container = render(
-        <MemoryRouter initialEntries={['/']}>
-          <Router />
-        </MemoryRouter>
+        <DataProvider>
+          <MemoryRouter initialEntries={['/']}>
+            <Router />
+          </MemoryRouter>
+        </DataProvider>
       ).container
     })
     await waitFor(
@@ -49,7 +58,7 @@ describe('Testing basic routes', () => {
         <Router />
       </MemoryRouter>
     )
-    expect(t.baseElement.innerHTML).toContain('<div class="Login">')
+    waitFor(() => expect(t.baseElement.innerHTML.includes('<div class="Login">')).toBeTruthy())
   })
 
   test('Login Navigation when not logged in', () => {
@@ -61,12 +70,12 @@ describe('Testing basic routes', () => {
     expect(t.baseElement.innerHTML).toContain('<div class="Login">')
   })
 
-  test('Register Navigation when not logged in', () => {
+  test('Register Navigation when not logged in', async () => {
     const t = render(
       <MemoryRouter initialEntries={['/register']}>
         <Router />
       </MemoryRouter>
     )
-    expect(t.baseElement.innerHTML).toContain('<div class="Login">')
+    waitFor(() => expect(t.baseElement.innerHTML.includes('<div class="Login">')).toBeTruthy())
   })
 })

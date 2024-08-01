@@ -2,6 +2,12 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import SellerCard from '../../pages/Components/SellerCard'
 import { ListingEntity } from '../../interfaces'
+jest.mock('react-leaflet', () => jest.fn());
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
+jest.mock('../../pages/Components/ListingMap', () => jest.fn())
 
 const mockListingEntity: ListingEntity = {
   listingID: '1',

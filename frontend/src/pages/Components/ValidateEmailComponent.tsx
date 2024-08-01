@@ -25,7 +25,6 @@ export default function ValidateEmailComponent() {
         alert('Verification link failed to send.')
       }
     } catch (error) {
-      debugger
       console.error("Error sending validation Email")
       navigate('/error')
     }
@@ -43,7 +42,6 @@ export default function ValidateEmailComponent() {
         alert('Email verified successfully!')
       }
     } catch (error) {
-      debugger
       console.error('An error occurred when verifying email')
       navigate('/error')
     }

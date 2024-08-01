@@ -8,7 +8,7 @@ interface PhotoGalleryProps {
 
 const PhotoGallery: React.FC<PhotoGalleryProps> = ({ images }) => {
   return (
-    <div className="Photo-Gallery">
+    <div className="Photo-Gallery" data-testid="photoGallery">
       <ImageList
         sx={{ width: '50vw', height: '75vh', border: '1px solid' }}
         cols={1}

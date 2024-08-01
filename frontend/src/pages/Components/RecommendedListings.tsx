@@ -30,7 +30,6 @@ export default function RecommendedListings() {
           setRecommendedListings(res)
         }
       } catch (error) {
-        debugger
         console.error('Error fetching recommended listings:', error)
         navigate('/error')
       }
@@ -68,10 +67,9 @@ export default function RecommendedListings() {
     try {
       const response = await APIPost(`/api/recommendations/stop/${listingID}`)
       if (response) {
-        setRecommendedListings(recommendedListings.filter((listing) => listing.listingID !== listingID))
+        setRecommendedListings([...(recommendedListings.filter((listing) => listing.listingID !== listingID))])
       }
     } catch (error) {
-      debugger
       console.log('Error removing recommendation')
       navigate('/error')
     }
@@ -128,7 +126,7 @@ export default function RecommendedListings() {
         </Typography>) : (
           <Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
             {recommendedListings.map((listing, index) => (
-              <Grid item sx={{ width: '100%' }} key={index}>
+              <Grid item sx={{ width: '100%' }} key={listing.listingID}>
                 <ListingCard {...listing} />
                 <Typography
                   data-testid={`remove-recommendation-${listing.listingID}`}

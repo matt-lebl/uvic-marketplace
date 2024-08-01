@@ -39,7 +39,6 @@ function CreateListing() {
         navigate('/');
       }
     } catch (error) {
-      debugger
       console.error('Failed to create listing')
       navigate('/error')
     }
@@ -82,12 +81,12 @@ function CreateListing() {
     }
 
     const names = Array.from(files).map((file) => file.name)
-    
+
     Array.from(files).map(async file => {
       const name = file.name
       const url = await APIUploadImage(file)
       if (url) {
-        setImageNames((prevNames : string[]) => prevNames.concat(name))
+        setImageNames((prevNames: string[]) => prevNames.concat(name))
         setUploadedImageURLs((prevURLs: string[]) => prevURLs.concat(url))
       }
     })
@@ -119,7 +118,7 @@ function CreateListing() {
       description: desc,
       price,
       location: { latitude, longitude },
-      images: uploadedImageURLs.map((url:string) => ({ url })),
+      images: uploadedImageURLs.map((url: string) => ({ url })),
       markedForCharity,
     }
 
