@@ -13,14 +13,14 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
   const { seller_profile } = data
 
   return (
-    <div className="Seller-Card">
+    <div className="Seller-Card" data-testid="seller-card">
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
           p: '20px 50px 20px 80px',
           flexGrow: 1,
-          maxWidth:'100%'
+          maxWidth: '100%'
         }}
       >
         <ProfileIcon
@@ -38,16 +38,16 @@ const SellerCard: React.FC<SellerCardProps> = ({ data }) => {
         </Paper>
       </Box>
       <Box sx={{ px: '50px' }}>
-        <ListingMap lat={data.location.latitude} long={data.location.longitude}/>
+        <ListingMap lat={data.location.latitude} long={data.location.longitude} />
 
         <Box display='flex' flexDirection='row' m='20px 0'>
-          <Typography variant='h2' sx={{ p: '5px', mr:'40px'}}>{data.title}</Typography>
+          <Typography variant='h2' sx={{ p: '5px', mr: '40px' }}>{data.title}</Typography>
           <Typography variant='h2' sx={{ p: '5px' }}>$ </Typography>
-          <Typography variant='h2'  sx={{ p:'5px' }}>{data.price}</Typography>
+          <Typography variant='h2' sx={{ p: '5px' }}>{data.price}</Typography>
         </Box>
 
         <Paper sx={{ p: '5px', m: '10px 0px' }}>
-          <Typography sx={{overflow:'wrap', maxWidth:'100%'}}>{data.description}</Typography>
+          <Typography sx={{ overflow: 'wrap', maxWidth: '100%' }}>{data.description}</Typography>
         </Paper>
       </Box>
     </div>

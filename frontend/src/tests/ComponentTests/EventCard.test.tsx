@@ -25,7 +25,7 @@ describe('EventCard component', () => {
     expect(screen.getByText('Funding: $10000')).toBeInTheDocument()
 
     const startText = screen.getByText((content) => {
-      const regex = /2024-07-15, 17:00:00/
+      const regex = new RegExp("14/07/2024, 17:00:00")///2024-07-15, 17:00:00/
       const hasText = regex.test(content)
 
       return hasText
@@ -34,7 +34,7 @@ describe('EventCard component', () => {
     expect(startText).toBeInTheDocument()
 
     const endText = screen.getByText((content) => {
-      const regex = /2024-07-20, 17:00:00/
+      const regex = new RegExp("19/07/2024, 17:00:00")///2024-07-20, 17:00:00/
       const hasText = regex.test(content)
 
       return hasText

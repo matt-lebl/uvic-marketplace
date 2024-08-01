@@ -133,57 +133,59 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
     const [hasExistingReview, setHasExistingReview] = useState(!(initialReviews?.every((value) => value.userID !== userID)) ?? false)
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                padding: '50px',
-                flexGrow: 1,
-            }}>
-            <Paper
+        <div data-testid="Reviews">
+            <Box
                 sx={{
-                    padding: '20px',
-                    backgroundColor: '#ffffff',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    padding: '50px',
                     flexGrow: 1,
                 }}>
-                <Box
+                <Paper
                     sx={{
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        display: 'flex',
-                        flexDirection: 'row',
+                        padding: '20px',
+                        backgroundColor: '#ffffff',
                         flexGrow: 1,
-                    }}
-                >
-                    <Typography sx={{ fontWeight: '700' }}>Reviews</Typography>
-                    {hasExistingReview ? null :
-                        <Button
-                            variant="contained"
-                            onClick={createReview}
-                            sx={{
-                                width: '40px',
-                                height: '40px',
-                                backgroundColor: '#25496A',
-                                color: '#B5DBFF',
-                                fontSize: '30px',
-                                borderRadius: '10px',
-                            }}
-                        >
-                            +
-                        </Button>
-                    }
-                </Box>
-                < Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
-                    {reviewData.map((reviewProps, index) => {
-                        return (
-                            <Grid item sx={{ width: '100%', padding: '10px' }} key={reviewProps.data.listing_review_id}>
-                                <ReviewCard {...reviewProps} />
-                            </Grid>
-                        )
-                    })}
-                </Grid >
-            </Paper>
-        </Box>)
+                    }}>
+                    <Box
+                        sx={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            flexGrow: 1,
+                        }}
+                    >
+                        <Typography sx={{ fontWeight: '700' }}>Reviews</Typography>
+                        {hasExistingReview ? null :
+                            <Button
+                                variant="contained"
+                                onClick={createReview}
+                                sx={{
+                                    width: '40px',
+                                    height: '40px',
+                                    backgroundColor: '#25496A',
+                                    color: '#B5DBFF',
+                                    fontSize: '30px',
+                                    borderRadius: '10px',
+                                }}
+                            >
+                                +
+                            </Button>
+                        }
+                    </Box>
+                    < Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
+                        {reviewData.map((reviewProps, index) => {
+                            return (
+                                <Grid item sx={{ width: '100%', padding: '10px' }} key={reviewProps.data.listing_review_id}>
+                                    <ReviewCard {...reviewProps} />
+                                </Grid>
+                            )
+                        })}
+                    </Grid >
+                </Paper>
+            </Box>
+        </div>)
 }
 
 export default Reviews

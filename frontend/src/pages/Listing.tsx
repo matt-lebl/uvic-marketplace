@@ -140,7 +140,7 @@ const Listing: React.FC<ListingProps> = ({
               </Box>
               {userListing ? (
                 <Box display={'flex'} flexDirection={'row-reverse'}>
-                  <Button variant="contained" type="submit">
+                  <Button variant="contained" type="submit" data-testid="EditButton">
                     Edit
                   </Button>
                 </Box>
