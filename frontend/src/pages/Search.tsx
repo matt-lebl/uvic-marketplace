@@ -70,7 +70,6 @@ function Search() {
           results.items = response.items
         })
         .catch((error: any) => {
-          debugger;
           console.error("Could not get Search Results")
           navigate('/error')
         })

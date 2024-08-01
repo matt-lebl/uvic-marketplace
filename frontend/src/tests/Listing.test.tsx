@@ -3,6 +3,11 @@ import { render, screen } from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import Listing from '../pages/Listing'
 import { ListingEntity } from '../interfaces'
+jest.mock('react-leaflet', () => jest.fn());
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
 
 const mockListing: ListingEntity = {
   title: 'Test Listing',

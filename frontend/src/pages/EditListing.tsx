@@ -52,7 +52,6 @@ function EditListing() {
         setImages(response.images)
       }
     } catch (error) {
-      debugger
       console.log(error)
       navigate('/error')
     } finally {
@@ -113,7 +112,6 @@ function EditListing() {
       console.log(response)
       navigate(`/listing/${listingID}`)
     } catch (error) {
-      debugger
       console.error("Failed to Update Listing")
       navigate('/error')
     }

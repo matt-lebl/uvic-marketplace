@@ -8,6 +8,11 @@ jest.mock('../APIlink', () => ({
   APIGet: jest.fn(),
   APIPost: jest.fn(),
 }))
+jest.mock('react-leaflet', () => jest.fn());
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
 
 const mockThreads = [
   {
@@ -38,23 +43,23 @@ describe('Messaging Component', () => {
       }
       return null
     })
-    ;(APIGet as jest.Mock).mockImplementation((url) => {
-      if (url === '/api/messages/overview') {
-        return Promise.resolve(mockThreads)
-      }
-      if (url.startsWith('/api/messages/thread')) {
-        return Promise.resolve(mockMessages)
-      }
-      if (url.startsWith('/api/user')) {
-        return Promise.resolve({
-          userID: 'user-3',
-          name: 'User Three',
-          profileUrl: '',
-        })
-      }
-      return Promise.resolve([])
-    })
-    ;(APIPost as jest.Mock).mockResolvedValue({})
+      ; (APIGet as jest.Mock).mockImplementation((url) => {
+        if (url === '/api/messages/overview') {
+          return Promise.resolve(mockThreads)
+        }
+        if (url.startsWith('/api/messages/thread')) {
+          return Promise.resolve(mockMessages)
+        }
+        if (url.startsWith('/api/user')) {
+          return Promise.resolve({
+            userID: 'user-3',
+            name: 'User Three',
+            profileUrl: '',
+          })
+        }
+        return Promise.resolve([])
+      })
+      ; (APIPost as jest.Mock).mockResolvedValue({})
   })
 
   afterEach(() => {

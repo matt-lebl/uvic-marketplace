@@ -99,7 +99,6 @@ const Searchbox: React.FC<Props> = ({
 
   // React.useEffect(() => {
   //   document.addEventListener('click', (e) => {
-  //     debugger;
   //     handleSearchClick(e)
   //   })
   //   // return () => {
@@ -112,7 +111,6 @@ const Searchbox: React.FC<Props> = ({
       await APIGet<SearchHistoryResponse>('/api/user/search-history')
         .then((data) => setSearchHistory(data?.searches.map((value) => value.searchTerm) ?? [] as string[]))
         .catch((error) => {
-          debugger;
           console.error('Failed to get search history')
           navigate('/error')
         })

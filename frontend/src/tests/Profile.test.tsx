@@ -12,7 +12,11 @@ const mockUser: User = {
   profileUrl: 'https://randomuser.me/api/',
   email: 'test@gmail.com',
 }
-
+jest.mock('react-leaflet', () => jest.fn());
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
 describe('ProfileContainer', () => {
   beforeEach(() => {
     render(<ProfileContainer />)

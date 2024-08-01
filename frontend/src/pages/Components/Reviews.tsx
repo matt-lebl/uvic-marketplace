@@ -175,7 +175,6 @@ const Reviews: React.FC<ReviewsProps> = ({ listingID, initialReviews }) => {
                 </Box>
                 < Grid border={'white'} bgcolor={'transparent'} width={'100%'}>
                     {reviewData.map((reviewProps, index) => {
-                        debugger;
                         return (
                             <Grid item sx={{ width: '100%', padding: '10px' }} key={reviewProps.data.listing_review_id}>
                                 <ReviewCard {...reviewProps} />

@@ -16,7 +16,6 @@ export default function Events() {
       const response: CharityEntity = await APIGet('/api/charities/current')
       setCurCharityEvent(response)
     } catch (error) {
-      debugger
       console.error("Failed to get Current Charaity Event")
       navigate('/error')
     }
@@ -27,7 +26,6 @@ export default function Events() {
       const response: Array<CharityEntity> = await APIGet('/api/charities')
       setCharityEvents(response)
     } catch (error) {
-      debugger
       console.error("Failed to get all charity events")
       navigate('/error')
     }

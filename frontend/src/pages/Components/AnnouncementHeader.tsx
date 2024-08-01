@@ -15,7 +15,6 @@ const AnnouncementHeader: React.FC = () => {
         const data = await APIGet<CharityEntity>('/api/charities/current')
         setCharity(data)
       } catch (error: any) {
-        debugger;
         console.error('Failed to fetch current charity')
         if (!(error instanceof APIError && error.status === 404)) {
           navigate('/error')

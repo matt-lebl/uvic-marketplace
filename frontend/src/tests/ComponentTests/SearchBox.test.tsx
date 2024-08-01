@@ -5,6 +5,12 @@ import Searchbox from '../../pages/Components/SearchBox'
 
 const mockSubmit = jest.fn()
 
+const mockOnSearch = jest.fn()
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}))
+
 describe('Searchbox', () => {
   const BASELAT: string = process.env.REACT_APP_BASE_LATITUDE ?? '' // ?? "" only exists to prevent type errors. It should never be reached.
   const BASELONG: string = process.env.REACT_APP_BASE_LONGITUDE ?? '' // ?? "" only exists to prevent type errors. It should never be reached.

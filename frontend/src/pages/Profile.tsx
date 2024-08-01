@@ -95,7 +95,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const handleLogout = async () => {
     await APIGet<boolean>(`/api/user/logout`)
       .catch((error: unknown) => {
-        debugger
         console.error('Could not logout', error)
       })
       .finally(() => {
@@ -108,7 +107,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
   const handleRemoveSearchHistory = () => {
     const func = async () => {
       await APIDelete(`/api/user/search-history`).catch((error) => {
-        debugger
         console.error('Error removing search history', error)
         navigate('/error')
       })
