@@ -1,5 +1,5 @@
 import json
-from core.schemas import  NewListing, NewReview, UpdateUser
+from core.schemas import NewListing, NewReview, UpdateUser
 from decouple import config
 from confluent_kafka import Producer
 from uuid import uuid4 as random_uuid
@@ -24,7 +24,9 @@ class DataSyncKafkaProducer:
             return
 
         self.conf = {
-            "bootstrap.servers": config(FB_ENV_VARS.KAFKA_BOOTSTRAP_SERVERS, default=""),
+            "bootstrap.servers": config(
+                FB_ENV_VARS.KAFKA_BOOTSTRAP_SERVERS, default=""
+            ),
             "client.id": random_uuid(),
         }
         self.producer = Producer(self.conf)
@@ -70,9 +72,9 @@ class DataSyncKafkaProducer:
     # POST /api/listing/review/
     def push_new_review(self, review: NewReview, userID: str):
         review_dict = {
-            'userID': userID,
-            'stars': review.stars,
-            'listingID': review.listingID,
+            "userID": userID,
+            "stars": review.stars,
+            "listingID": review.listingID,
         }
         self.push_message("create-review", json.dumps(review_dict, default=str))
 
@@ -90,21 +92,21 @@ class DataSyncKafkaProducer:
     # POST /api/user/
     def push_new_user(self, user: dict):
         user_dict = {
-            'username': user['username'],
-            'userID': user['userID'],
-            'name': user['name'],
-            'bio': user['bio']
+            "username": user["username"],
+            "userID": user["userID"],
+            "name": user["name"],
+            "bio": user["bio"],
         }
-        self.push_message("create-user", json.dumps({'user': user_dict}))
+        self.push_message("create-user", json.dumps({"user": user_dict}))
 
     # PATCH /api/user/{id}
     def push_updated_user(self, user: UpdateUser, userID: str):
         user_dict = {
-            'username': user.username,
-            'userID': userID,
-            'name': user.name,
-            'bio': user.bio,
-            'ignoreCharityListings': user.ignoreCharityListings
+            "username": user.username,
+            "userID": userID,
+            "name": user.name,
+            "bio": user.bio,
+            "ignoreCharityListings": user.ignoreCharityListings,
         }
         self.push_message("edit-user", json.dumps(user_dict))
 
@@ -112,3 +114,6 @@ class DataSyncKafkaProducer:
     def push_deleted_user(self, userID: str):
         # TODO
         pass
+
+
+dsKafkaProducer = DataSyncKafkaProducer()

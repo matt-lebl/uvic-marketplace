@@ -15,7 +15,7 @@ from services.utils import convert_to_type, data_layer_failed
 from services.auth import AuthHandler, EmailValidator, UserValidator
 from services.data_sync_kafka_producer import DataSyncKafkaProducer
 
-dsKafkaProducer = DataSyncKafkaProducer(disable=False)
+from services.data_sync_kafka_producer import dsKafkaProducer
 
 userRouter = APIRouter(
     prefix="/api/user",

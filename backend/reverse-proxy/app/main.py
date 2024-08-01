@@ -29,6 +29,8 @@ app.add_middleware(
         "https://localhost",
         "http://market.lebl.ca",
         "https://market.lebl.ca",
+        "http://market.rahuln.ca",
+        "https://market.rahuln.ca",
     ],
     allow_credentials=True,
     allow_methods=["*"],

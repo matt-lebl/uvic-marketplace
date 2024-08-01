@@ -40,3 +40,5 @@ cypress/screenshots/
 cypress/videos/
 cypress/logs/
 cypress.env.json
+
+images/*
