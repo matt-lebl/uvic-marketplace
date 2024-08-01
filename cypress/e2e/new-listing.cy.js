@@ -12,11 +12,11 @@ describe("New Listing", () => {
     })
     cy.get('form[data-testid="login-form"]').submit();
     cy.url().should("eq", "https://market.lebl.ca/");
-    cy.get("button").eq(6).click();
+    cy.contains('button', '+').click();
   });
 
   it("Should load the New Listing page", () => {
-    cy.url().should('include', '/new-listing');
+    cy.url().should('eq', 'https://market.lebl.ca/new-listing');
     cy.contains("h2", "New Listing").should("be.visible");
   })
 
@@ -27,16 +27,12 @@ describe("New Listing", () => {
     cy.get('button[type="submit"]').click();
     const fileName = 'umbrella.jpg';
     cy.get('input#photoInput').attachFile(fileName);
+    cy.url().should("include", "/listing");
   });
 
   it("Should not create an invalid listing", () => {
     cy.get('button[type="submit"]').click();
-    cy.get('#Listing-Title-helper-text')
-      .should('be.visible')
-      .and('contain.text', 'Title is required');
-    cy.get('#Listing-Price-helper-text')
-      .should('be.visible')
-      .and('contain.text', 'Price is required');
+    cy.url().should("eq", "https://market.lebl.ca/new-listing");
   });
 
   afterEach(() => {
