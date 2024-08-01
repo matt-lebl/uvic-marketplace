@@ -8,6 +8,7 @@ import APIError, {
   APIPatch,
   APIDelete,
   SetAxios,
+  validateReturn,
 } from '../APIlink'
 import ErrorResponse, {
   ListingRequest,
@@ -118,7 +119,9 @@ describe('POST', () => {
     // // expect(res.status).toEqual(200);
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
-      testRequest
+      testRequest,
+      { validateStatus: validateReturn }
+
     )
     expect(testRequest.listing).toSatisfySchemaInApiSpec('NewListing')
     expect(res?.listing).toSatisfySchemaInApiSpec('Listing')
@@ -149,7 +152,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest).toSatisfySchemaInApiSpec('NewReview')
     expect(res).toSatisfySchemaInApiSpec('Review')
@@ -163,7 +166,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL + testID,
       undefined,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res).toEqual(null)
   })
@@ -191,7 +194,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest).toSatisfySchemaInApiSpec('NewUserReq')
     expect(res).toSatisfySchemaInApiSpec('NewUser')
@@ -207,7 +210,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res).toEqual(null)
   })
@@ -232,7 +235,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest).toSatisfySchemaInApiSpec('LoginRequest')
     expect(res).toSatisfySchemaInApiSpec('User')
@@ -242,7 +245,7 @@ describe('POST', () => {
     const testURL: string = 'api/user/logout'
     mockedAxios.post.mockResolvedValueOnce({ status: 200, data: null })
     const res = await APIPost(testURL)
-    expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined)
+    expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined, { validateStatus: validateReturn })
     expect(res).toEqual(null)
   })
 
@@ -250,7 +253,7 @@ describe('POST', () => {
     const testURL: string = 'api/user/send-confirmation-email'
     mockedAxios.post.mockResolvedValueOnce({ status: 200, data: null })
     const res = await APIPost(testURL)
-    expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined)
+    expect(mockedAxios.post).toHaveBeenCalledWith(baseUrl + testURL, undefined, { validateStatus: validateReturn })
     expect(res).toEqual(null)
   })
 
@@ -267,7 +270,7 @@ describe('POST', () => {
     expect(mockedAxios.post).toHaveBeenCalledWith(
       baseUrl + testURL,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res).toEqual(null)
   })
@@ -331,7 +334,7 @@ describe('GET', () => {
 
     const res = await APIGet<ListingEntity>(testURL + testID)
     expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + testID,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(res).toSatisfySchemaInApiSpec('Listing')
   })
 
@@ -361,7 +364,7 @@ describe('GET', () => {
     const res = await APIGet<SearchResultsResponse>(testURL, queryParams)
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl + testURL + '?query=textbook&minPricez=0',
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res?.items[0]).toSatisfySchemaInApiSpec('ListingSummary')
     expect(res?.totalItems).toEqual(res?.items.length)
@@ -391,7 +394,7 @@ describe('GET', () => {
     const res = await APIGet<ListingSummary[]>(testURL, queryParams)
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl + testURL + '?page=1&limit=1',
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res[0]).toSatisfySchemaInApiSpec('ListingSummary')
   })
@@ -409,7 +412,7 @@ describe('GET', () => {
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data: testResponse })
     const res = await APIGet<SearchHistoryResponse>(testURL)
     expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(testResponse).toSatisfySchemaInApiSpec('SearchHistory')
   })
 
@@ -426,7 +429,7 @@ describe('GET', () => {
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data: testResponse })
     const res = await APIGet<UserProfile>(testURL + testID)
     expect(mockedAxios.get).toHaveBeenCalledWith(baseUrl + testURL + testID,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(res).toSatisfySchemaInApiSpec('UserProfile')
   })
 
@@ -458,7 +461,7 @@ describe('GET', () => {
     const res = await APIGet<MessageThread[]>(testURL, queryParams)
     expect(mockedAxios.get).toHaveBeenCalledWith(
       baseUrl + testURL + '?num_items=1&offset=1',
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res[0]).toSatisfySchemaInApiSpec('MessageThread')
   })
@@ -492,7 +495,7 @@ describe('GET', () => {
       testListingID +
       testReciverID +
       '?num_items=1&offset=1',
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res[0]).toSatisfySchemaInApiSpec('Message')
   })
@@ -541,7 +544,7 @@ describe('PATCH', () => {
     expect(mockedAxios.patch).toHaveBeenCalledWith(
       baseUrl + testURL + testID,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest?.listing).toSatisfySchemaInApiSpec('NewListing')
     expect(testRequest?.status).toSatisfySchemaInApiSpec('ItemStatus')
@@ -574,7 +577,7 @@ describe('PATCH', () => {
     expect(mockedAxios.patch).toHaveBeenCalledWith(
       baseUrl + testURL + testID,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest).toSatisfySchemaInApiSpec('NewReview')
     expect(res).toSatisfySchemaInApiSpec('Review')
@@ -603,7 +606,7 @@ describe('PATCH', () => {
     expect(mockedAxios.patch).toHaveBeenCalledWith(
       baseUrl + testURL + testID,
       testRequest,
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(testRequest).toSatisfySchemaInApiSpec('UpdateUser')
     expect(res).toSatisfySchemaInApiSpec('User')
@@ -628,7 +631,7 @@ describe('DELETE', () => {
     mockedAxios.delete.mockResolvedValueOnce({ status: 200, data: null })
     const res = await APIDelete(testURL + testID)
     expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL + testID,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(res).toEqual(undefined)
   })
 
@@ -638,7 +641,7 @@ describe('DELETE', () => {
     mockedAxios.delete.mockResolvedValueOnce({ status: 200, data: null })
     const res = await APIDelete(testURL + testID)
     expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL + testID,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(res).toEqual(undefined)
   })
 
@@ -652,7 +655,7 @@ describe('DELETE', () => {
     const res = await APIDelete(testURL, queryParams)
     expect(mockedAxios.delete).toHaveBeenCalledWith(
       baseUrl + testURL + '?searchID=A23F29039B23',
-      { validateStatus: (status: number) => status <= 500 }
+      { validateStatus: validateReturn }
     )
     expect(res).toEqual(undefined)
   })
@@ -662,7 +665,7 @@ describe('DELETE', () => {
     mockedAxios.delete.mockResolvedValueOnce({ status: 200, data: null })
     const res = await APIDelete(testURL)
     expect(mockedAxios.delete).toHaveBeenCalledWith(baseUrl + testURL,
-      { validateStatus: (status: number) => status <= 500 })
+      { validateStatus: validateReturn })
     expect(res).toEqual(undefined)
   })
 })
