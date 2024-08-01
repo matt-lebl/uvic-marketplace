@@ -868,7 +868,7 @@ Originally I had this at &gt;= 10, but once our CSV users had +200 listings to t
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">C:\Users\Broondan\Documents\apache-jmeter-5.5\bin\results\response_times_over_time.jtl</stringProp>
+          <stringProp name="filename">.\results\threads_over_time.jtl</stringProp>
           <longProp name="interval_grouping">500</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
