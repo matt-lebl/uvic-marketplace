@@ -50,18 +50,18 @@ def main():
     :return:
     """
     org_data = [
-        ("Test Corp", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
-        ("Test Corp 2", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
-        ("Test Corp 3", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", False),
-        ("Test Corp 4", "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg", True)
+        ("ORG1_NAME", "LOGO_URL", False),
+        ("ORG2_NAME", "LOGO_URL", False),
+        ("ORG3_NAME", "LOGO_URL", False),
+        ("ORG4_NAME", "LOGO_URL", True)  # This true value indicates that this org is the one receiving donations
     ]
 
     orgs = [generate_organization(org[0], org[1], org[2]) for org in org_data]
 
-    charity_request_data = ("Giving Charity", "A good charity for charitying",
-                            datetime.now(UTC).isoformat(),
-                            (datetime.now(UTC) + timedelta(days=30)).isoformat(),
-                            "https://www.investopedia.com/thmb/C_11EGPNJx3TUnKbWqAJQztjKLM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/corporation-5687c7279c4746dda9162459e92be821.jpg",
+    charity_request_data = ("CHARITY_NAME", "CHARITY_DESCRIPTION",
+                            "START_DATE",
+                            "END_DATE",
+                            "LOGO_URL",
                             orgs)
 
     charity_request = generate_charity_request(charity_request_data[0], charity_request_data[1],
