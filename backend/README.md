@@ -51,6 +51,12 @@
 - Run main.py with **data-layer** virtual environment
   `python ./main.py`
 
+## Adding Charities
+In the backend/data-layer/app folder there is the add_charity.py file. To add a charity, edit the file with the relevant 
+charity information, then run `python add_charity.py`. Do this only after running the environment (the script requires
+a connection to the database).
+
+
 # Testing
 
 1. Run dev environment
