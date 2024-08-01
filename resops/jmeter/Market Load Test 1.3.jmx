@@ -85,7 +85,7 @@ Connect to 5s</stringProp>
 The u_msg_partner_id is left unused; it was supposed to be for also doing a bit of messaging in the test as well, but I ran out of time to add that.</stringProp>
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">C:/Users/Broondan/Desktop/Uni Work/5th Year - 2024 Summer/SENG 499 (Design Project 2)/Work/jmeter/data/user_data.csv</stringProp>
+        <stringProp name="filename">./user_data.csv</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
         <boolProp name="quotedData">false</boolProp>
         <boolProp name="recycle">true</boolProp>
@@ -98,7 +98,7 @@ The u_msg_partner_id is left unused; it was supposed to be for also doing a bit 
         <stringProp name="TestPlan.comments">Taking in a CSV file, this should allow other steps to access the CSV contents.</stringProp>
         <stringProp name="delimiter">,</stringProp>
         <stringProp name="fileEncoding"></stringProp>
-        <stringProp name="filename">C:/Users/Broondan/Desktop/Uni Work/5th Year - 2024 Summer/SENG 499 (Design Project 2)/Work/jmeter/data/listing_data.csv</stringProp>
+        <stringProp name="filename">./data/listing_data.csv</stringProp>
         <boolProp name="ignoreFirstLine">false</boolProp>
         <boolProp name="quotedData">true</boolProp>
         <boolProp name="recycle">true</boolProp>
