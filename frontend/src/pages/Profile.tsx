@@ -167,6 +167,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 onChange={(e) => setUsername(e.target.value)}
                 fullWidth
                 sx={{ marginBottom: 1 }}
+                data-testid="edit-username"
               />
               <TextField
                 label="Name"
@@ -174,6 +175,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 onChange={(e) => setName(e.target.value)}
                 fullWidth
                 sx={{ marginBottom: 1 }}
+                data-testid="edit-name"
               />
               <TextField
                 label="Bio"
@@ -194,19 +196,23 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h6" fontSize="4rem">
+                <Typography variant="h6" fontSize="4rem" data-testid="name">
                   {name}
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h4" fontSize="1.5rem">
+                <Typography
+                  variant="h4"
+                  fontSize="1.5rem"
+                  data-testid="username"
+                >
                   {user.email}
                 </Typography>
               </Box>
               <Box
                 sx={{ display: 'flex', alignItems: 'center', paddingTop: 2 }}
               >
-                <Typography variant="h4" fontSize="1rem">
+                <Typography variant="h4" fontSize="1rem" data-testid="bio">
                   {bio || ''}
                 </Typography>
               </Box>
