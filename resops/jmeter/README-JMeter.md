@@ -1,6 +1,8 @@
 # Resops and JMeter
 Done by Brendan Wadey.
 
+Test plans are saved as "Market Load Test X.Y.jmx", where X denotes the class of test and Y denotes version history (greater = more recent). 
+
 TOTP java implementation done by Thorsten Hoeger and Mahsum Urebe, taken from https://github.com/taimos/totp/ under the Apache License 2.0.
 
 ## Installation and Use
