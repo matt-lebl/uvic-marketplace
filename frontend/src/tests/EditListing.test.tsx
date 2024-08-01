@@ -65,6 +65,7 @@ const mockListing: ListingEntity = {
     },
   ],
   distance: 5,
+  charityId: ''
 }
 
 describe('EditListing', () => {
