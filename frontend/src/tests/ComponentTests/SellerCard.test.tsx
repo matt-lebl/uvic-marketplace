@@ -7,6 +7,8 @@ jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: () => jest.fn(),
 }))
+jest.mock('../../pages/Components/ListingMap', () => jest.fn())
+
 const mockListingEntity: ListingEntity = {
   listingID: '1',
   seller_profile: {
