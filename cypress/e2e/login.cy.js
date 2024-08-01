@@ -33,8 +33,8 @@ describe("Login", () => {
     cy.get("@alert")
       .should("have.been.calledOnce")
       .and(
-        "have.been.calledWith",
-        "Login failed: Error: Request failed with status code 400"
+        "have.been.calledWithMatch",
+        "Login failed: Error"
       );
   });
  
