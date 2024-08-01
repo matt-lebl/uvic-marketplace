@@ -12,24 +12,13 @@ describe('Events', () => {
     })
     cy.get('form[data-testid="login-form"]').submit();
     cy.url().should("eq", "https://market.lebl.ca/");
-    cy.get("button").eq(3).click();
+    cy.contains('button', 'Events').click();
   });
 
-  //TODO: implement
   it('Should display events', () => {
     cy.url().should("eq", "https://market.lebl.ca/events");
+    cy.wait(3000); 
     cy.contains("h4", "Charity Events").should("be.visible");
   })
 
-  it('Should view an event', () => {
-    cy.visit('https://market.lebl.ca/login')
-  })
-
-  it('Should create an event?', () => {
-    cy.visit('https://market.lebl.ca/login')
-  })
-
-  it('Should delete an event?', () => {
-    cy.visit('https://market.lebl.ca/login')
-  })
 })
