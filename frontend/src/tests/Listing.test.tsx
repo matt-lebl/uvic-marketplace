@@ -43,6 +43,7 @@ const mockListing: ListingEntity = {
     },
   ],
   distance: 5,
+  charityId: '789',
 }
 jest.mock('../APIlink', () => ({
   APIGet: jest.fn(),

@@ -59,22 +59,17 @@ function Search() {
       string,
       string | number,
     ][]
-
-    const func = async () => {
-      await APIGet<SearchResultsResponse>(
-        '/api/search',
-        queryParams
-      )
-        .then((response: SearchResultsResponse) => {
-          results.totalItems = response.totalItems
-          results.items = response.items
-        })
-        .catch((error: any) => {
-          console.error("Could not get Search Results")
-          navigate('/error')
-        })
+    try {
+      var response = await APIGet<SearchResultsResponse>('/api/search', queryParams)
+      if (response) {
+        results.totalItems = response.totalItems
+        results.items = response.items
+      }
+    } catch (error) {
+      debugger;
+      console.error("Could not get Search Results")
+      navigate('/error')
     }
-    func()
     return results;
   }
 

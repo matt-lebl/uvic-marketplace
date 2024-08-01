@@ -46,6 +46,7 @@ const mockListingEntity: ListingEntity = {
     },
   ],
   distance: 10,
+  charityId: '1',
 }
 
 describe('SellerCard Component', () => {

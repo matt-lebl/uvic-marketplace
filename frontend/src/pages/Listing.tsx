@@ -133,6 +133,9 @@ const Listing: React.FC<ListingProps> = ({
             >
               <Box>
                 <SellerCard data={listingData} />
+                {listingData.charityId ? (
+                  <Typography variant="h6">This listing is participating in the current charity!</Typography>
+                ) : null}
                 <Reviews
                   listingID={listingID}
                   initialReviews={listingData?.reviews ?? []}
