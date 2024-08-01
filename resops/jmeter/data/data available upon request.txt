@@ -1,0 +1,3 @@
+Since these CSV files contain secret login credentials, they will not be posted to the github repo.
+
+If you would like to test the JMeter load test within this repo, please contact Brendan Wadey via Discord.
