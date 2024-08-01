@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "2240287c-7d25-4691-8c7d-671db6f515f7",
+		"_postman_id": "5fbfbb8d-0e85-42fd-8b5d-112a650affa8",
 		"name": "UVic Marketplace API Specification",
 		"description": "API specification for communication between the frontend application and the backend application.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "36586575"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "17514907"
 	},
 	"item": [
 		{
@@ -18,13 +18,9 @@
 							"request": {
 								"auth": {
 									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{bearerToken}}",
-											"type": "string"
-										}
-									]
+									"bearer": {
+										"token": "{{bearerToken}}"
+									}
 								},
 								"method": "GET",
 								"header": [
@@ -347,17 +343,7 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/user/search-history",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"user",
-										"search-history"
-									]
-								}
+								"url": "{{baseUrl}}/api/user/search-history"
 							},
 							"response": []
 						}
@@ -379,17 +365,7 @@
 										"value": "application/json"
 									}
 								],
-								"url": {
-									"raw": "{{baseUrl}}/api/listing/{{listingID}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"listing",
-										"{{listingID}}"
-									]
-								}
+								"url": "{{baseUrl}}/api/listing/{{listingID}}"
 							},
 							"response": [
 								{
@@ -521,17 +497,7 @@
 										"value": "application/json"
 									}
 								],
-								"url": {
-									"raw": "{{baseUrl}}/api/listing/{{listingID}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"listing",
-										"{{listingID}}"
-									]
-								}
+								"url": "{{baseUrl}}/api/listing/{{listingID}}"
 							},
 							"response": [
 								{
@@ -756,17 +722,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/listing/{{listingID}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"listing",
-										"{{listingID}}"
-									]
-								}
+								"url": "{{baseUrl}}/api/listing/{{listingID}}"
 							},
 							"response": [
 								{
@@ -1004,24 +960,14 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n  \"listing\": {\n    \"title\": \"Listing2\",\n    \"location\": {\n      \"latitude\": 0.1,\n      \"longitude\": 0.1\n    },\n    \"price\": 1.0,\n    \"description\": \"Test Description\",\n    \"images\": [\n      {\n        \"url\": \"imageurl.com\"\n      }\n    ],\n    \"markedForCharity\": true\n  }\n}",
+									"raw": "{\n  \"listing\": {\n    \"title\": \"mouse\",\n    \"location\": {\n      \"latitude\": 0.1,\n      \"longitude\": 0.1\n    },\n    \"price\": 10.0,\n    \"description\": \"\",\n    \"images\": [\n      {\n        \"url\": \"imageurl.com\"\n      }\n    ],\n    \"markedForCharity\": false\n  }\n}",
 									"options": {
 										"raw": {
-											"headerFamily": "json",
 											"language": "json"
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/listing",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"listing"
-									]
-								}
+								"url": "{{baseUrl}}/api/listing"
 							},
 							"response": [
 								{
@@ -1053,16 +999,7 @@
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/listing",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"listing"
-											]
-										}
+										"url": "{{baseUrl}}/api/listing"
 									},
 									"status": "Created",
 									"code": 201,
@@ -1105,16 +1042,7 @@
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/listing",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"listing"
-											]
-										}
+										"url": "{{baseUrl}}/api/listing"
 									},
 									"status": "Bad Request",
 									"code": 400,
@@ -1157,16 +1085,7 @@
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/listing",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"listing"
-											]
-										}
+										"url": "{{baseUrl}}/api/listing"
 									},
 									"status": "Internal Server Error",
 									"code": 500,
@@ -1181,24 +1100,6 @@
 									"body": "{\n  \"error\": \"<string>\"\n}"
 								}
 							]
-						},
-						{
-							"name": "Get user's listings",
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/listing",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"listing"
-									]
-								}
-							},
-							"response": []
 						}
 					]
 				},
@@ -1213,17 +1114,7 @@
 									"request": {
 										"method": "POST",
 										"header": [],
-										"url": {
-											"raw": "{{baseUrl}}/api/user/send-confirmation-email",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												"send-confirmation-email"
-											]
-										}
+										"url": "{{baseUrl}}/api/user/send-confirmation-email"
 									},
 									"response": []
 								},
@@ -1234,24 +1125,14 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"code\" : \"bb292a1f-4ad1-41e2-92ac-bf3956508684\"\n}",
+											"raw": "{\n    \"code\" : \"08b4c81a-bd41-456d-8f7b-df598b92d0a4\"\n}",
 											"options": {
 												"raw": {
 													"language": "json"
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/user/confirm-email",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												"confirm-email"
-											]
-										}
+										"url": "{{baseUrl}}/api/user/confirm-email"
 									},
 									"response": []
 								}
@@ -1279,25 +1160,14 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"email\": \"rahuln@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"totp_code\": \"274016\"\n}",
+											"raw": "{\n  \"email\": \"rahuln{{rand_int}}@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"totp_code\": \"680714\"\n}",
 											"options": {
 												"raw": {
-													"headerFamily": "json",
 													"language": "json"
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/user/login",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												"login"
-											]
-										}
+										"url": "{{baseUrl}}/api/user/login"
 									},
 									"response": [
 										{
@@ -1324,17 +1194,7 @@
 														}
 													}
 												},
-												"url": {
-													"raw": "{{baseUrl}}/api/user/login",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"user",
-														"login"
-													]
-												}
+												"url": "{{baseUrl}}/api/user/login"
 											},
 											"status": "OK",
 											"code": 200,
@@ -1368,17 +1228,7 @@
 														}
 													}
 												},
-												"url": {
-													"raw": "{{baseUrl}}/api/user/login",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"user",
-														"login"
-													]
-												}
+												"url": "{{baseUrl}}/api/user/login"
 											},
 											"status": "Unauthorized",
 											"code": 401,
@@ -1408,25 +1258,14 @@
 										],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n  \"email\": \"rahuln@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"username\": \"{{user}}{{rand_int}}\",\n  \"name\": \"rahul\"\n}",
+											"raw": "{\n  \"email\": \"rahuln{{rand_int}}@uvic.ca\",\n  \"password\": \"12345678Bb$\",\n  \"username\": \"{{user}}{{rand_int}}\",\n  \"name\": \"rahul\"\n}",
 											"options": {
 												"raw": {
-													"headerFamily": "json",
 													"language": "json"
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/user/",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												""
-											]
-										}
+										"url": "{{baseUrl}}/api/user/"
 									},
 									"response": [
 										{
@@ -1453,17 +1292,7 @@
 														}
 													}
 												},
-												"url": {
-													"raw": "{{baseUrl}}/api/user/",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"user",
-														""
-													]
-												}
+												"url": "{{baseUrl}}/api/user/"
 											},
 											"status": "Created",
 											"code": 201,
@@ -1501,17 +1330,7 @@
 														}
 													}
 												},
-												"url": {
-													"raw": "{{baseUrl}}/api/user/",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"user",
-														""
-													]
-												}
+												"url": "{{baseUrl}}/api/user/"
 											},
 											"status": "Bad Request",
 											"code": 400,
@@ -1549,17 +1368,7 @@
 														}
 													}
 												},
-												"url": {
-													"raw": "{{baseUrl}}/api/user/",
-													"host": [
-														"{{baseUrl}}"
-													],
-													"path": [
-														"api",
-														"user",
-														""
-													]
-												}
+												"url": "{{baseUrl}}/api/user/"
 											},
 											"status": "Internal Server Error",
 											"code": 500,
@@ -1580,23 +1389,11 @@
 									"request": {
 										"auth": {
 											"type": "apikey",
-											"apikey": [
-												{
-													"key": "key",
-													"value": "authorization",
-													"type": "string"
-												},
-												{
-													"key": "value",
-													"value": "{{apiKey}}",
-													"type": "string"
-												},
-												{
-													"key": "in",
-													"value": "header",
-													"type": "string"
-												}
-											]
+											"apikey": {
+												"key": "authorization",
+												"value": "{{apiKey}}",
+												"in": "header"
+											}
 										},
 										"method": "POST",
 										"header": [
@@ -1605,17 +1402,7 @@
 												"value": "application/json"
 											}
 										],
-										"url": {
-											"raw": "{{baseUrl}}/api/user/logout",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												"logout"
-											]
-										}
+										"url": "{{baseUrl}}/api/user/logout"
 									},
 									"response": []
 								},
@@ -1633,17 +1420,7 @@
 												}
 											}
 										},
-										"url": {
-											"raw": "{{baseUrl}}/api/user/reset-password",
-											"host": [
-												"{{baseUrl}}"
-											],
-											"path": [
-												"api",
-												"user",
-												"reset-password"
-											]
-										}
+										"url": "{{baseUrl}}/api/user/reset-password"
 									},
 									"response": []
 								}
@@ -1662,17 +1439,7 @@
 										"value": "application/json"
 									}
 								],
-								"url": {
-									"raw": "{{baseUrl}}/api/user/{{userID}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"user",
-										"{{userID}}"
-									]
-								}
+								"url": "{{baseUrl}}/api/user/{{userID}}"
 							},
 							"response": [
 								{
@@ -1871,17 +1638,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/user/",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"user",
-										""
-									]
-								}
+								"url": "{{baseUrl}}/api/user/"
 							},
 							"response": []
 						}
@@ -1904,16 +1661,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/charities",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"charities"
-									]
-								}
+								"url": "{{baseUrl}}/api/charities"
 							},
 							"response": []
 						},
@@ -1922,17 +1670,7 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/charities/b931fe50-d811-43aa-bdd6-3b43ed9e4033",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"charities",
-										"b931fe50-d811-43aa-bdd6-3b43ed9e4033"
-									]
-								}
+								"url": "{{baseUrl}}/api/charities/b931fe50-d811-43aa-bdd6-3b43ed9e4033"
 							},
 							"response": []
 						},
@@ -1941,16 +1679,7 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/charities",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"charities"
-									]
-								}
+								"url": "{{baseUrl}}/api/charities"
 							},
 							"response": []
 						},
@@ -1959,17 +1688,7 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/charities/current",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"charities",
-										"current"
-									]
-								}
+								"url": "{{baseUrl}}/api/charities/current"
 							},
 							"response": []
 						}
@@ -1983,17 +1702,7 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/messages/overview",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"messages",
-										"overview"
-									]
-								}
+								"url": "{{baseUrl}}/api/messages/overview"
 							},
 							"response": []
 						},
@@ -2002,19 +1711,7 @@
 							"request": {
 								"method": "GET",
 								"header": [],
-								"url": {
-									"raw": "{{baseUrl}}/api/messages/thread/{{listingID}}/{{userID}}",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"messages",
-										"thread",
-										"{{listingID}}",
-										"{{userID}}"
-									]
-								}
+								"url": "{{baseUrl}}/api/messages/thread/{{listingID}}/{{userID}}"
 							},
 							"response": []
 						},
@@ -2032,16 +1729,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/messages",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"messages"
-									]
-								}
+								"url": "{{baseUrl}}/api/messages"
 							},
 							"response": []
 						}
@@ -2064,16 +1752,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/review",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"review"
-									]
-								}
+								"url": "{{baseUrl}}/api/review"
 							},
 							"response": []
 						},
@@ -2091,17 +1770,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/review/50da311e-f6f4-49e5-bf57-3e9a314ff080",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"review",
-										"50da311e-f6f4-49e5-bf57-3e9a314ff080"
-									]
-								}
+								"url": "{{baseUrl}}/api/review/50da311e-f6f4-49e5-bf57-3e9a314ff080"
 							},
 							"response": []
 						},
@@ -2119,17 +1788,7 @@
 										}
 									}
 								},
-								"url": {
-									"raw": "{{baseUrl}}/api/review/50da311e-f6f4-49e5-bf57-3e9a314ff080",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"api",
-										"review",
-										"50da311e-f6f4-49e5-bf57-3e9a314ff080"
-									]
-								}
+								"url": "{{baseUrl}}/api/review/50da311e-f6f4-49e5-bf57-3e9a314ff080"
 							},
 							"response": []
 						}
@@ -2153,18 +1812,7 @@
 										}
 									]
 								},
-								"url": {
-									"raw": "localhost:8001/api/images/acd.png",
-									"host": [
-										"localhost"
-									],
-									"port": "8001",
-									"path": [
-										"api",
-										"images",
-										"acd.png"
-									]
-								}
+								"url": "localhost:8001/api/images/acd.png"
 							},
 							"response": []
 						},
@@ -2186,18 +1834,58 @@
 										}
 									]
 								},
+								"url": "localhost:8001/api/images/acd.png"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "recommendations",
+					"item": [
+						{
+							"name": "Recommendations",
+							"request": {
+								"method": "GET",
+								"header": [],
 								"url": {
-									"raw": "localhost:8001/api/images/acd.png",
+									"raw": "{{baseUrl}}/api/recommendations?page=1&limit=10",
 									"host": [
-										"localhost"
+										"{{baseUrl}}"
 									],
-									"port": "8001",
 									"path": [
 										"api",
-										"images",
-										"acd.png"
+										"recommendations"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
 									]
 								}
+							},
+							"response": []
+						},
+						{
+							"name": "Stop Recommending This Item",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\": \"stop\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{baseUrl}}/api/recommendations/stop/{{listingID}}"
 							},
 							"response": []
 						}
@@ -2213,18 +1901,7 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/charities/clear/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"charities",
-								"clear",
-								""
-							]
-						}
+						"url": "{{baseUrl}}/api/charities/clear/"
 					},
 					"response": []
 				}
