@@ -64,6 +64,7 @@ export interface ListingEntity {
     url: string
   }[]
   distance: number
+  charityId: string
 }
 
 export interface NewReview {

@@ -107,6 +107,7 @@ describe('POST', () => {
           },
         ],
         distance: 4.2,
+        charityId: ""
       },
     }
     mockedAxios.post.mockResolvedValueOnce({ status: 201, data: testResponse })
@@ -320,6 +321,7 @@ describe('GET', () => {
         },
       ],
       distance: 4.2,
+      charityId: ""
     }
     mockedAxios.get.mockResolvedValueOnce({ status: 200, data: testResponse })
 

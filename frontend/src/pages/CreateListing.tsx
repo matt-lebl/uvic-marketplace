@@ -9,8 +9,8 @@ import {
   InputAdornment,
 } from '@mui/material'
 import PhotoPreviewList from './Components/PhotoPreviewList'
-import { ListingEntity, ListingResponse } from '../interfaces'
-import { APIPost, APIUploadImage } from '../APIlink'
+import { CharityEntity, ListingEntity, ListingResponse } from '../interfaces'
+import { APIGet, APIPost, APIUploadImage } from '../APIlink'
 import { useNavigate } from 'react-router-dom'
 
 function CreateListing() {
@@ -25,6 +25,8 @@ function CreateListing() {
   const [geolocationError, setGeolocationError] = useState<string | null>(null)
   const [titleError, setTitleError] = useState<boolean>(false)
   const [priceError, setPriceError] = useState<boolean>(false)
+  const [currentEvent, setCurrentEvent] = useState<CharityEntity | undefined>(undefined)
+  const [markedForCharity, setMarkedForCharity] = useState<boolean>(false)
   const navigate = useNavigate()
 
   async function apiSubmit(listing: Partial<ListingEntity>) {
@@ -40,6 +42,15 @@ function CreateListing() {
       debugger
       console.error('Failed to create listing')
       navigate('/error')
+    }
+  }
+
+  async function getEvent() {
+    try {
+      const response: CharityEntity | undefined = await APIGet('/api/charities/current')
+      setCurrentEvent(response)
+    } catch (error) {
+      console.error('Failed to get current event')
     }
   }
 
@@ -59,6 +70,7 @@ function CreateListing() {
       setGeolocationError('Geolocation is not supported by this browser.')
       console.error('Geolocation is not supported by this browser.')
     }
+    getEvent()
   }, [])
 
   const handlePhotoAdd = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -108,7 +120,7 @@ function CreateListing() {
       price,
       location: { latitude, longitude },
       images: uploadedImageURLs.map((url:string) => ({ url })),
-      markedForCharity: false,
+      markedForCharity,
     }
 
     apiSubmit(submitListing)
@@ -209,6 +221,16 @@ function CreateListing() {
                 >
                   Remove All
                 </Button>
+              </Box>
+              <Box mt={3}>
+                <Typography>Participate in charity:</Typography>
+                <select
+                  value={markedForCharity ? "true" : "false"}
+                  onChange={(e) => setMarkedForCharity(markedForCharity ? false : true)}
+                >
+                  <option value="false">None</option>
+                  {currentEvent ? (<option value="true">{currentEvent.name}</option>) : null}
+                </select>
               </Box>
             </Paper>
             <Box display={'flex'} flexDirection={'row-reverse'}>
