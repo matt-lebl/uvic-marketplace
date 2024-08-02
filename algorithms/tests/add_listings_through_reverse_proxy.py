@@ -115,6 +115,11 @@ def add_listings(base_url):
     ]
 
     for i in range(100):
+        if i % 2 == 0:
+            mark_for_charity = True
+        else:
+            mark_for_charity = False
+
         listing_data = listing_data = {
             "listing": {
                 "title": items[i][0],
@@ -128,7 +133,8 @@ def add_listings(base_url):
                 {
                     "url": "imageurl.com"
                 }
-                ]
+                ],
+                "markedForCharity": mark_for_charity
             }
         }
 
