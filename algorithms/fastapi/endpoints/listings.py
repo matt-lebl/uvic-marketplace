@@ -16,7 +16,6 @@ router = APIRouter()
 @router.post("/listing", response_model=ListingResponse, responses={201: {"model": ListingResponse}, 400: {"model": ErrorMessage}, 500: {"model": ErrorMessage}}, status_code=201)
 async def create_listing(data: Dict = Body(...), authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
     
-    print(data)
     # Save the listing to Elasticsearch
     listing_data = data['listing']
 
@@ -30,9 +29,16 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
         "lon": listing_data['location']['longitude']
     }
 
+    # Format seller for Elasticsearch
+    listing_data['sellerID'] = listing_data['seller_profile']['userID']
+    listing_data['sellerName'] = listing_data['seller_profile']['name']
+
     # Format charityID for Elasticsearch
     if 'charityId' in listing_data:
         listing_data['charityID'] = str(listing_data['charityId'])
+
+    if 'images' in listing_data and len(listing_data['images']) > 0:
+        listing_data['imageUrl'] = listing_data['images'][0]['url']
 
     # Add the listing to Elasticsearch
     response = es.index(index="listings_index", id=listing_data['listingID'], body=listing_data)
@@ -65,7 +71,7 @@ async def create_listing(data: Dict = Body(...), authorization: Optional[str] = 
         print("Error adding/updating listing to postgres: ", e)
         db.rollback()
         return HTTPException(status_code=501, detail="Error adding/updating listing to database")
-        
+
     # Format listing into proper response 
     del listing_data['embedding']
     listing_data['status'] = ItemStatusEnum.AVAILABLE
@@ -96,6 +102,7 @@ async def delete_listing(listing_id: str, db: Session = Depends(get_db)):
             db.commit()
             print(f"Deleted from DB: Listing ID {listing_id}")
         else:
+            print("Listing not found in database")
             raise HTTPException(status_code=404, detail="Listing not found in database")
     except SQLAlchemyError as e:
         db.rollback()
