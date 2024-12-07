@@ -27,7 +27,7 @@ spec:
                   key: TOTP_KEY
                   name: backend-totp-key-secret
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: http://kafka:9092
+              value: kafka:9092
             - name: FRONTEND_URL
               value: 'https://market.lebl.ca'
             - name: VALIDATION_EMAIL_ENCRYPTION_KEY
